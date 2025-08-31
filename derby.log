@@ -1,0 +1,19 @@
+----------------------------------------------------------------
+Sun Aug 31 09:12:15 IDT 2025:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.17.1.0 - (1913217): instance a816c00e-0198-fec1-4301-0000068e2db8 
+on database directory C:\Users\meyta\OneDrive\שולחן העבודה\לימודים\Last year\Design Patterns\design_patterns_final_project\taskDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@c387f44 
+Loaded from file:/C:/Users/meyta/OneDrive/%d7%a9%d7%95%d7%9c%d7%97%d7%9f%20%d7%94%d7%a2%d7%91%d7%95%d7%93%d7%94/%d7%9c%d7%99%d7%9e%d7%95%d7%93%d7%99%d7%9d/Last%20year/Design%20Patterns/design_patterns_final_project/lib/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=24.0.2+12-54
+user.dir=C:\Users\meyta\OneDrive\שולחן העבודה\לימודים\Last year\Design Patterns\design_patterns_final_project
+os.name=Windows 11
+os.arch=amd64
+os.version=10.0
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Sun Aug 31 09:12:41 IDT 2025: Shutting down Derby engine
+----------------------------------------------------------------
+Sun Aug 31 09:12:41 IDT 2025:
+Shutting down instance a816c00e-0198-fec1-4301-0000068e2db8 on database directory C:\Users\meyta\OneDrive\שולחן העבודה\לימודים\Last year\Design Patterns\design_patterns_final_project\taskDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@c387f44 
+----------------------------------------------------------------
