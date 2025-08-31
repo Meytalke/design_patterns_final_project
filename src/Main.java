@@ -1,5 +1,5 @@
 import model.dao.*;
-import model.dao.TasksDAOImpl;
+import model.dao.TasksDAODerby;
 import view.TaskManagerUI;
 import viewmodel.TasksViewModel;
 
@@ -12,7 +12,7 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
             try {
                 // Create a single instance of the real DAO (Singleton)
-                ITasksDAO realDAO = TasksDAOImpl.getInstance();
+                ITasksDAO realDAO = TasksDAODerby.getInstance();
 
                 // Wrap the real DAO with a Proxy
                 ITasksDAO proxyDAO = new TasksDAOProxy(realDAO);
