@@ -6,23 +6,29 @@ import model.report.*;
 import model.task.ITask;
 import model.task.Task;
 import model.task.TaskState;
+import view.TaskManagerView;
 import view.TasksObserver;
+import view.IView;
 import viewmodel.combinator.TaskFilter;
 
 import java.util.*;
 
 
-public class TasksViewModel {
+public class TasksViewModel implements IViewModel {
 
-    private final ITasksDAO tasksDAO;
+    private IView view;
+    private ITasksDAO tasksDAO;
+    //This list will contain observers to UI components that need to be updated
+    // to start, we will update the whole UI everytime the list of tasks changes
     private final List<TasksObserver> observers = new ArrayList<>();
     private List<ITask> tasks = new ArrayList<>();
     private List<ITask> allTasks = new ArrayList<>();
     private final Map<String, IReportExporter> exporters = new HashMap<>();
 
 
-    public TasksViewModel(ITasksDAO tasksDAO) {
+    public TasksViewModel(ITasksDAO tasksDAO, IView view) {
         this.tasksDAO = tasksDAO;
+        setView(view);
         exporters.put("Terminal", new ReportAdapter());
         exporters.put("PDF", new PdfReportAdapter());
         exporters.put("CSV", new CsvReportAdapter());
@@ -38,7 +44,7 @@ public class TasksViewModel {
         observers.remove(observer);
     }
 
-    private void notifyObservers() {
+    public void notifyObservers() {
         for (TasksObserver observer : observers) {
             observer.onTasksChanged(tasks);
         }
@@ -58,6 +64,7 @@ public class TasksViewModel {
 
     public void addTask(String title, String description) {
         try {
+            System.out.println("Attempting to add task: " + title + "\nDesc: " + description);
             ITask newTask = new Task(0,title, description,TaskState.TO_DO);
             tasksDAO.addTask(newTask);
             this.allTasks.add(newTask);
@@ -161,4 +168,42 @@ public class TasksViewModel {
     public List<ITask> getTasks() {
         return tasks;
     }
+    
+    public void setTasksDAO(ITasksDAO tasksDAO) { 
+        this.tasksDAO = tasksDAO;
+    }
+    
+    public ITasksDAO getTasksDAO() {
+        return tasksDAO;
+    }
+    
+    @Override
+    public void setView(IView view){
+        this.view = view;
+    }
+
+    @Override
+    public IView getView() {
+        return view;
+    }
+
+    public void addButtonPressed(){
+        String title = ((TaskManagerView) view).getTaskTitleInputF().getText();
+        String description = ((TaskManagerView) view).getDescriptionInputTA().getText();
+        if (!title.isEmpty()) {
+            addTask(title, description);
+            resetForm();
+        }
+    }
+    private void resetForm() {
+        ((TaskManagerView) view).getTaskTitleInputF().setText("");
+        ((TaskManagerView) view).getDescriptionInputTA().setText("");
+        ((TaskManagerView) view).getTaskStateComboBox().setSelectedIndex(0);
+        ((TaskManagerView) view).getTaskStateComboBox().setEnabled(false);
+        ((TaskManagerView) view).getAddButton().setEnabled(true);
+        ((TaskManagerView) view).getUpdateButton().setEnabled(false);
+        ((TaskManagerView) view).setSelectedTask(null);
+        ((TaskManagerView) view).getTaskList().clearSelection();
+    }
+
 }

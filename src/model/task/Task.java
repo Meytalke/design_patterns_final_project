@@ -6,6 +6,7 @@ public class Task implements ITask {
     private int id;
     private String title;
     private String description;
+    //Convert TaskState to IState type with concrete instance from ToDoState or InProgressState etc...
     private TaskState state;
 
     public Task(int id, String title, String description, TaskState state) {
@@ -39,7 +40,7 @@ public class Task implements ITask {
 
     @Override
     public String toString() {
-        return id + " | " + title + " | " + state;
+        return "id: "+ id + " | title: " + title + " | state: " + state.toString();
     }
 
 }
