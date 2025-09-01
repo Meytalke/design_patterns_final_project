@@ -12,10 +12,10 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
             try {
                 // Create a single instance of the real DAO (Singleton)
-                ITasksDAO realDAO = TasksDAODerby.getInstance();
+                ITasksDAO tasksDAO = TasksDAODerby.getInstance();
 
-                // Wrap the real DAO with a Proxy
-                ITasksDAO proxyDAO = new TasksDAOProxy(realDAO);
+                // Wrap the real DAO with a Proxy for caching
+                ITasksDAO proxyDAO = new TasksDAOProxy(tasksDAO);
 
                 // The ViewModel receives the Proxy
                 TasksViewModel viewModel = new TasksViewModel(proxyDAO);
