@@ -12,7 +12,7 @@ public class TasksDAOImpl implements ITasksDAO {
 
     // Singleton instance
     private static TasksDAOImpl instance;
-    private static Connection connection = null;
+    private Connection connection = null;
     private static final String DB_URL = "jdbc:derby:./taskDB;create=true";
 
     // Private constructor to prevent direct instantiation
