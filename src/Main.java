@@ -14,6 +14,7 @@ import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) {
+        final IViewModel[] viewModelContainer = new IViewModel[1];
         SwingUtilities.invokeLater(() -> {
             try {
                 // Create a single instance of the real DAO (Singleton)
@@ -26,6 +27,7 @@ public class Main {
 
                 // The ViewModel receives the Proxy and the View
                 IViewModel viewModel = new TasksViewModel(proxyDAO,  taskManagerView);
+                viewModelContainer[0] = viewModel;
                 // The View receives the ViewModel
                 taskManagerView.setViewModel(viewModel);
 
@@ -42,6 +44,10 @@ public class Main {
         //Attempt to ensure the database is shutdown upon shutting down the program.
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
+                if (viewModelContainer[0] instanceof TasksViewModel) {
+                    ((TasksViewModel) viewModelContainer[0]).shutdown();
+                }
+
                 DriverManager.getConnection("jdbc:derby:;shutdown=true");
                 System.out.println("Derby database shut down successfully.");
             } catch (SQLException e) {

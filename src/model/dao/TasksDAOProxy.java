@@ -65,8 +65,8 @@ public class TasksDAOProxy implements ITasksDAO {
     @Override
     public ITask getTask(int id) throws TasksDAOException {
         //If we fetched all tasks once, no need to retrieve them again
-        if(!allCache.isEmpty()){
-            System.out.println("Returning task from cache: " + id);
+        if (allCache.containsKey(id)) {
+            System.out.println("Returning task from allCache: " + id);
             return allCache.get(id);
         }
         // In cache:
@@ -79,6 +79,7 @@ public class TasksDAOProxy implements ITasksDAO {
         ITask task = tasksDAO.getTask(id);
         //This if statement is useless when getTask throws exception when not found, so we can remove this part.
         if (task != null) {
+            allCache.put(task.getId(), task);
             cache.put(task.getId(), task);
         }
         return task;
@@ -94,7 +95,10 @@ public class TasksDAOProxy implements ITasksDAO {
     public void addTask(ITask task) throws TasksDAOException {
         tasksDAO.addTask(task);
         cache.put(task.getId(), task);
+        allCache.put(task.getId(), task);
         System.out.println("Task added (cache): " + task.getId());
+        System.out.println(cache);
+        System.out.println(allCache);
     }
 
     /**

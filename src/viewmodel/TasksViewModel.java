@@ -12,6 +12,9 @@ import view.IView;
 import viewmodel.combinator.TaskFilter;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 public class TasksViewModel implements IViewModel {
@@ -24,15 +27,17 @@ public class TasksViewModel implements IViewModel {
     private List<ITask> tasks = new ArrayList<>();
     private List<ITask> allTasks = new ArrayList<>();
     private final Map<String, IReportExporter> exporters = new HashMap<>();
+    private ExecutorService service;
 
 
     public TasksViewModel(ITasksDAO tasksDAO, IView view) {
-        this.tasksDAO = tasksDAO;
+        setModel(tasksDAO);
         setView(view);
         exporters.put("Terminal", new ReportAdapter());
         exporters.put("PDF", new PdfReportAdapter());
         exporters.put("CSV", new CsvReportAdapter());
         exporters.put("JSON", new JsonReportAdapter());
+        this.service = Executors.newFixedThreadPool(8);
         loadTasks(); // Initial load
     }
 
@@ -51,28 +56,32 @@ public class TasksViewModel implements IViewModel {
     }
 
     public void loadTasks() {
-        try {
-            ITask[] tasksArray = tasksDAO.getTasks();
-            // Convert the array to an ArrayList for mutable operations
-            this.allTasks = new ArrayList<>(Arrays.asList(tasksArray));
-            this.tasks = new ArrayList<>(this.allTasks);
-            notifyObservers();
-        } catch (TasksDAOException e){
-            System.err.println("Error loading tasks: " + e.getMessage());
-        }
+        service.submit(() -> {
+            try {
+                ITask[] tasksArray = tasksDAO.getTasks();
+                // Convert the array to an ArrayList for mutable operations
+                this.allTasks = new ArrayList<>(Arrays.asList(tasksArray));
+                this.tasks = new ArrayList<>(this.allTasks);
+                notifyObservers();
+            } catch (TasksDAOException e){
+                System.err.println("Error loading tasks: " + e.getMessage());
+            }
+        });
     }
 
     public void addTask(String title, String description) {
-        try {
-            System.out.println("Attempting to add task: " + title + "\nDesc: " + description);
-            ITask newTask = new Task(0,title, description,new ToDoState());
-            tasksDAO.addTask(newTask);
-            this.allTasks.add(newTask);
-            this.tasks = new ArrayList<>(this.allTasks);
-            notifyObservers();
-        } catch (TasksDAOException e) {
-            System.err.println("Error adding task: " + e.getMessage());
-        }
+        service.submit(() -> {
+            try {
+                System.out.println("Attempting to add task: " + title + "\nDesc: " + description);
+                ITask newTask = new Task(0,title, description,new ToDoState());
+                tasksDAO.addTask(newTask);
+                this.allTasks.add(newTask);
+                this.tasks = new ArrayList<>(this.allTasks);
+                notifyObservers();
+            } catch (TasksDAOException e) {
+                System.err.println("Error adding task: " + e.getMessage());
+            }
+        });
     }
 
     public void addButtonPressed(String title, String description){
@@ -82,25 +91,27 @@ public class TasksViewModel implements IViewModel {
     }
 
     public void updateTask(int id, String newTitle, String newDescription, TaskState newState) {
-        try {
-            System.out.println("Attempting to update task ID: " + id);
-            Task task = (Task) tasksDAO.getTask(id);
-            if (task == null) {
-                System.err.println("Task not found for update. ID: " + id);
-                return;
+        service.submit(() -> {
+            try {
+                System.out.println("Attempting to update task ID: " + id);
+                Task task = (Task) tasksDAO.getTask(id);
+                if (task == null) {
+                    System.err.println("Task not found for update. ID: " + id);
+                    return;
+                }
+
+                task.setTitle(newTitle);
+                task.setDescription(newDescription);
+                task.setState(newState);
+
+                tasksDAO.updateTask(task);
+                allTasks.replaceAll(t -> t.getId() == id ? task : t);
+                loadTasks();
+
+            } catch (TasksDAOException e) {
+                System.err.println("Error updating task: " + e.getMessage());
             }
-
-            task.setTitle(newTitle);
-            task.setDescription(newDescription);
-            task.setState(newState);
-
-            tasksDAO.updateTask(task);
-            allTasks.replaceAll(t -> t.getId() == id ? task : t);
-            loadTasks();
-
-        } catch (TasksDAOException e) {
-            System.err.println("Error updating task: " + e.getMessage());
-        }
+        });
     }
 
     public void updateButtonPressed(int id, String newTitle, String newDescription, TaskState newState) {
@@ -108,16 +119,21 @@ public class TasksViewModel implements IViewModel {
     }
 
     public void moveTaskStateUp(int taskId) {
-        try {
-            Task task = (Task) tasksDAO.getTask(taskId);
-            if (task == null) return;
+        service.submit(() -> {
+            try {
+                Task task = (Task) tasksDAO.getTask(taskId);
+                if (task == null) return;
 
-            task.setState(task.getState().next());
-            tasksDAO.updateTask(task);
-            loadTasks();
-        } catch (TasksDAOException e) {
-            System.err.println("Error updating task state: " + e.getMessage());
-        }
+                task.setState(task.getState().next());
+                tasksDAO.updateTask(task);
+
+                allTasks.replaceAll(t -> t.getId() == taskId ? task : t);
+                tasks.replaceAll(t -> t.getId() == taskId ? task : t);
+                notifyObservers();
+            } catch (TasksDAOException e) {
+                System.err.println("Error updating task state: " + e.getMessage());
+            }
+        });
     }
 
     public void upButtonPressed(int taskId) {
@@ -125,16 +141,21 @@ public class TasksViewModel implements IViewModel {
     }
 
     public void moveTaskStateDown(int taskId) {
-        try {
-            Task task = (Task) tasksDAO.getTask(taskId);
-            if (task == null) return;
+        service.submit(() -> {
+            try {
+                Task task = (Task) tasksDAO.getTask(taskId);
+                if (task == null) return;
 
-            task.setState(task.getState().previous());
-            tasksDAO.updateTask(task);
-            loadTasks();
-        } catch (TasksDAOException e) {
-            System.err.println("Error updating task state: " + e.getMessage());
-        }
+                task.setState(task.getState().previous());
+                tasksDAO.updateTask(task);
+
+                allTasks.replaceAll(t -> t.getId() == taskId ? task : t);
+                tasks.replaceAll(t -> t.getId() == taskId ? task : t);
+                notifyObservers();
+            } catch (TasksDAOException e) {
+                System.err.println("Error updating task state: " + e.getMessage());
+            }
+        });
     }
 
     public void downButtonPressed(int taskId) {
@@ -143,14 +164,16 @@ public class TasksViewModel implements IViewModel {
 
 
     public void deleteTask(int id) {
-        try {
-            tasksDAO.deleteTask(id);
-            this.allTasks.removeIf(task -> task.getId() == id);
-            this.tasks.removeIf(task -> task.getId() == id);
-            notifyObservers();
-        } catch (TasksDAOException e) {
-            System.err.println("Error deleting task: " + e.getMessage());
-        }
+        service.submit(() -> {
+            try {
+                tasksDAO.deleteTask(id);
+                this.allTasks.removeIf(task -> task.getId() == id);
+                this.tasks.removeIf(task -> task.getId() == id);
+                notifyObservers();
+            } catch (TasksDAOException e) {
+                System.err.println("Error deleting task: " + e.getMessage());
+            }
+        });
     }
 
     public void deleteButtonPressed(int id) {
@@ -158,29 +181,33 @@ public class TasksViewModel implements IViewModel {
     }
 
     public void deleteAllTasks() {
-        try {
-            tasksDAO.deleteTasks();
-            this.allTasks.clear();
-            this.tasks.clear();
-            notifyObservers();
-        } catch (TasksDAOException e) {
-            System.err.println("Error deleting tasks: " + e.getMessage());
-        }
+        service.submit(() -> {
+            try {
+                tasksDAO.deleteTasks();
+                this.allTasks.clear();
+                this.tasks.clear();
+                notifyObservers();
+            } catch (TasksDAOException e) {
+                System.err.println("Error deleting tasks: " + e.getMessage());
+            }
+        });
     }
 
     public void generateReport(String format) {
-        // 1. Use the Visitor to gather data
-        ReportVisitor visitor = new ReportVisitor();
-        allTasks.forEach(task -> task.accept(visitor));
-        ReportData reportData = visitor.getReport();
+        service.submit(() -> {
+            // 1. Use the Visitor to gather data
+            ReportVisitor visitor = new ReportVisitor();
+            allTasks.forEach(task -> task.accept(visitor));
+            ReportData reportData = visitor.getReport();
 
-        IReportExporter exporter = exporters.get(format);
-        // 2. Use the Adapter to export the report
-        if (exporter != null) {
-            exporter.export(reportData, "report." + format.toLowerCase()); // The path can be dynamic
-        } else {
-            System.err.println("Unsupported report format: " + format);
-        }
+            IReportExporter exporter = exporters.get(format);
+            // 2. Use the Adapter to export the report
+            if (exporter != null) {
+                exporter.export(reportData, "report." + format.toLowerCase()); // The path can be dynamic
+            } else {
+                System.err.println("Unsupported report format: " + format);
+            }
+        });
     }
 
     public void filterTasks(String state, String titleTerm, String descriptionTerm, String idTerm) {
@@ -237,8 +264,28 @@ public class TasksViewModel implements IViewModel {
     }
 
     @Override
+    public void setModel(ITasksDAO tasksDAO) {
+        this.tasksDAO = tasksDAO;
+    }
+
+    @Override
     public IView getView() {
         return view;
     }
 
+    @Override
+    public ITasksDAO getModel() {
+        return tasksDAO;
+    }
+
+    public void shutdown() {
+        service.shutdown();
+        try {
+            if (!service.awaitTermination(60, TimeUnit.SECONDS)) {
+                service.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            service.shutdownNow();
+        }
+    }
 }
