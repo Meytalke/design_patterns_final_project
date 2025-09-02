@@ -1,18 +1,23 @@
 package model.task;
 
-public class ToDoState implements TaskState {
+public class ToDoState implements ITaskState {
+
+    private final InProgressState inProgressState = new InProgressState(this);
+
     @Override
     public String getDisplayName() {
         return "To Do";
     }
 
     @Override
-    public TaskState next() {
-        return new InProgressState();
+    public ITaskState next() {
+        return getInProgressState();
     }
 
     @Override
-    public TaskState previous() {
+    public ITaskState previous() {
         return this;
     }
+
+    public ITaskState getInProgressState() {return inProgressState;}
 }

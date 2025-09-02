@@ -1,44 +1,38 @@
 package view.ObservableProperty;
 
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
-public class ObservableProperty<T,U> implements IObservableProperty<T> {
+public class ObservableProperty<T> implements IObservableProperty<T> {
 
     private T value;
-    private U component;
+    private final List<Consumer<T>> listeners = new ArrayList<>();
 
-    public ObservableProperty(T value, U component) {
-        /*
-        * Initializing observableProperty object with the value to store, and the UI component to */
-        setValue(value);
-        setComponent(component);
-    }
-
-    @Override
-    public void updateUI() {
-    //Update the UI component with the new value T
-
-    }
-
-    @Override
-    public void changeValue(T value) {
+    public ObservableProperty(T value) {
         setValue(value);
     }
 
 
-    public T getValue() {
+
+    @Override
+    public T get() {
         return value;
     }
 
-    public void setValue(T value) {
-        this.value = value;
+    @Override
+    public void setValue(T newValue) {
+        if((value == null && newValue!= null) || (value!=null && !value.equals(newValue))){
+            value=newValue;
+            for( Consumer<T> listener : listeners){
+                listener.accept(value);
+            }
+        }
     }
 
-    public U getComponent() {
-        return component;
-    }
-
-    public void setComponent(U component) {
-        this.component = component;
+    @Override
+    public void addListener(Consumer<T> listener) {
+        listeners.add(listener);
     }
 }

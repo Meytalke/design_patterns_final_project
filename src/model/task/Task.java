@@ -6,9 +6,9 @@ public class Task implements ITask {
     private int id;
     private String title;
     private String description;
-    private TaskState state;
+    private ITaskState state;
 
-    public Task(int id, String title, String description, TaskState state) {
+    public Task(int id, String title, String description, ITaskState state) {
         setId(id);
         setTitle(title);
         setDescription(description);
@@ -25,12 +25,12 @@ public class Task implements ITask {
     public String getDescription() {return description;}
 
     @Override
-    public TaskState getState() {return state;}
+    public ITaskState getState() {return state;}
 
     public void setId(int id) {this.id = id;}
     public void setTitle(String title) {this.title = title;}
     public void setDescription(String description) {this.description = description;}
-    public void setState(TaskState state) {this.state = state;}
+    public void setState(ITaskState state) {this.state = state;}
 
     @Override
     public void accept(TaskVisitor visitor) {

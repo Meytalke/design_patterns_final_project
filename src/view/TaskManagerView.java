@@ -16,17 +16,18 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
     private final JPanel contentPane;
     //Task title and description input field and textArea
     private final JTextField taskTitleInputF;
-    private JTextArea descriptionInputTA;
+    private final JTextArea descriptionInputTA;
     //Control buttons - addTask, updateTask, deleteTask, deleteAllTasks, report?
-    private JButton addButton, updateButton, deleteButton, deleteAllButton,reportButton;
-    private JButton upButton, downButton;
+    private final JButton addButton, updateButton, deleteButton, deleteAllButton,reportButton;
+    private final JButton upButton, downButton;
     //Task state in string value, convert to IState to control more accurate filtering
     private final JComboBox<String> stateFilterComboBox;
     private final JComboBox<String> exportFormatComboBox;
 
     // Task State in string value, convert to IState to control action behavior on each task
     // Or just make a visual difference depending on the state (color).
-    private JComboBox<TaskState> taskStateComboBox;
+    private final JComboBox<ITaskState> taskStateComboBox;
+    private ITaskState selectedTaskState = new ToDoState();
     private ITask selectedTask = null;
 
     //Task list in memory and a listModel list to store the tasks visually
@@ -34,9 +35,9 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
     private DefaultListModel<ITask> listModel;
 
     //Search specific regex fields
-    private JTextField searchTitleInput;
-    private JTextField searchDescriptionInput;
-    private JTextField searchIdInput;
+    private final JTextField searchTitleInput;
+    private final JTextField searchDescriptionInput;
+    private final JTextField searchIdInput;
 
     //Interface over class
     private IViewModel viewModel;
@@ -68,17 +69,17 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
         //Setting up state options, and docExport format.
         //Change this from enum to actual state classes.
         stateFilterComboBox = new JComboBox<>(new String[]{"All", "To Do", "In Progress", "Completed"});
-        taskStateComboBox = new JComboBox<TaskState>(new TaskState[]{
-                new ToDoState(),
-                new InProgressState(),
-                new CompletedState()
+        taskStateComboBox = new JComboBox<ITaskState>(new ITaskState[]{
+                getSelectedTaskState(),//ToDoState
+                getSelectedTaskState().next(), //InProgressState
+                getSelectedTaskState().next().next() //CompletedState
         });
 
         taskStateComboBox.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value instanceof TaskState state) {
+                if (value instanceof ITaskState state) {
                     setText(state.getDisplayName());
                 }
                 return this;
@@ -171,6 +172,7 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
         window.setContentPane(contentPane);
         window.pack();
         window.setLocationRelativeTo(null);
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setVisible(true);
 
         // --- Event Listeners ---
@@ -187,7 +189,7 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
             if (selectedTask != null) {
                 String title = taskTitleInputF.getText();
                 String description = descriptionInputTA.getText();
-                TaskState state = (TaskState) taskStateComboBox.getSelectedItem();
+                ITaskState state = (ITaskState) taskStateComboBox.getSelectedItem();
 
                 ((TasksViewModel) viewModel).updateButtonPressed(selectedTask.getId(), title, description, state);
 
@@ -324,24 +326,12 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
         return descriptionInputTA;
     }
 
-    public void setDescriptionInputTA(JTextArea descriptionInputTA) {
-        this.descriptionInputTA = descriptionInputTA;
-    }
-
     public JButton getAddButton() {
         return addButton;
     }
 
-    public void setAddButton(JButton addButton) {
-        this.addButton = addButton;
-    }
-
     public JButton getUpdateButton() {
         return updateButton;
-    }
-
-    public void setUpdateButton(JButton updateButton) {
-        this.updateButton = updateButton;
     }
 
     public ITask getSelectedTask() {
@@ -372,47 +362,25 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
         return searchTitleInput;
     }
 
-    public void setSearchTitleInput(JTextField searchTitleInput) {
-        this.searchTitleInput = searchTitleInput;
-    }
-
     public JTextField getSearchDescriptionInput() {
         return searchDescriptionInput;
-    }
-
-    public void setSearchDescriptionInput(JTextField searchDescriptionInput) {
-        this.searchDescriptionInput = searchDescriptionInput;
     }
 
     public JTextField getSearchIdInput() {
         return searchIdInput;
     }
 
-    public void setSearchIdInput(JTextField searchIdInput) {
-        this.searchIdInput = searchIdInput;
-    }
-
-    public JComboBox<TaskState> getTaskStateComboBox() {
+    public JComboBox<ITaskState> getTaskStateComboBox() {
         return taskStateComboBox;
-    }
-
-    public void setTaskStateComboBox(JComboBox<TaskState> taskStateComboBox) {
-        this.taskStateComboBox = taskStateComboBox;
     }
 
     public JButton getDeleteButton() {
         return deleteButton;
     }
 
-    public void setDeleteButton(JButton deleteButton) {
-        this.deleteButton = deleteButton;
-    }
-
     public JButton getDeleteAllButton() {
         return deleteAllButton;
     }
 
-    public void setDeleteAllButton(JButton deleteAllButton) {
-        this.deleteAllButton = deleteAllButton;
-    }
+    public ITaskState getSelectedTaskState() {return selectedTaskState;}
 }

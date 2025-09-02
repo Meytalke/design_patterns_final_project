@@ -38,17 +38,18 @@ public interface TaskFilter {
             return tasks -> tasks;
         }
 
-        TaskState taskState;
+        ITaskState taskState;
         switch (state) {
+            //Use the linking of object instances to save in memory (at most 3 states instances)
             case "To Do" -> taskState = new ToDoState();
-            case "In Progress" -> taskState = new InProgressState();
-            case "Completed" -> taskState = new CompletedState();
+            case "In Progress" -> taskState = new InProgressState(new ToDoState());
+            case "Completed" -> taskState = new CompletedState(new InProgressState(new ToDoState()));
             default -> throw new IllegalArgumentException("Unknown state: " + state);
         }
 
-        TaskState finalTaskState = taskState;
+
         return tasks -> tasks.stream()
-                .filter(task -> task.getState().getDisplayName().equals(finalTaskState.getDisplayName()))
+                .filter(task -> task.getState().getDisplayName().equals(taskState.getDisplayName()))
                 .collect(Collectors.toList());
     }
 

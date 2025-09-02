@@ -1,13 +1,13 @@
 package view.ObservableProperty;
 
-public interface IObservableProperty<T> {
-    /*
-    Where:
-        T= the property type (String|boolean|int)
-        U= the UI component type (Swing.something).
+import java.util.function.Consumer;
 
-    * */
-    public void updateUI();
-    public void changeValue(T value);
+public interface IObservableProperty<T> {
+
+
+    T get();
+    void setValue(T value);
+    void addListener(Consumer<T> listener);
+
 
 }

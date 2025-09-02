@@ -20,7 +20,7 @@ public class ReportVisitor implements TaskVisitor {
 
     @Override
     public void visit(ITask task) {
-        TaskState state = task.getState();
+        ITaskState state = task.getState();
         if (state instanceof CompletedState) {
             completedTasks++;
         } else if (state instanceof InProgressState) {

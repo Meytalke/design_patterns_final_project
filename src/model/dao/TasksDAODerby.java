@@ -13,10 +13,9 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.task.TaskState;
+import model.task.ITaskState;
 import model.task.ToDoState;
-import model.task.InProgressState;
-import model.task.CompletedState;
+
 
 public class TasksDAODerby implements ITasksDAO {
     /*
@@ -28,8 +27,8 @@ public class TasksDAODerby implements ITasksDAO {
      * */
     // Singleton instance
     private static TasksDAODerby instance = null;
-    private Connection connection = null;
-    private final String DB_URL = "jdbc:derby:./taskDB;create=true";
+    private final Connection connection;
+    private final String DB_URL = "jdbc:derby:../taskDB;create=true";
 
     /**
      * Private constructor to prevent direct instantiation
@@ -89,20 +88,25 @@ public class TasksDAODerby implements ITasksDAO {
             derbyStatement.executeUpdate(sql);
         } catch (SQLException e) {
             // "X0Y32" indicates table already exists
-            if (!e.getSQLState().equals("X0Y32")) {
+            if (e.getSQLState().equals("X0Y32")) {
+                System.out.println("Table already exists. Skipping..");
+            }
+            else{
                 throw new TasksDAOException("Error creating table", e);
             }
         }
     }
 
-    private TaskState stateFromString(String stateStr) {
+    private ITaskState stateFromString(String stateStr) {
+     //Starting with a ToDoState, and advancing it using the next function to save up on new instances
+     ITaskState state = new ToDoState();
         switch (stateStr) {
             case "To Do":
-                return new ToDoState();
+                return state;
             case "In Progress":
-                return new InProgressState();
+                return state.next();
             case "Completed":
-                return new CompletedState();
+                return state.next().next();
             default:
                 throw new IllegalArgumentException("Unknown state: " + stateStr);
         }
