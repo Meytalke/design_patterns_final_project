@@ -4,72 +4,138 @@ import model.task.ITask;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * A proxy class that caches queries from the database to improve performance.
+ * It implements the ITasksDAO interface and delegates queries to the underlying
+ * ITasksDAO instance, while storing the results in a cache to avoid repeated
+ * database queries.
+
+ * <li>tasksDAO: The ITasksDAO instance to delegate queries to.</li>
+ * <li>cache: A ConcurrentHashMap to store cached results.</li>
+
+ */
 public class TasksDAOProxy implements ITasksDAO {
+    
+    private final ITasksDAO tasksDAO;
+    private final ConcurrentHashMap<Integer, ITask> cache = new ConcurrentHashMap<>();
+    //Seperate cache for all tasks - once gotten all the tasks once, no need to retrieve seperate tasks.
+    private final ConcurrentHashMap<Integer, ITask> allCache = new ConcurrentHashMap<>();
 
-    private final ITasksDAO realDAO;
-    private ConcurrentHashMap<Integer, ITask> cache = new ConcurrentHashMap<>();
+    
+    /**
+     * Constructs a new TasksDAOProxy instance with the given
+     * ITasksDAO instance to delegate queries to.
+     * @param tasksDAO The ITasksDAO instance to delegate queries to.
+     */
+    public TasksDAOProxy(ITasksDAO tasksDAO) {this.tasksDAO = tasksDAO;}
 
-    public TasksDAOProxy(ITasksDAO realDAO) {
-        this.realDAO = realDAO;
-    }
 
+
+    /**
+     * Retrieves all tasks from the database or cache.
+     *
+     * @return {@code ITask[]} An array of all tasks in the database.
+     * @throws TasksDAOException Occurs if there's is database access error when 
+     * retrieving tasks.
+     */
     @Override
     public ITask[] getTasks() throws TasksDAOException {
-        if (!cache.isEmpty()) {
+        // Retrieve tasks from cache
+        if (!allCache.isEmpty()) {
             System.out.println("Returning tasks from cache.");
-            System.out.println(cache);
-            return cache.values().toArray(new ITask[0]);
+            System.out.println(allCache);
+            return allCache.values().toArray(new ITask[0]);
         }
-
+        // Retrieve tasks from database and store them in cache
         System.out.println("Fetching all tasks from DB.");
-        ITask[] tasks = realDAO.getTasks();
+        ITask[] tasks = tasksDAO.getTasks();
         for (ITask task : tasks) {
-            cache.put(task.getId(), task);
+            allCache.put(task.getId(), task);
         }
         return tasks;
     }
 
+    /**
+     * Retrieves a task from the database or cache.
+     *
+     * @param id The id of the task to retrieve.
+     * @return The task with the given id, or null if the task does not exist.
+     * @throws TasksDAOException If there's is database access error when retrieving task.
+     */
     @Override
     public ITask getTask(int id) throws TasksDAOException {
+        //If we fetched all tasks once, no need to retrieve them again
+        if(!allCache.isEmpty()){
+            System.out.println("Returning task from cache: " + id);
+            return allCache.get(id);
+        }
+        // In cache:
         if (cache.containsKey(id)) {
             System.out.println("Returning task from cache: " + id);
             return cache.get(id);
         }
 
         System.out.println("Fetching task " + id + " from DB.");
-        ITask task = realDAO.getTask(id);
+        ITask task = tasksDAO.getTask(id);
+        //This if statement is useless when getTask throws exception when not found, so we can remove this part.
         if (task != null) {
             cache.put(task.getId(), task);
         }
         return task;
     }
 
+    /**
+     * Adds a task to the database and the cache.
+     *
+     * @param task The task to add.
+     * @throws TasksDAOException If there's is database access error when adding task.
+     */
     @Override
     public void addTask(ITask task) throws TasksDAOException {
-        realDAO.addTask(task);
-        if (!cache.isEmpty()) {
-            cache.put(task.getId(), task);
-            System.out.println("Task added (cache): " + task.getId());
-        }
+        tasksDAO.addTask(task);
+        cache.put(task.getId(), task);
+        System.out.println("Task added (cache): " + task.getId());
     }
 
+    /**
+     * Deletes a task from the database and the cache.
+     *
+     * @param id The id of the task to delete.
+     * @throws TasksDAOException If there's is database access error when deleting task.
+     */
     @Override
     public void deleteTask(int id) throws TasksDAOException {
-        realDAO.deleteTask(id);
-        cache.remove(id);
+        tasksDAO.deleteTask(id);
+        //Remove from cache if exists
+        if(cache.containsKey(id))
+            cache.remove(id);
+        if(allCache.containsKey(id))
+            allCache.remove(id);
         System.out.println("Task removed (cache): " + id);
     }
 
+    /**
+     * Updates a task in the database and the cache.
+     *
+     * @param task The task to update.
+     * @throws TasksDAOException If there's is database access error when updating task.
+     */
     @Override
     public void updateTask(ITask task) throws TasksDAOException {
-        realDAO.updateTask(task);
+        tasksDAO.updateTask(task);
         cache.put(task.getId(), task);
         System.out.println("Task updated (cache): " + task.getId());
     }
 
+    /**
+     * Deletes all tasks from the database and the cache.
+     *
+     * @throws TasksDAOException If there's is database access error when deleting all tasks.
+     */
     @Override
     public void deleteTasks() throws TasksDAOException {
-        realDAO.deleteTasks();
+        tasksDAO.deleteTasks();
         cache.clear();
+        allCache.clear();
     }
 }

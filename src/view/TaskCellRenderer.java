@@ -4,6 +4,9 @@ import model.task.ITask;
 import javax.swing.*;
 import java.awt.*;
 
+/*
+* This class is here to control the UI look of each cell in the list rendered to the screen.
+* */
 public class TaskCellRenderer extends JPanel implements ListCellRenderer<ITask> {
 
     private final JLabel idLabel;

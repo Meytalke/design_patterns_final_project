@@ -1,7 +1,6 @@
 package viewmodel.combinator;
 
-import model.task.ITask;
-import model.task.TaskState;
+import model.task.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -39,11 +38,17 @@ public interface TaskFilter {
             return tasks -> tasks;
         }
 
-        String enumName = state.toUpperCase().replace(" ", "_");
-        TaskState taskState = TaskState.valueOf(enumName);
+        TaskState taskState;
+        switch (state) {
+            case "To Do" -> taskState = new ToDoState();
+            case "In Progress" -> taskState = new InProgressState();
+            case "Completed" -> taskState = new CompletedState();
+            default -> throw new IllegalArgumentException("Unknown state: " + state);
+        }
 
+        TaskState finalTaskState = taskState;
         return tasks -> tasks.stream()
-                .filter(task -> task.getState() == taskState)
+                .filter(task -> task.getState().getDisplayName().equals(finalTaskState.getDisplayName()))
                 .collect(Collectors.toList());
     }
 

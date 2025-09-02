@@ -6,23 +6,29 @@ import model.report.*;
 import model.task.ITask;
 import model.task.Task;
 import model.task.TaskState;
+import model.task.ToDoState;
 import view.TasksObserver;
+import view.IView;
 import viewmodel.combinator.TaskFilter;
 
 import java.util.*;
 
 
-public class TasksViewModel {
+public class TasksViewModel implements IViewModel {
 
-    private final ITasksDAO tasksDAO;
+    private IView view;
+    private ITasksDAO tasksDAO;
+    //This list will contain observers to UI components that need to be updated
+    // to start, we will update the whole UI everytime the list of tasks changes
     private final List<TasksObserver> observers = new ArrayList<>();
     private List<ITask> tasks = new ArrayList<>();
     private List<ITask> allTasks = new ArrayList<>();
     private final Map<String, IReportExporter> exporters = new HashMap<>();
 
 
-    public TasksViewModel(ITasksDAO tasksDAO) {
+    public TasksViewModel(ITasksDAO tasksDAO, IView view) {
         this.tasksDAO = tasksDAO;
+        setView(view);
         exporters.put("Terminal", new ReportAdapter());
         exporters.put("PDF", new PdfReportAdapter());
         exporters.put("CSV", new CsvReportAdapter());
@@ -38,7 +44,7 @@ public class TasksViewModel {
         observers.remove(observer);
     }
 
-    private void notifyObservers() {
+    public void notifyObservers() {
         for (TasksObserver observer : observers) {
             observer.onTasksChanged(tasks);
         }
@@ -58,7 +64,8 @@ public class TasksViewModel {
 
     public void addTask(String title, String description) {
         try {
-            ITask newTask = new Task(0,title, description,TaskState.TO_DO);
+            System.out.println("Attempting to add task: " + title + "\nDesc: " + description);
+            ITask newTask = new Task(0,title, description,new ToDoState());
             tasksDAO.addTask(newTask);
             this.allTasks.add(newTask);
             this.tasks = new ArrayList<>(this.allTasks);
@@ -68,22 +75,72 @@ public class TasksViewModel {
         }
     }
 
+    public void addButtonPressed(String title, String description){
+        if (!title.isEmpty()) {
+            addTask(title, description);
+        }
+    }
+
     public void updateTask(int id, String newTitle, String newDescription, TaskState newState) {
         try {
-            ITask oldTask = tasksDAO.getTask(id);
-            if (oldTask == null) {
+            System.out.println("Attempting to update task ID: " + id);
+            Task task = (Task) tasksDAO.getTask(id);
+            if (task == null) {
                 System.err.println("Task not found for update. ID: " + id);
                 return;
             }
 
-            ITask updatedTask = new Task(id, newTitle, newDescription, newState);
-            tasksDAO.updateTask(updatedTask);
-            allTasks.replaceAll(task -> task.getId() == id ? updatedTask : task);
+            task.setTitle(newTitle);
+            task.setDescription(newDescription);
+            task.setState(newState);
+
+            tasksDAO.updateTask(task);
+            allTasks.replaceAll(t -> t.getId() == id ? task : t);
             loadTasks();
+
         } catch (TasksDAOException e) {
             System.err.println("Error updating task: " + e.getMessage());
         }
     }
+
+    public void updateButtonPressed(int id, String newTitle, String newDescription, TaskState newState) {
+        updateTask(id, newTitle, newDescription, newState);
+    }
+
+    public void moveTaskStateUp(int taskId) {
+        try {
+            Task task = (Task) tasksDAO.getTask(taskId);
+            if (task == null) return;
+
+            task.setState(task.getState().next());
+            tasksDAO.updateTask(task);
+            loadTasks();
+        } catch (TasksDAOException e) {
+            System.err.println("Error updating task state: " + e.getMessage());
+        }
+    }
+
+    public void upButtonPressed(int taskId) {
+        moveTaskStateUp(taskId);
+    }
+
+    public void moveTaskStateDown(int taskId) {
+        try {
+            Task task = (Task) tasksDAO.getTask(taskId);
+            if (task == null) return;
+
+            task.setState(task.getState().previous());
+            tasksDAO.updateTask(task);
+            loadTasks();
+        } catch (TasksDAOException e) {
+            System.err.println("Error updating task state: " + e.getMessage());
+        }
+    }
+
+    public void downButtonPressed(int taskId) {
+        moveTaskStateDown(taskId);
+    }
+
 
     public void deleteTask(int id) {
         try {
@@ -94,6 +151,10 @@ public class TasksViewModel {
         } catch (TasksDAOException e) {
             System.err.println("Error deleting task: " + e.getMessage());
         }
+    }
+
+    public void deleteButtonPressed(int id) {
+        deleteTask(id);
     }
 
     public void deleteAllTasks() {
@@ -161,4 +222,23 @@ public class TasksViewModel {
     public List<ITask> getTasks() {
         return tasks;
     }
+    
+    public void setTasksDAO(ITasksDAO tasksDAO) { 
+        this.tasksDAO = tasksDAO;
+    }
+    
+    public ITasksDAO getTasksDAO() {
+        return tasksDAO;
+    }
+    
+    @Override
+    public void setView(IView view){
+        this.view = view;
+    }
+
+    @Override
+    public IView getView() {
+        return view;
+    }
+
 }

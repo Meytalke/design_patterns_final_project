@@ -1,6 +1,11 @@
-import model.dao.*;
-import model.dao.TasksDAOImpl;
-import view.TaskManagerUI;
+
+import model.dao.ITasksDAO;
+import model.dao.TasksDAODerby;
+import model.dao.TasksDAOException;
+import model.dao.TasksDAOProxy;
+import view.IView;
+import view.TaskManagerView;
+import viewmodel.IViewModel;
 import viewmodel.TasksViewModel;
 
 import javax.swing.*;
@@ -12,25 +17,29 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
             try {
                 // Create a single instance of the real DAO (Singleton)
-                ITasksDAO realDAO = TasksDAOImpl.getInstance();
+                ITasksDAO tasksDAO = TasksDAODerby.getInstance();
 
-                // Wrap the real DAO with a Proxy
-                ITasksDAO proxyDAO = new TasksDAOProxy(realDAO);
+                // Wrap the real DAO with a Proxy for caching
+                ITasksDAO proxyDAO = new TasksDAOProxy(tasksDAO);
 
-                // The ViewModel receives the Proxy
-                TasksViewModel viewModel = new TasksViewModel(proxyDAO);
+                IView taskManagerView = new TaskManagerView();
 
-                // he View receives the ViewModel
-                TaskManagerUI ui = new TaskManagerUI(viewModel);
-                ui.start();
+                // The ViewModel receives the Proxy and the View
+                IViewModel viewModel = new TasksViewModel(proxyDAO,  taskManagerView);
+                // The View receives the ViewModel
+                taskManagerView.setViewModel(viewModel);
+
+                taskManagerView.start();
 
             } catch (TasksDAOException e) {
+                //Print the error to a popup dialog
                 JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(),
                         "Database Error", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
             }
         });
 
+        //Attempt to ensure the database is shutdown upon shutting down the program.
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
                 DriverManager.getConnection("jdbc:derby:;shutdown=true");

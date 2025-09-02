@@ -39,7 +39,7 @@ public class Task implements ITask {
 
     @Override
     public String toString() {
-        return id + " | " + title + " | " + state;
+        return "id: "+ id + " | title: " + title + " | state: " + state.toString();
     }
 
 }
