@@ -2,18 +2,25 @@ package model.task;
 
 import model.report.TaskVisitor;
 
+import java.util.Date;
+
 public class Task implements ITask {
     private int id;
     private String title;
     private String description;
     private TaskState state;
+    private Date creationDate;
+    private TaskPriority priority;
 
-    public Task(int id, String title, String description, TaskState state) {
+    public Task(int id, String title, String description, TaskState state, Date creationDate, TaskPriority priority) {
         setId(id);
         setTitle(title);
         setDescription(description);
         setState(state);
+        setCreationDate(creationDate);
+        setPriority(priority);
     }
+
 
     @Override
     public int getId() {return id;}
@@ -27,10 +34,21 @@ public class Task implements ITask {
     @Override
     public TaskState getState() {return state;}
 
+    public Date getCreationDate() {return creationDate;}
+
+    public TaskPriority getPriority() {return priority;}
+
     public void setId(int id) {this.id = id;}
+
     public void setTitle(String title) {this.title = title;}
+
     public void setDescription(String description) {this.description = description;}
+
     public void setState(TaskState state) {this.state = state;}
+
+    public void setCreationDate(Date creationDate) {this.creationDate = creationDate;}
+
+    public void setPriority(TaskPriority priority) {this.priority = priority;}
 
     @Override
     public void accept(TaskVisitor visitor) {
@@ -39,7 +57,7 @@ public class Task implements ITask {
 
     @Override
     public String toString() {
-        return "id: "+ id + " | title: " + title + " | state: " + state.toString();
+        return "ID: "+ id + " | Title: " + title + " | State: " + state.toString() + " | Creation Date:" + creationDate.toString() + " | priority: " + priority.toString() ;
     }
 
 }

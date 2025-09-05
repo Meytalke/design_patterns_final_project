@@ -3,6 +3,10 @@ package view;
 import model.task.*;
 import viewmodel.IViewModel;
 import viewmodel.TasksViewModel;
+import viewmodel.strategy.SortByCreationDateStrategy;
+import viewmodel.strategy.SortByPriorityStrategy;
+import viewmodel.strategy.SortByTitleStrategy;
+import viewmodel.strategy.SortingOption;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -18,15 +22,15 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
     private final JTextField taskTitleInputF;
     private JTextArea descriptionInputTA;
     //Control buttons - addTask, updateTask, deleteTask, deleteAllTasks, report?
-    private JButton addButton, updateButton, deleteButton, deleteAllButton,reportButton;
-    private JButton upButton, downButton;
+    private JButton addButton, updateButton, deleteButton, deleteAllButton, reportButton;
+    private final JButton upButton,downButton;
     //Task state in string value, convert to IState to control more accurate filtering
     private final JComboBox<String> stateFilterComboBox;
+    private JComboBox<SortingOption> sortComboBox;
     private final JComboBox<String> exportFormatComboBox;
-
-    // Task State in string value, convert to IState to control action behavior on each task
-    // Or just make a visual difference depending on the state (color).
+    private final JComboBox<TaskPriority> taskPriorityComboBox;
     private JComboBox<TaskState> taskStateComboBox;
+    private final JLabel creationDateLabel;
     private ITask selectedTask = null;
 
     //Task list in memory and a listModel list to store the tasks visually
@@ -73,7 +77,6 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
                 new InProgressState(),
                 new CompletedState()
         });
-
         taskStateComboBox.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -84,6 +87,32 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
                 return this;
             }
         });
+        taskPriorityComboBox = new JComboBox<>(TaskPriority.values());
+        taskPriorityComboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof TaskPriority priority) {
+                    setText(priority.getDisplayName());
+                }
+                return this;
+            }
+        });
+
+        sortComboBox = new JComboBox<>(SortingOption.values());
+        sortComboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof SortingOption option) {
+                    setText(option.getDisplayName());
+                }
+                return this;
+            }
+        });
+
+        creationDateLabel = new JLabel("Creation Date: N/A");
+        
         exportFormatComboBox = new JComboBox<>(new String[]{"Terminal","PDF", "CSV" , "JSON"});
 
         //Setting up the visual listModel object and the taskList JList visual object.
@@ -119,8 +148,18 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
         gbc.gridx = 1; gbc.gridy = 2; gbc.gridwidth = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
         addTaskPanel.add(taskStateComboBox, gbc);
 
+        // Row 4: Task Priority
+        gbc.gridx = 0; gbc.gridy = 3; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
+        addTaskPanel.add(new JLabel("Priority:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 3; gbc.gridwidth = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
+        addTaskPanel.add(taskPriorityComboBox, gbc);
+
+        // Row 5: Creation Date
+        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2; gbc.anchor = GridBagConstraints.WEST; gbc.fill = GridBagConstraints.NONE;
+        addTaskPanel.add(creationDateLabel, gbc);
+
         // Row 4: Action Buttons
-        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 2; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.anchor = GridBagConstraints.EAST;
         JPanel actionButtonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         actionButtonsPanel.add(addButton);
         actionButtonsPanel.add(updateButton);
@@ -135,16 +174,46 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
         downButton.setEnabled(false);
 
         // Panel for search and filter controls
-        JPanel searchAndFilterPanel = new JPanel(new GridLayout(4, 2, 5, 5));
+        JPanel searchAndFilterPanel = new JPanel(new GridBagLayout()); // Changed to GridBagLayout
         searchAndFilterPanel.setBorder(BorderFactory.createTitledBorder("Search and Filter"));
-        searchAndFilterPanel.add(new JLabel("Search Title:"));
-        searchAndFilterPanel.add(searchTitleInput);
-        searchAndFilterPanel.add(new JLabel("Search Description:"));
-        searchAndFilterPanel.add(searchDescriptionInput);
-        searchAndFilterPanel.add(new JLabel("Search ID:"));
-        searchAndFilterPanel.add(searchIdInput);
-        searchAndFilterPanel.add(new JLabel("Filter by State:"));
-        searchAndFilterPanel.add(stateFilterComboBox);
+
+        GridBagConstraints searchGbc = new GridBagConstraints(); // New GBC for this panel
+        searchGbc.insets = new Insets(5, 5, 5, 5); // Padding
+
+        // --- Row 1: Search Title ---
+        searchGbc.gridx = 0; searchGbc.gridy = 0; searchGbc.anchor = GridBagConstraints.WEST;
+        searchAndFilterPanel.add(new JLabel("Search Title:"), searchGbc);
+        searchGbc.gridx = 1; searchGbc.gridy = 0; searchGbc.fill = GridBagConstraints.HORIZONTAL; searchGbc.weightx = 1.0;
+        searchAndFilterPanel.add(searchTitleInput, searchGbc);
+
+        // --- Row 2: Search Description ---
+        searchGbc.gridx = 0; searchGbc.gridy = 1; searchGbc.anchor = GridBagConstraints.WEST;
+        searchGbc.fill = GridBagConstraints.NONE; searchGbc.weightx = 0; // Reset fill/weightx
+        searchAndFilterPanel.add(new JLabel("Search Description:"), searchGbc);
+        searchGbc.gridx = 1; searchGbc.gridy = 1; searchGbc.fill = GridBagConstraints.HORIZONTAL; searchGbc.weightx = 1.0;
+        searchAndFilterPanel.add(searchDescriptionInput, searchGbc);
+
+        // --- Row 3: Search ID ---
+        searchGbc.gridx = 0; searchGbc.gridy = 2; searchGbc.anchor = GridBagConstraints.WEST;
+        searchGbc.fill = GridBagConstraints.NONE; searchGbc.weightx = 0;
+        searchAndFilterPanel.add(new JLabel("Search ID:"), searchGbc);
+        searchGbc.gridx = 1; searchGbc.gridy = 2; searchGbc.fill = GridBagConstraints.HORIZONTAL; searchGbc.weightx = 1.0;
+        searchAndFilterPanel.add(searchIdInput, searchGbc);
+
+        // --- Row 4: Filter by State ---
+        searchGbc.gridx = 0; searchGbc.gridy = 3; searchGbc.anchor = GridBagConstraints.WEST;
+        searchGbc.fill = GridBagConstraints.NONE; searchGbc.weightx = 0;
+        searchAndFilterPanel.add(new JLabel("Filter by State:"), searchGbc);
+        searchGbc.gridx = 1; searchGbc.gridy = 3; searchGbc.fill = GridBagConstraints.HORIZONTAL; searchGbc.weightx = 1.0;
+        searchAndFilterPanel.add(stateFilterComboBox, searchGbc);
+
+        // --- Row 5: Sort by ---
+        searchGbc.gridx = 0; searchGbc.gridy = 4; searchGbc.anchor = GridBagConstraints.WEST;
+        searchGbc.fill = GridBagConstraints.NONE; searchGbc.weightx = 0;
+        searchAndFilterPanel.add(new JLabel("Sort by:"), searchGbc);
+        searchGbc.gridx = 1; searchGbc.gridy = 4; searchGbc.fill = GridBagConstraints.HORIZONTAL; searchGbc.weightx = 1.0;
+        searchAndFilterPanel.add(sortComboBox, searchGbc);
+
 
         // Top panel containing both the add/update and search panels
         JPanel topPanel = new JPanel(new BorderLayout(10, 10));
@@ -177,8 +246,8 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
         addButton.addActionListener(e -> {
             String title = taskTitleInputF.getText();
             String description = descriptionInputTA.getText();
-
-            ((TasksViewModel) viewModel).addButtonPressed(title, description);
+            TaskPriority priority = (TaskPriority) taskPriorityComboBox.getSelectedItem();
+            ((TasksViewModel) viewModel).addButtonPressed(title, description, priority);
 
             resetForm();
         });
@@ -188,8 +257,8 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
                 String title = taskTitleInputF.getText();
                 String description = descriptionInputTA.getText();
                 TaskState state = (TaskState) taskStateComboBox.getSelectedItem();
-
-                ((TasksViewModel) viewModel).updateButtonPressed(selectedTask.getId(), title, description, state);
+                TaskPriority priority = (TaskPriority) taskPriorityComboBox.getSelectedItem();
+                ((TasksViewModel) viewModel).updateButtonPressed(selectedTask.getId(), title, description, state, priority);
 
                 resetForm();
             }
@@ -209,6 +278,22 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
             }
         });
 
+        sortComboBox.addActionListener(e -> {
+            SortingOption selectedOption = (SortingOption) sortComboBox.getSelectedItem();
+
+            switch (selectedOption) {
+                case PRIORITY:
+                    ((TasksViewModel) viewModel).setSortingStrategy(new SortByPriorityStrategy());
+                    break;
+                case CREATION_DATE:
+                    ((TasksViewModel) viewModel).setSortingStrategy(new SortByCreationDateStrategy());
+                    break;
+                case TITLE:
+                default:
+                    ((TasksViewModel) viewModel).setSortingStrategy(new SortByTitleStrategy());
+                    break;
+            }
+        });
 
         deleteButton.addActionListener(e -> {
             if (selectedTask != null) {
@@ -244,6 +329,8 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
                         taskTitleInputF.setText(selectedTask.getTitle());
                         descriptionInputTA.setText(selectedTask.getDescription());
                         taskStateComboBox.setSelectedItem(selectedTask.getState());
+                        taskPriorityComboBox.setSelectedItem(selectedTask.getPriority());
+                        creationDateLabel.setText("Creation Date: " + selectedTask.getCreationDate().toString());
                         taskStateComboBox.setEnabled(true);
                         addButton.setEnabled(false);
                         updateButton.setEnabled(true);
@@ -276,6 +363,7 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
         taskTitleInputF.setText("");
         descriptionInputTA.setText("");
         taskStateComboBox.setSelectedIndex(0);
+        taskPriorityComboBox.setSelectedIndex(0);
         taskStateComboBox.setEnabled(false);
         addButton.setEnabled(true);
         updateButton.setEnabled(false);

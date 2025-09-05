@@ -3,13 +3,12 @@ package viewmodel;
 import model.dao.ITasksDAO;
 import model.dao.TasksDAOException;
 import model.report.*;
-import model.task.ITask;
-import model.task.Task;
-import model.task.TaskState;
-import model.task.ToDoState;
+import model.task.*;
 import view.TasksObserver;
 import view.IView;
 import viewmodel.combinator.TaskFilter;
+import viewmodel.strategy.SortByCreationDateStrategy;
+import viewmodel.strategy.SortingStrategy;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -27,6 +26,7 @@ public class TasksViewModel implements IViewModel {
     private List<ITask> tasks = new ArrayList<>();
     private List<ITask> allTasks = new ArrayList<>();
     private final Map<String, IReportExporter> exporters = new HashMap<>();
+    private SortingStrategy currentSortingStrategy;
     private ExecutorService service;
 
 
@@ -37,6 +37,7 @@ public class TasksViewModel implements IViewModel {
         exporters.put("PDF", new PdfReportAdapter());
         exporters.put("CSV", new CsvReportAdapter());
         exporters.put("JSON", new JsonReportAdapter());
+        this.currentSortingStrategy = new SortByCreationDateStrategy();
         this.service = Executors.newFixedThreadPool(8);
         loadTasks(); // Initial load
     }
@@ -55,6 +56,20 @@ public class TasksViewModel implements IViewModel {
         }
     }
 
+    // A public method to allow the view to change the sorting strategy
+    public void setSortingStrategy(SortingStrategy strategy) {
+        this.currentSortingStrategy = strategy;
+        sortTasks(); // Re-sort the current list of tasks
+        notifyObservers();
+    }
+
+    // A private helper method to apply the current sorting strategy
+    private void sortTasks() {
+        if (currentSortingStrategy != null && !tasks.isEmpty()) {
+            currentSortingStrategy.sort(this.tasks);
+        }
+    }
+
     public void loadTasks() {
         service.submit(() -> {
             try {
@@ -62,6 +77,7 @@ public class TasksViewModel implements IViewModel {
                 // Convert the array to an ArrayList for mutable operations
                 this.allTasks = new ArrayList<>(Arrays.asList(tasksArray));
                 this.tasks = new ArrayList<>(this.allTasks);
+                sortTasks();
                 notifyObservers();
             } catch (TasksDAOException e){
                 System.err.println("Error loading tasks: " + e.getMessage());
@@ -69,11 +85,11 @@ public class TasksViewModel implements IViewModel {
         });
     }
 
-    public void addTask(String title, String description) {
+    public void addTask(String title, String description, TaskPriority priority) {
         service.submit(() -> {
             try {
                 System.out.println("Attempting to add task: " + title + "\nDesc: " + description);
-                ITask newTask = new Task(0,title, description,new ToDoState());
+                ITask newTask = new Task(0,title, description, new ToDoState(),new Date(), priority);
                 tasksDAO.addTask(newTask);
                 this.allTasks.add(newTask);
                 this.tasks = new ArrayList<>(this.allTasks);
@@ -84,13 +100,13 @@ public class TasksViewModel implements IViewModel {
         });
     }
 
-    public void addButtonPressed(String title, String description){
+    public void addButtonPressed(String title, String description, TaskPriority priority){
         if (!title.isEmpty()) {
-            addTask(title, description);
+            addTask(title, description, priority);
         }
     }
 
-    public void updateTask(int id, String newTitle, String newDescription, TaskState newState) {
+    public void updateTask(int id, String newTitle, String newDescription, TaskState newState, TaskPriority newPriority) {
         service.submit(() -> {
             try {
                 System.out.println("Attempting to update task ID: " + id);
@@ -103,6 +119,7 @@ public class TasksViewModel implements IViewModel {
                 task.setTitle(newTitle);
                 task.setDescription(newDescription);
                 task.setState(newState);
+                task.setPriority(newPriority);
 
                 tasksDAO.updateTask(task);
                 allTasks.replaceAll(t -> t.getId() == id ? task : t);
@@ -114,8 +131,8 @@ public class TasksViewModel implements IViewModel {
         });
     }
 
-    public void updateButtonPressed(int id, String newTitle, String newDescription, TaskState newState) {
-        updateTask(id, newTitle, newDescription, newState);
+    public void updateButtonPressed(int id, String newTitle, String newDescription, TaskState newState,TaskPriority newPriority) {
+        updateTask(id, newTitle, newDescription, newState, newPriority);
     }
 
     public void moveTaskStateUp(int taskId) {
@@ -243,6 +260,7 @@ public class TasksViewModel implements IViewModel {
         }
 
         this.tasks = combinedFilter.filter(this.allTasks);
+        sortTasks();
         notifyObservers();
     }
 

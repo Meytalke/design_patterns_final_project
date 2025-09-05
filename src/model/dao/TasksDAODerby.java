@@ -3,11 +3,7 @@ package model.dao;
 import model.task.*;
 
 //Sql imports
-import java.sql.DriverManager;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.ResultSet;
+import java.sql.*;
 
 //Util imports
 import java.util.ArrayList;
@@ -79,13 +75,17 @@ public class TasksDAODerby implements ITasksDAO {
                 - id: an auto-incrementing integer primary key
                 - title: a string with a maximum length of 255 characters
                 - description: a string with a maximum length of 1024 characters
-                - state: a string with a maximum length of 50 characters 
+                - state: a string with a maximum length of 50 characters
+                - creation_date: the date and time the task was created
+                - priority: a string to represent the task's priority level
             */
             String sql = "CREATE TABLE tasks (" +
                     "id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY, " +
                     "title VARCHAR(255) NOT NULL, " +
                     "description VARCHAR(1024), " +
-                    "state VARCHAR(50) NOT NULL)";
+                    "state VARCHAR(50) NOT NULL, " +
+                    "creation_date TIMESTAMP NOT NULL, " +
+                    "priority VARCHAR(20) NOT NULL)";
             derbyStatement.executeUpdate(sql);
         } catch (SQLException e) {
             // "X0Y32" indicates table already exists
@@ -129,7 +129,9 @@ public class TasksDAODerby implements ITasksDAO {
                         resultSet.getInt("id"),
                         resultSet.getString("title"),
                         resultSet.getString("description"),
-                        stateFromString(resultSet.getString("state"))
+                        stateFromString(resultSet.getString("state")),
+                        resultSet.getDate("creation_date"),
+                        TaskPriority.valueOf(resultSet.getString("priority"))
                 ));
             }
         } catch (SQLException e) {
@@ -159,7 +161,9 @@ public class TasksDAODerby implements ITasksDAO {
                         resultSet.getInt("id"),
                         resultSet.getString("title"),
                         resultSet.getString("description"),
-                        stateFromString(resultSet.getString("state"))
+                        stateFromString(resultSet.getString("state")),
+                        resultSet.getDate("creation_date"),
+                        TaskPriority.valueOf(resultSet.getString("priority"))
                 );
             }
             
@@ -182,10 +186,12 @@ public class TasksDAODerby implements ITasksDAO {
         String title = task.getTitle().replace("'", "''");
         String description = task.getDescription().replace("'", "''");
         String state = task.getState().getDisplayName();
+        Timestamp creationTimestamp = new Timestamp(task.getCreationDate().getTime());
+        String priority = task.getPriority().toString();
 
         //Insert new task
-        String sql = "INSERT INTO tasks (title, description, state) " +
-                "VALUES ('" + title + "', '" + description + "', '" + state + "')";
+        String sql = "INSERT INTO tasks (title, description, state, creation_date, priority) " +
+                "VALUES ('" + title + "', '" + description + "', '" + state + "', '" + creationTimestamp + "', '" + priority + "')";
 
         try {
             Statement statement = connection.createStatement();
@@ -222,12 +228,15 @@ public class TasksDAODerby implements ITasksDAO {
         String title = task.getTitle().replace("'", "''");
         String description = task.getDescription().replace("'", "''");
         String state = task.getState().getDisplayName();
+        String priority = task.getPriority().toString();
 
         String sql = "UPDATE tasks SET " +
                 "title = '" + title + "', " +
                 "description = '" + description + "', " +
-                "state = '" + state + "' " +
+                "state = '" + state + "', " +
+                "priority = '" + priority + "' " +
                 "WHERE id = " + task.getId();
+
         try {
             Statement statement = connection.createStatement();
             statement.executeUpdate(sql);
