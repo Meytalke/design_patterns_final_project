@@ -20,17 +20,22 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
     private final JPanel contentPane;
     //Task title and description input field and textArea
     private final JTextField taskTitleInputF;
-    private JTextArea descriptionInputTA;
+    private final JTextArea descriptionInputTA;
     //Control buttons - addTask, updateTask, deleteTask, deleteAllTasks, report?
-    private JButton addButton, updateButton, deleteButton, deleteAllButton, reportButton;
+    private final JButton addButton;
+    private final JButton updateButton;
+    private final JButton deleteButton;
+    private final JButton deleteAllButton;
+    private final JButton reportButton;
     private final JButton upButton,downButton;
     //Task state in string value, convert to IState to control more accurate filtering
     private final JComboBox<String> stateFilterComboBox;
-    private JComboBox<SortingOption> sortComboBox;
+    private final JComboBox<SortingOption> sortComboBox;
     private final JComboBox<String> exportFormatComboBox;
     private final JComboBox<TaskPriority> taskPriorityComboBox;
-    private JComboBox<TaskState> taskStateComboBox;
+    private final JComboBox<TaskState> taskStateComboBox;
     private final JLabel creationDateLabel;
+    private final TaskState selectedTaskState = new ToDoState();
     private ITask selectedTask = null;
 
     //Task list in memory and a listModel list to store the tasks visually
@@ -38,9 +43,9 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
     private DefaultListModel<ITask> listModel;
 
     //Search specific regex fields
-    private JTextField searchTitleInput;
-    private JTextField searchDescriptionInput;
-    private JTextField searchIdInput;
+    private final JTextField searchTitleInput;
+    private final JTextField searchDescriptionInput;
+    private final JTextField searchIdInput;
 
     //Interface over class
     private IViewModel viewModel;
@@ -73,9 +78,9 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
         //Change this from enum to actual state classes.
         stateFilterComboBox = new JComboBox<>(new String[]{"All", "To Do", "In Progress", "Completed"});
         taskStateComboBox = new JComboBox<TaskState>(new TaskState[]{
-                new ToDoState(),
-                new InProgressState(),
-                new CompletedState()
+                getSelectedTaskState(),//ToDoState
+                getSelectedTaskState().next(), //InProgressState
+                getSelectedTaskState().next().next() //CompletedState
         });
         taskStateComboBox.setRenderer(new DefaultListCellRenderer() {
             @Override
@@ -121,6 +126,16 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
         taskList.setCellRenderer(new TaskCellRenderer());
 
         window = new JFrame("Tasks Manager");
+    }
+
+    private void selectTaskStateInComboBox(TaskState stateToSelect) {
+        for (int i = 0; i < taskStateComboBox.getItemCount(); i++) {
+            TaskState state = taskStateComboBox.getItemAt(i);
+            if (state.getClass() == stateToSelect.getClass()) {
+                taskStateComboBox.setSelectedIndex(i);
+                return;
+            }
+        }
     }
 
     public void start() {
@@ -240,6 +255,7 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
         window.setContentPane(contentPane);
         window.pack();
         window.setLocationRelativeTo(null);
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setVisible(true);
 
         // --- Event Listeners ---
@@ -289,6 +305,10 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
                     ((TasksViewModel) viewModel).setSortingStrategy(new SortByCreationDateStrategy());
                     break;
                 case TITLE:
+                    ((TasksViewModel) viewModel).setSortingStrategy(new SortByTitleStrategy());
+                    break;
+                case null:
+                    break;
                 default:
                     ((TasksViewModel) viewModel).setSortingStrategy(new SortByTitleStrategy());
                     break;
@@ -328,7 +348,7 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
                     if (selectedTask != null) {
                         taskTitleInputF.setText(selectedTask.getTitle());
                         descriptionInputTA.setText(selectedTask.getDescription());
-                        taskStateComboBox.setSelectedItem(selectedTask.getState());
+                        selectTaskStateInComboBox(selectedTask.getState());
                         taskPriorityComboBox.setSelectedItem(selectedTask.getPriority());
                         creationDateLabel.setText("Creation Date: " + selectedTask.getCreationDate().toString());
                         taskStateComboBox.setEnabled(true);
@@ -412,25 +432,11 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
         return descriptionInputTA;
     }
 
-    public void setDescriptionInputTA(JTextArea descriptionInputTA) {
-        this.descriptionInputTA = descriptionInputTA;
-    }
 
     public JButton getAddButton() {
         return addButton;
     }
 
-    public void setAddButton(JButton addButton) {
-        this.addButton = addButton;
-    }
-
-    public JButton getUpdateButton() {
-        return updateButton;
-    }
-
-    public void setUpdateButton(JButton updateButton) {
-        this.updateButton = updateButton;
-    }
 
     public ITask getSelectedTask() {
         return selectedTask;
@@ -460,47 +466,25 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
         return searchTitleInput;
     }
 
-    public void setSearchTitleInput(JTextField searchTitleInput) {
-        this.searchTitleInput = searchTitleInput;
-    }
-
     public JTextField getSearchDescriptionInput() {
         return searchDescriptionInput;
-    }
-
-    public void setSearchDescriptionInput(JTextField searchDescriptionInput) {
-        this.searchDescriptionInput = searchDescriptionInput;
     }
 
     public JTextField getSearchIdInput() {
         return searchIdInput;
     }
 
-    public void setSearchIdInput(JTextField searchIdInput) {
-        this.searchIdInput = searchIdInput;
-    }
-
     public JComboBox<TaskState> getTaskStateComboBox() {
         return taskStateComboBox;
-    }
-
-    public void setTaskStateComboBox(JComboBox<TaskState> taskStateComboBox) {
-        this.taskStateComboBox = taskStateComboBox;
     }
 
     public JButton getDeleteButton() {
         return deleteButton;
     }
 
-    public void setDeleteButton(JButton deleteButton) {
-        this.deleteButton = deleteButton;
-    }
-
     public JButton getDeleteAllButton() {
         return deleteAllButton;
     }
 
-    public void setDeleteAllButton(JButton deleteAllButton) {
-        this.deleteAllButton = deleteAllButton;
-    }
+    public TaskState getSelectedTaskState() {return selectedTaskState;}
 }

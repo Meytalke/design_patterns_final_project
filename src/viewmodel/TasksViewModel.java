@@ -27,7 +27,8 @@ public class TasksViewModel implements IViewModel {
     private List<ITask> allTasks = new ArrayList<>();
     private final Map<String, IReportExporter> exporters = new HashMap<>();
     private SortingStrategy currentSortingStrategy;
-    private ExecutorService service;
+    private final ExecutorService service;
+    //private ObservableProperty<List<ITask>> listObservers = new ObservableProperty<>(tasks);
 
 
     public TasksViewModel(ITasksDAO tasksDAO, IView view) {
@@ -71,13 +72,13 @@ public class TasksViewModel implements IViewModel {
     }
 
     public void loadTasks() {
-        service.submit(() -> {
+        //Wrap DB calls with our service executor
+        getService().submit(() -> {
             try {
                 ITask[] tasksArray = tasksDAO.getTasks();
                 // Convert the array to an ArrayList for mutable operations
                 this.allTasks = new ArrayList<>(Arrays.asList(tasksArray));
                 this.tasks = new ArrayList<>(this.allTasks);
-                sortTasks();
                 notifyObservers();
             } catch (TasksDAOException e){
                 System.err.println("Error loading tasks: " + e.getMessage());
@@ -86,7 +87,8 @@ public class TasksViewModel implements IViewModel {
     }
 
     public void addTask(String title, String description, TaskPriority priority) {
-        service.submit(() -> {
+        //Wrap DB calls with our service executor
+        getService().submit(() -> {
             try {
                 System.out.println("Attempting to add task: " + title + "\nDesc: " + description);
                 ITask newTask = new Task(0,title, description, new ToDoState(),new Date(), priority);
@@ -107,7 +109,8 @@ public class TasksViewModel implements IViewModel {
     }
 
     public void updateTask(int id, String newTitle, String newDescription, TaskState newState, TaskPriority newPriority) {
-        service.submit(() -> {
+        //Wrap DB calls with our service executor
+        getService().submit(() -> {
             try {
                 System.out.println("Attempting to update task ID: " + id);
                 Task task = (Task) tasksDAO.getTask(id);
@@ -121,6 +124,7 @@ public class TasksViewModel implements IViewModel {
                 task.setState(newState);
                 task.setPriority(newPriority);
 
+                //Updating the task on DB and in memory by searching for it using its id.
                 tasksDAO.updateTask(task);
                 allTasks.replaceAll(t -> t.getId() == id ? task : t);
                 loadTasks();
@@ -136,7 +140,8 @@ public class TasksViewModel implements IViewModel {
     }
 
     public void moveTaskStateUp(int taskId) {
-        service.submit(() -> {
+        //Wrap DB calls with our service executor
+        getService().submit(() -> {
             try {
                 Task task = (Task) tasksDAO.getTask(taskId);
                 if (task == null) return;
@@ -158,7 +163,8 @@ public class TasksViewModel implements IViewModel {
     }
 
     public void moveTaskStateDown(int taskId) {
-        service.submit(() -> {
+        //Wrap DB calls with our service executor
+        getService().submit(() -> {
             try {
                 Task task = (Task) tasksDAO.getTask(taskId);
                 if (task == null) return;
@@ -181,7 +187,8 @@ public class TasksViewModel implements IViewModel {
 
 
     public void deleteTask(int id) {
-        service.submit(() -> {
+        //Wrap DB calls with our service executor
+        getService().submit(() -> {
             try {
                 tasksDAO.deleteTask(id);
                 this.allTasks.removeIf(task -> task.getId() == id);
@@ -198,7 +205,8 @@ public class TasksViewModel implements IViewModel {
     }
 
     public void deleteAllTasks() {
-        service.submit(() -> {
+        //Wrap DB calls with our service executor
+        getService().submit(() -> {
             try {
                 tasksDAO.deleteTasks();
                 this.allTasks.clear();
@@ -211,7 +219,7 @@ public class TasksViewModel implements IViewModel {
     }
 
     public void generateReport(String format) {
-        service.submit(() -> {
+        getService().submit(() -> {
             // 1. Use the Visitor to gather data
             ReportVisitor visitor = new ReportVisitor();
             allTasks.forEach(task -> task.accept(visitor));
@@ -295,6 +303,8 @@ public class TasksViewModel implements IViewModel {
     public ITasksDAO getModel() {
         return tasksDAO;
     }
+
+    public ExecutorService getService() {return service;}
 
     public void shutdown() {
         service.shutdown();

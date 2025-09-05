@@ -5,11 +5,11 @@ import view.IView;
 import view.TasksObserver;
 
 public interface IViewModel {
-    public void addObserver(TasksObserver observer);
-    public void removeObserver(TasksObserver observer);
-    public void notifyObservers();
-    public void setView(IView view);
-    public void setModel(ITasksDAO tasksDAO);
-    public IView getView();
-    public ITasksDAO getModel();
+    void addObserver(TasksObserver observer);
+    void removeObserver(TasksObserver observer);
+    void notifyObservers();
+    void setView(IView view);
+    void setModel(ITasksDAO tasksDAO);
+    IView getView();
+    ITasksDAO getModel();
 }

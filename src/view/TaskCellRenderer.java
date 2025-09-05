@@ -55,7 +55,7 @@ public class TaskCellRenderer extends JPanel implements ListCellRenderer<ITask> 
         eastPanel.add(stateLabel);
         eastPanel.add(priorityLabel);
 
-        // Add the main components to the renderer panel
+        // Add the main parts to the renderer panel
         add(idLabel, BorderLayout.WEST);
         add(centerPanel, BorderLayout.CENTER);
         add(eastPanel, BorderLayout.EAST);

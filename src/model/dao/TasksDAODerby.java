@@ -11,8 +11,6 @@ import java.util.List;
 
 import model.task.TaskState;
 import model.task.ToDoState;
-import model.task.InProgressState;
-import model.task.CompletedState;
 
 public class TasksDAODerby implements ITasksDAO {
     /*
@@ -24,7 +22,7 @@ public class TasksDAODerby implements ITasksDAO {
      * */
     // Singleton instance
     private static TasksDAODerby instance = null;
-    private Connection connection = null;
+    private final Connection connection;
     private final String DB_URL = "jdbc:derby:./taskDB;create=true";
 
     /**
@@ -89,25 +87,25 @@ public class TasksDAODerby implements ITasksDAO {
             derbyStatement.executeUpdate(sql);
         } catch (SQLException e) {
             // "X0Y32" indicates table already exists
-            if (!e.getSQLState().equals("X0Y32")) {
+            if (e.getSQLState().equals("X0Y32")) {
+                System.out.println("Table already exists. Skipping..");
+            }
+            else{
                 throw new TasksDAOException("Error creating table", e);
             }
         }
     }
 
     private TaskState stateFromString(String stateStr) {
-        switch (stateStr) {
-            case "To Do":
-                return new ToDoState();
-            case "In Progress":
-                return new InProgressState();
-            case "Completed":
-                return new CompletedState();
-            default:
-                throw new IllegalArgumentException("Unknown state: " + stateStr);
-        }
+        //Starting with a ToDoState, and advancing it using the next function to save up on new instances
+        TaskState state = new ToDoState();
+        return switch (stateStr) {
+            case "To Do" -> state;
+            case "In Progress" -> state.next();
+            case "Completed" -> state.next().next();
+            default -> throw new IllegalArgumentException("Unknown state: " + stateStr);
+        };
     }
-
 
     /** 
      * Retrieves all tasks from the database.

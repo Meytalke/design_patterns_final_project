@@ -30,7 +30,7 @@ public class Main {
                 viewModelContainer[0] = viewModel;
                 // The View receives the ViewModel
                 taskManagerView.setViewModel(viewModel);
-
+                System.out.println("System starting");
                 taskManagerView.start();
 
             } catch (TasksDAOException e) {
