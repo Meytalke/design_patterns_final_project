@@ -15,6 +15,7 @@ import viewmodel.combinator.TaskFilter;
 import viewmodel.strategy.SortByCreationDateStrategy;
 import viewmodel.strategy.SortingStrategy;
 
+
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;

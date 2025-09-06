@@ -11,6 +11,8 @@ public class ObservableProperty<T> implements IObservableProperty<T> {
     private final List<Consumer<T>> listeners = new ArrayList<>();
 
     public ObservableProperty(T value) {
+        /*
+        * Initializing observableProperty object with the value to store, and the UI component to */
         setValue(value);
     }
 
