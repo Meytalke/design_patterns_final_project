@@ -18,7 +18,7 @@ public class TasksDAOProxy implements ITasksDAO {
     
     private final ITasksDAO tasksDAO;
     private final ConcurrentHashMap<Integer, ITask> cache = new ConcurrentHashMap<>();
-    //Seperate cache for all tasks - once gotten all the tasks once, no need to retrieve seperate tasks.
+    //Separate cache for all tasks - once gotten all the tasks at once, no need to retrieve separate tasks.
     private final ConcurrentHashMap<Integer, ITask> allCache = new ConcurrentHashMap<>();
 
     
@@ -35,18 +35,18 @@ public class TasksDAOProxy implements ITasksDAO {
      * Retrieves all tasks from the database or cache.
      *
      * @return {@code ITask[]} An array of all tasks in the database.
-     * @throws TasksDAOException Occurs if there's is database access error when 
+     * @throws TasksDAOException Occurs if there is a database access error when
      * retrieving tasks.
      */
     @Override
     public ITask[] getTasks() throws TasksDAOException {
-        // Retrieve tasks from cache
+        // Retrieve tasks from a cache
         if (!allCache.isEmpty()) {
             System.out.println("Returning tasks from cache.");
             System.out.println(allCache);
             return allCache.values().toArray(new ITask[0]);
         }
-        // Retrieve tasks from database and store them in cache
+        // Retrieve tasks from a database and store them in a cache
         System.out.println("Fetching all tasks from DB.");
         ITask[] tasks = tasksDAO.getTasks();
         for (ITask task : tasks) {
@@ -60,7 +60,7 @@ public class TasksDAOProxy implements ITasksDAO {
      *
      * @param id The id of the task to retrieve.
      * @return The task with the given id, or null if the task does not exist.
-     * @throws TasksDAOException If there's is database access error when retrieving task.
+     * @throws TasksDAOException If there is a database access error when retrieving a task.
      */
     @Override
     public ITask getTask(int id) throws TasksDAOException {
@@ -77,7 +77,7 @@ public class TasksDAOProxy implements ITasksDAO {
 
         System.out.println("Fetching task " + id + " from DB.");
         ITask task = tasksDAO.getTask(id);
-        //This if statement is useless when getTask throws exception when not found, so we can remove this part.
+        //This if statement it is useless when getTask throws an exception when not found, so we can remove this part.
         if (task != null) {
             allCache.put(task.getId(), task);
             cache.put(task.getId(), task);
@@ -89,7 +89,7 @@ public class TasksDAOProxy implements ITasksDAO {
      * Adds a task to the database and the cache.
      *
      * @param task The task to add.
-     * @throws TasksDAOException If there's is database access error when adding task.
+     * @throws TasksDAOException If there is a database access error when adding a task.
      */
     @Override
     public void addTask(ITask task) throws TasksDAOException {
@@ -105,7 +105,7 @@ public class TasksDAOProxy implements ITasksDAO {
      * Deletes a task from the database and the cache.
      *
      * @param id The id of the task to delete.
-     * @throws TasksDAOException If there's is database access error when deleting task.
+     * @throws TasksDAOException If there is a database access error when deleting a task.
      */
     @Override
     public void deleteTask(int id) throws TasksDAOException {
@@ -122,7 +122,7 @@ public class TasksDAOProxy implements ITasksDAO {
      * Updates a task in the database and the cache.
      *
      * @param task The task to update.
-     * @throws TasksDAOException If there's is database access error when updating task.
+     * @throws TasksDAOException If there is a database access error when updating a task.
      */
     @Override
     public void updateTask(ITask task) throws TasksDAOException {
@@ -134,7 +134,7 @@ public class TasksDAOProxy implements ITasksDAO {
     /**
      * Deletes all tasks from the database and the cache.
      *
-     * @throws TasksDAOException If there's is database access error when deleting all tasks.
+     * @throws TasksDAOException If there is a database access error when deleting all tasks.
      */
     @Override
     public void deleteTasks() throws TasksDAOException {

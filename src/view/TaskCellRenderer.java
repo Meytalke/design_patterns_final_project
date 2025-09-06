@@ -5,9 +5,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 
-/*
-* This class is here to control the UI look of each cell in the list rendered to the screen.
-* */
+/**
+ * ListCellRenderer for rendering {@link ITask} items in a list component.
+ * <p>
+ * Displays task attributes such as ID, title, description, state, creation date, and priority
+ * using a panel with labeled fields. Selection and focus states are reflected in the background
+ * and foreground as per the host look-and-feel.
+ */
 public class TaskCellRenderer extends JPanel implements ListCellRenderer<ITask> {
 
     private final JLabel idLabel;
@@ -61,6 +65,16 @@ public class TaskCellRenderer extends JPanel implements ListCellRenderer<ITask> 
         add(eastPanel, BorderLayout.EAST);
     }
 
+    /**
+     * Configures and returns the component used to render the specified list cell.
+     *
+     * @param list the JList being painted
+     * @param task the task value to render for the current cell
+     * @param index the cell index
+     * @param isSelected whether the cell is selected
+     * @param cellHasFocus whether the cell currently has focus
+     * @return a component that renders the current cell's value
+     */
     @Override
     public Component getListCellRendererComponent(JList<? extends ITask> list, ITask task, int index,
                                                   boolean isSelected, boolean cellHasFocus) {
