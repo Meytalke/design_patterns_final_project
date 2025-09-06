@@ -47,7 +47,6 @@ public interface TaskFilter {
             default -> throw new IllegalArgumentException("Unknown state: " + state);
         }
 
-
         return tasks -> tasks.stream()
                 .filter(task -> task.getState().getDisplayName().equals(taskState.getDisplayName()))
                 .collect(Collectors.toList());
