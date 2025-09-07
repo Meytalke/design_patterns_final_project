@@ -4,16 +4,14 @@ import model.task.ITask;
 
 import java.util.List;
 
-<<<<<<< HEAD
-public interface SortingStrategy {
-=======
+
 /**
  * Strategy contract for sorting task collections.
  * <p>
  * Implementations define a specific ordering criterion and are free to sort
  * the provided list in place.
  */
-public interface SortingStrategy {
+public interface ISortingStrategy {
     /**
      * Sorts the provided list of tasks according to this strategy's ordering.
      *
@@ -22,6 +20,5 @@ public interface SortingStrategy {
      * @throws NullPointerException if {@code tasks} is null
      */
 
->>>>>>> master
     void sort(List<ITask> tasks);
 }

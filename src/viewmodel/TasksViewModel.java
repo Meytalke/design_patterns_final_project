@@ -8,12 +8,11 @@ import model.task.ITask;
 import model.task.Task;
 import model.task.ITaskState;
 import model.task.ToDoState;
-import view.ObservableProperty.ObservableProperty;
 import view.TasksObserver;
 import view.IView;
 import viewmodel.combinator.TaskFilter;
 import viewmodel.strategy.SortByCreationDateStrategy;
-import viewmodel.strategy.SortingStrategy;
+import viewmodel.strategy.ISortingStrategy;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  *   <li>Asynchronously load, add, update, and delete tasks using {@link ITasksDAO}.</li>
  *   <li>Maintain an in-memory collection of all tasks and a working list that can be filtered and sorted.</li>
  *   <li>Notify registered {@link TasksObserver} instances whenever the visible tasks list changes.</li>
- *   <li>Apply sorting via pluggable {@link SortingStrategy} implementations.</li>
+ *   <li>Apply sorting via pluggable {@link ISortingStrategy} implementations.</li>
  *   <li>Filter tasks using combinable predicates from {@link TaskFilter}.</li>
  *   <li>Generate reports using a Visitor + Adapter approach ({@link ReportVisitor}, {@link IReportExporter}).</li>
  * </ul>
@@ -54,12 +53,12 @@ import java.util.concurrent.TimeUnit;
  * @see IView
  * @see ITasksDAO
  * @see ITask
- * @see SortingStrategy
+ * @see ISortingStrategy
  * @see TaskFilter
  */
 public class TasksViewModel implements IViewModel {
 
-    // The currently attached view. May be null until explicitly set.
+    // The currently attached view. Maybe null until explicitly set.
     private IView view;
 
     // The data-access object used to persist and retrieve tasks.
@@ -82,7 +81,7 @@ public class TasksViewModel implements IViewModel {
     private final Map<String, IReportExporter> exporters = new HashMap<>();
 
     // The active sorting strategy used to order {@link #tasks}.
-    private SortingStrategy currentSortingStrategy;
+    private ISortingStrategy currentISortingStrategy;
 
     // Executor used to perform DAO operations and other background work.
     private final ExecutorService service;
@@ -103,7 +102,7 @@ public class TasksViewModel implements IViewModel {
         exporters.put("PDF", new PdfReportAdapter());
         exporters.put("CSV", new CsvReportAdapter());
         exporters.put("JSON", new JsonReportAdapter());
-        this.currentSortingStrategy = new SortByCreationDateStrategy();
+        this.currentISortingStrategy = new SortByCreationDateStrategy();
         this.service = Executors.newFixedThreadPool(8);
         loadTasks(); // Initial load
     }
@@ -185,8 +184,8 @@ public class TasksViewModel implements IViewModel {
      *
      * @param strategy the sorting strategy to apply; must not be null
      */
-    public void setSortingStrategy(SortingStrategy strategy) {
-        this.currentSortingStrategy = strategy;
+    public void setSortingStrategy(ISortingStrategy strategy) {
+        this.currentISortingStrategy = strategy;
         sortTasks(); // Re-sort the current list of tasks
         notifyObservers();
     }
@@ -196,8 +195,8 @@ public class TasksViewModel implements IViewModel {
      * No-op if there is no strategy or the list is empty.
      */
     private void sortTasks() {
-        if (currentSortingStrategy != null && !tasks.isEmpty()) {
-            currentSortingStrategy.sort(this.tasks);
+        if (currentISortingStrategy != null && !tasks.isEmpty()) {
+            currentISortingStrategy.sort(this.tasks);
         }
     }
 
@@ -453,7 +452,7 @@ public class TasksViewModel implements IViewModel {
      *   <li>idTerm: if parseable as an integer, filters by exact id; invalid numbers are ignored.</li>
      * </ul>
      *
-     * <p>After filtering, the current {@link SortingStrategy} is applied.</p>
+     * <p>After filtering, the current {@link ISortingStrategy} is applied.</p>
      *
      * @param state            the desired state name or "All"
      * @param titleTerm        a search term for titles; may be null/empty
@@ -525,6 +524,10 @@ public class TasksViewModel implements IViewModel {
      */
     public ITasksDAO getTasksDAO() {
         return tasksDAO;
+    }
+
+    public ISortingStrategy getCurrentSortingStrat(){
+        return currentISortingStrategy
     }
 
     /**
