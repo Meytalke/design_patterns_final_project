@@ -3,10 +3,7 @@ package view;
 import model.task.*;
 import viewmodel.IViewModel;
 import viewmodel.TasksViewModel;
-import viewmodel.strategy.SortByCreationDateStrategy;
-import viewmodel.strategy.SortByPriorityStrategy;
-import viewmodel.strategy.SortByTitleStrategy;
-import viewmodel.strategy.SortingOption;
+import viewmodel.strategy.*;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
