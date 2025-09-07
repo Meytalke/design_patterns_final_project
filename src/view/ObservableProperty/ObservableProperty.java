@@ -3,20 +3,17 @@ package view.ObservableProperty;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ObservableProperty<T> implements IObservableProperty<T> {
 
     private T value;
-    private final List<Consumer<T>> listeners = new ArrayList<>();
+    private final List<IPropertyObserver<T>> listeners = new ArrayList<>();
 
     public ObservableProperty(T value) {
         /*
-        * Initializing observableProperty object with the value to store, and the UI component to */
+        * Initializing observableProperty object with the value to store */
         setValue(value);
     }
-
-
 
     @Override
     public T get() {
@@ -25,16 +22,33 @@ public class ObservableProperty<T> implements IObservableProperty<T> {
 
     @Override
     public void setValue(T newValue) {
+        //Ensure update only on relevant value changes
         if((value == null && newValue!= null) || (value!=null && !value.equals(newValue))){
             value=newValue;
-            for( Consumer<T> listener : listeners){
-                listener.accept(value);
-            }
+            notifyListeners();
         }
     }
 
+
     @Override
-    public void addListener(Consumer<T> listener) {
+    public void addListener(IPropertyObserver<T> listener) {
         listeners.add(listener);
+    }
+
+    @Override
+    public void removeListener(IPropertyObserver<T> listener) {
+        listeners.remove(listener);
+    }
+
+    @Override
+    public void clearListeners() {
+        listeners.clear();
+    }
+
+    @Override
+    public void notifyListeners() {
+        for(IPropertyObserver<T> listener : listeners){
+            listener.update(get());
+        }
     }
 }

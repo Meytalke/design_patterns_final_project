@@ -34,7 +34,7 @@ public class TasksDAODerby implements ITasksDAO {
     // Singleton instance
     private static TasksDAODerby instance = null;
     private final Connection connection;
-    private final String DB_URL = "jdbc:derby:../taskDB;create=true";
+    private final String DB_URL = "jdbc:derby:./taskDB;";
 
     /**
      * Private constructor to prevent direct instantiation

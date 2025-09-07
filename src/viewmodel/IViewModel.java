@@ -29,9 +29,7 @@ import view.TasksObserver;
  * Parameters marked “must not be null” will result in undefined behavior if null is passed.
  */
 public interface IViewModel {
-<<<<<<
 
-    <HEAD
     void addObserver(TasksObserver observer);
 
     void removeObserver(TasksObserver observer);

@@ -63,7 +63,7 @@ public class Task implements ITask {
      * @param creationDate  creation timestamp (expected non-null; no defensive copy)
      * @param priority      priority classification (expected non-null)
      */
-    public Task(int id, String title, String description, TaskState state, Date creationDate, TaskPriority priority) {
+    public Task(int id, String title, String description, ITaskState state, Date creationDate, TaskPriority priority) {
         setId(id);
         setTitle(title);
         setDescription(description);
