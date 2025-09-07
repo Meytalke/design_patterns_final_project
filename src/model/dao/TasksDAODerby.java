@@ -17,7 +17,12 @@ import java.util.List;
 import model.task.ITaskState;
 import model.task.ToDoState;
 
-
+/**
+ * A concrete implementation of the {@code ITasksDAO} interface that interacts with
+ * a Derby database to manage tasks. This class uses a Singleton pattern to ensure
+ * a single instance exists and maintains a persistent database connection throughout
+ * the application's lifecycle.
+ */
 public class TasksDAODerby implements ITasksDAO {
     /*
      * TasksDAO Implementation to support DerbyDB.
@@ -50,8 +55,8 @@ public class TasksDAODerby implements ITasksDAO {
     /**
      * <p>
      * This method is synchronized to ensure that only one instance of this class is
-     * created, even in a multi-threaded environment. This is important when dealing with
-     * a seperate thread for the UI and a seperate thread for the DB.
+     * created, even in a multithreaded environment. This is important when dealing with
+     * a separate thread for the UI and a separate thread for the DB.
      * </p>
      *
      * @return the single instance of this class (thread-safe)
@@ -65,7 +70,7 @@ public class TasksDAODerby implements ITasksDAO {
     }
 
     /**
-     * Creates the tasks table in the database if it does not already exist. If the
+     * Creates the task table in the database if it does not already exist. If the
      * table already exists, this method does nothing.
      *
      * @param connection The connection to the database to use when creating the table.
@@ -92,7 +97,7 @@ public class TasksDAODerby implements ITasksDAO {
                     "priority VARCHAR(20) NOT NULL)";
             derbyStatement.executeUpdate(sql);
         } catch (SQLException e) {
-            // "X0Y32" indicates table already exists
+            // "X0Y32" indicates a table already exists
             if (e.getSQLState().equals("X0Y32")) {
                 System.out.println("Table already exists. Skipping..");
             }
@@ -102,8 +107,17 @@ public class TasksDAODerby implements ITasksDAO {
         }
     }
 
+    /**
+     * Converts a human-readable task state name into a corresponding TaskState instance.
+     * Implementation note: starts from a ToDoState and advances using {@code next()} to minimize
+     * additional allocations and keep state transitions consistent.
+     *
+     * @param stateStr the display name of the state to convert; must be one of the supported values
+     * @return a ITaskState instance corresponding to {@code stateStr}
+     * @throws IllegalArgumentException if {@code stateStr} is not a recognized state name
+     */
     private ITaskState stateFromString(String stateStr) {
-        //Starting with a ToDoState, and advancing it using the next function to save up on new instances
+        //Starting with a ToDoState and advancing it using the next function to save up on new instances
         ITaskState state = new ToDoState();
         return switch (stateStr) {
             case "To Do" -> state;
@@ -114,11 +128,11 @@ public class TasksDAODerby implements ITasksDAO {
     }
 
 
-    /** 
+    /**
      * Retrieves all tasks from the database.
      *
      * @return {@code ITask[]} An array of all tasks in the database.
-     * @throws TasksDAOException Occurs if there's is database access error when 
+     * @throws TasksDAOException Occurs if there is a database access error when
      * retrieving tasks.
      */
     @Override
@@ -128,21 +142,21 @@ public class TasksDAODerby implements ITasksDAO {
         try {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
-            // While we have any results (if at all), extract data into object and add to list.
+            // While we have any results (if at all), extract data into an object and add to the list.
             while (resultSet.next()) {
                 tasks.add(new Task(
                         resultSet.getInt("id"),
                         resultSet.getString("title"),
                         resultSet.getString("description"),
                         stateFromString(resultSet.getString("state")),
-                        resultSet.getDate("creation_date"),
+                        resultSet.getTimestamp("creation_date"),
                         TaskPriority.valueOf(resultSet.getString("priority"))
                 ));
             }
         } catch (SQLException e) {
             throw new TasksDAOException("Error retrieving tasks", e);
         }
-        // Convert list to array
+        // Convert a list to array
         return tasks.toArray(ITask[]::new );
     }
 
@@ -151,12 +165,12 @@ public class TasksDAODerby implements ITasksDAO {
      *
      * @param id The id of the task to retrieve.
      * @return The task with the given id, or null if the task does not exist.
-     * @throws TasksDAOException If there's is database access error when retrieving task.
+     * @throws TasksDAOException If there is a database access error when retrieving a task.
      */
     @Override
     public ITask getTask(int id) throws TasksDAOException {
         try{
-            //Select specific task
+            //Select a specific task
             String sql = "SELECT * FROM tasks WHERE id = " + id;
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
@@ -167,7 +181,7 @@ public class TasksDAODerby implements ITasksDAO {
                         resultSet.getString("title"),
                         resultSet.getString("description"),
                         stateFromString(resultSet.getString("state")),
-                        resultSet.getDate("creation_date"),
+                        resultSet.getTimestamp("creation_date"),
                         TaskPriority.valueOf(resultSet.getString("priority"))
                 );
             }
@@ -184,7 +198,7 @@ public class TasksDAODerby implements ITasksDAO {
      * Adds a task to the database.
      *
      * @param task The task to add.
-     * @throws TasksDAOException If there's is database access error when adding task.
+     * @throws TasksDAOException If there is a database access error when adding a task.
      */
     @Override
     public void addTask(ITask task) throws TasksDAOException {
@@ -192,6 +206,8 @@ public class TasksDAODerby implements ITasksDAO {
         String description = task.getDescription().replace("'", "''");
         String state = task.getState().getDisplayName();
         Timestamp creationTimestamp = new Timestamp(task.getCreationDate().getTime());
+        System.out.println("Timestamp creationTimestamp:");
+        System.out.println(creationTimestamp.toString());
         String priority = task.getPriority().toString();
 
         //Insert new task
@@ -225,7 +241,7 @@ public class TasksDAODerby implements ITasksDAO {
      * Updates a task in the database.
      *
      * @param task The task to update.
-     * @throws TasksDAOException If there's is database access error when updating task.
+     * @throws TasksDAOException If there is a database access error when updating a task.
      */
     @Override
     public void updateTask(ITask task) throws TasksDAOException {
@@ -253,7 +269,7 @@ public class TasksDAODerby implements ITasksDAO {
     /**
      * Deletes all tasks from the database.
      *
-     * @throws TasksDAOException If there's is database access error when deleting all tasks.
+     * @throws TasksDAOException If there is a database access error when deleting all tasks.
      */
     @Override
     public void deleteTasks() throws TasksDAOException {
@@ -271,7 +287,7 @@ public class TasksDAODerby implements ITasksDAO {
      * Deletes a task from the database with the given id.
      *
      * @param id The id of the task to delete.
-     * @throws TasksDAOException If there's is database access error when deleting task.
+     * @throws TasksDAOException If there is a database access error when deleting a task.
      */
     @Override
     public void deleteTask(int id) throws TasksDAOException {

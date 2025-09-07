@@ -8,6 +8,10 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Responsible for generating PDF documents using the Apache PDFBox library.
+ * This class provides functionality to create and save a PDF document with a title and list of content lines.
+ */
 public class PdfBoxReportGenerator {
 
     /**
@@ -23,7 +27,7 @@ public class PdfBoxReportGenerator {
                 contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
                 contentStream.beginText();
                 contentStream.setLeading(14.5f); // Set leading for line spacing
-                contentStream.newLineAtOffset(50, 750); // Set starting position
+                contentStream.newLineAtOffset(50, 750); // Set the starting position
 
                 // Write the title
                 contentStream.showText(title);

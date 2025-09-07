@@ -1,9 +1,18 @@
 package viewmodel.strategy;
 
-// This enum represents the different sorting options available in the UI.
+/**
+ * Enumerates the available sorting options exposed to the UI.
+ * Each option provides a human-readable display name.
+ */
 public enum SortingOption {
+
+    /** Sort by the task's creation date (oldest to newest). */
     CREATION_DATE("Creation Date"),
+
+    /** Sort by the task's priority. */
     PRIORITY("Priority"),
+
+    /** Sort by the task's title (lexicographical). */
     TITLE("Title"),;
 
     private final String displayName;
@@ -12,6 +21,11 @@ public enum SortingOption {
         this.displayName = displayName;
     }
 
+    /**
+     * Returns a human-readable label suitable for UI presentation.
+     *
+     * @return the display name of this sorting option
+     */
     public String getDisplayName() {
         return displayName;
     }
