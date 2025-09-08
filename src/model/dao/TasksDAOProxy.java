@@ -29,8 +29,6 @@ public class TasksDAOProxy implements ITasksDAO {
      */
     public TasksDAOProxy(ITasksDAO tasksDAO) {this.tasksDAO = tasksDAO;}
 
-
-
     /**
      * Retrieves all tasks from the database or cache.
      *

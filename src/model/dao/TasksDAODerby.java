@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.task.ITaskState;
+import model.task.TaskState;
 import model.task.ToDoState;
 
 /**
@@ -34,7 +34,6 @@ public class TasksDAODerby implements ITasksDAO {
     // Singleton instance
     private static TasksDAODerby instance = null;
     private final Connection connection;
-    private final String DB_URL = "jdbc:derby:../taskDB;create=true";
 
     /**
      * Private constructor to prevent direct instantiation
@@ -42,14 +41,23 @@ public class TasksDAODerby implements ITasksDAO {
      * @throws TasksDAOException If the driver or connection is missing
      */
     private TasksDAODerby() throws TasksDAOException {
+        System.out.println("DEBUG: TasksDAODerby is connecting to the real DB.");
         try {
-            // Load the driver (not strictly necessary for Java 7+ but good practice)
             Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-            connection = DriverManager.getConnection(DB_URL);
-            createTableIfNotExists(connection);
+            String DB_URL = "jdbc:derby:./taskDB;create=true";
+            this.connection = DriverManager.getConnection(DB_URL);
+            createTableIfNotExists(this.connection);
         } catch (ClassNotFoundException | SQLException e) {
             throw new TasksDAOException("Error initializing DB connection.", e);
         }
+    }
+
+    // A separate, public constructor for integration tests
+    // This allows the test to manually provide a connection
+    public TasksDAODerby(Connection connection) throws TasksDAOException {
+        this.connection = connection;
+        // The table creation logic can be handled here as well, if needed.
+        createTableIfNotExists(this.connection);
     }
 
     /**
@@ -85,16 +93,12 @@ public class TasksDAODerby implements ITasksDAO {
                 - title: a string with a maximum length of 255 characters
                 - description: a string with a maximum length of 1024 characters
                 - state: a string with a maximum length of 50 characters
-                - creation_date: the date and time the task was created
-                - priority: a string to represent the task's priority level
             */
             String sql = "CREATE TABLE tasks (" +
                     "id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY, " +
                     "title VARCHAR(255) NOT NULL, " +
                     "description VARCHAR(1024), " +
-                    "state VARCHAR(50) NOT NULL, " +
-                    "creation_date TIMESTAMP NOT NULL, " +
-                    "priority VARCHAR(20) NOT NULL)";
+                    "state VARCHAR(50) NOT NULL)";
             derbyStatement.executeUpdate(sql);
         } catch (SQLException e) {
             // "X0Y32" indicates a table already exists
@@ -113,12 +117,12 @@ public class TasksDAODerby implements ITasksDAO {
      * additional allocations and keep state transitions consistent.
      *
      * @param stateStr the display name of the state to convert; must be one of the supported values
-     * @return a ITaskState instance corresponding to {@code stateStr}
+     * @return a TaskState instance corresponding to {@code stateStr}
      * @throws IllegalArgumentException if {@code stateStr} is not a recognized state name
      */
-    private ITaskState stateFromString(String stateStr) {
+    private TaskState stateFromString(String stateStr) {
         //Starting with a ToDoState and advancing it using the next function to save up on new instances
-        ITaskState state = new ToDoState();
+        TaskState state = new ToDoState();
         return switch (stateStr) {
             case "To Do" -> state;
             case "In Progress" -> state.next();
@@ -127,8 +131,7 @@ public class TasksDAODerby implements ITasksDAO {
         };
     }
 
-
-    /**
+    /** 
      * Retrieves all tasks from the database.
      *
      * @return {@code ITask[]} An array of all tasks in the database.
@@ -138,26 +141,22 @@ public class TasksDAODerby implements ITasksDAO {
     @Override
     public ITask[] getTasks() throws TasksDAOException {
         List<ITask> tasks = new ArrayList<>();
-        String sql = "SELECT * FROM tasks";
-        try {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
-            // While we have any results (if at all), extract data into an object and add to the list.
+        String sql = "SELECT * FROM tasks ORDER BY id ASC";
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+
             while (resultSet.next()) {
                 tasks.add(new Task(
                         resultSet.getInt("id"),
                         resultSet.getString("title"),
                         resultSet.getString("description"),
-                        stateFromString(resultSet.getString("state")),
-                        resultSet.getTimestamp("creation_date"),
-                        TaskPriority.valueOf(resultSet.getString("priority"))
+                        stateFromString(resultSet.getString("state"))
                 ));
             }
         } catch (SQLException e) {
             throw new TasksDAOException("Error retrieving tasks", e);
         }
-        // Convert a list to array
-        return tasks.toArray(ITask[]::new );
+        return tasks.toArray(new ITask[0]);
     }
 
     /**
@@ -180,9 +179,7 @@ public class TasksDAODerby implements ITasksDAO {
                         resultSet.getInt("id"),
                         resultSet.getString("title"),
                         resultSet.getString("description"),
-                        stateFromString(resultSet.getString("state")),
-                        resultSet.getTimestamp("creation_date"),
-                        TaskPriority.valueOf(resultSet.getString("priority"))
+                        stateFromString(resultSet.getString("state"))
                 );
             }
             
@@ -205,14 +202,10 @@ public class TasksDAODerby implements ITasksDAO {
         String title = task.getTitle().replace("'", "''");
         String description = task.getDescription().replace("'", "''");
         String state = task.getState().getDisplayName();
-        Timestamp creationTimestamp = new Timestamp(task.getCreationDate().getTime());
-        System.out.println("Timestamp creationTimestamp:");
-        System.out.println(creationTimestamp.toString());
-        String priority = task.getPriority().toString();
 
         //Insert new task
-        String sql = "INSERT INTO tasks (title, description, state, creation_date, priority) " +
-                "VALUES ('" + title + "', '" + description + "', '" + state + "', '" + creationTimestamp + "', '" + priority + "')";
+        String sql = "INSERT INTO tasks (title, description, state) " +
+                "VALUES ('" + title + "', '" + description + "', '" + state+ "')";
 
         try {
             Statement statement = connection.createStatement();
@@ -249,13 +242,11 @@ public class TasksDAODerby implements ITasksDAO {
         String title = task.getTitle().replace("'", "''");
         String description = task.getDescription().replace("'", "''");
         String state = task.getState().getDisplayName();
-        String priority = task.getPriority().toString();
 
         String sql = "UPDATE tasks SET " +
                 "title = '" + title + "', " +
                 "description = '" + description + "', " +
-                "state = '" + state + "', " +
-                "priority = '" + priority + "' " +
+                "state = '" + state + "' " +
                 "WHERE id = " + task.getId();
 
         try {

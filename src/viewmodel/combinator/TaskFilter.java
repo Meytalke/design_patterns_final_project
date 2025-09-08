@@ -20,8 +20,6 @@ import java.util.stream.Collectors;
  */
 @FunctionalInterface
 public interface TaskFilter {
-
-
     /**
      * Applies this filter to a list of tasks.
      *

@@ -1,5 +1,7 @@
 package model.task;
 
+import java.util.Objects;
+
 /**
  * Initial state of a task: "To Do".
  * <p>
@@ -54,5 +56,18 @@ public class ToDoState implements ITaskState {
      */
     public ITaskState getInProgressState() {
         return inProgressState;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ToDoState that = (ToDoState) o;
+        return Objects.equals(getDisplayName(), that.getDisplayName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDisplayName());
     }
 }

@@ -1,9 +1,5 @@
 package model.task;
 
-import model.report.TaskVisitor;
-
-import java.util.Date;
-
 /**
  * Read-only contract for a task domain object.
  * <p>
@@ -13,14 +9,10 @@ import java.util.Date;
  *
  * <p>Design notes:
  * <ul>
- *   <li>State transitions are modeled via {@link ITaskState}.</li>
- *   <li>Priority presentation can be obtained from {@link TaskPriority}.</li>
- *   <li>Reporting and export concerns are decoupled via the Visitor pattern
- *       (see {@link #accept(TaskVisitor)}).</li>
+ *   <li>State transitions are modeled via {@link TaskState}.</li>
  * </ul>
  *
  * @see TaskState
- * @see TaskPriority
  */
 public interface ITask {
 
@@ -50,34 +42,5 @@ public interface ITask {
      *
      * @return the non-null task state
      */
-    ITaskState getState();
-
-    /**
-     * Returns the priority classification of the task.
-     *
-     * @return the non-null priority
-     */
-    TaskPriority getPriority();
-
-    /**
-     * Returns the timestamp when this task was created.
-     * <p>
-     * Since {@link Date} is mutable, implementations are encouraged to return
-     * a defensive copy. Callers should treat the returned instance as read-only.
-     *
-     * @return the non-null creation date (snapshot)
-     */
-    Date getCreationDate();
-
-    /**
-     * Accepts a visitor to perform an operation on this task without coupling
-     * the task model to concrete reporting/export logic.
-     * <p>
-     * This follows the Visitor pattern (double dispatch). Implementations should
-     * delegate to the appropriate {@code visit(...)} method on the given visitor.
-     *
-     * @param visitor the visitor to accept; must not be {@code null}
-     * @throws NullPointerException if {@code visitor} is {@code null} (recommended behavior)
-     */
-    void accept(TaskVisitor visitor);
+    TaskState getState();
 }
