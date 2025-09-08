@@ -13,7 +13,6 @@ import view.ObservableProperty.IObservableProperty;
 import view.ObservableProperty.ObservableCollection;
 import view.ObservableProperty.ObservableProperty;
 import view.TaskManagerView;
-import view.TasksObserver;
 import view.IView;
 import viewmodel.combinator.TaskFilter;
 import viewmodel.strategy.SortByIDStrategy;
@@ -38,7 +37,6 @@ import java.util.concurrent.TimeUnit;
  * <ul>
  *   <li>Asynchronously load, add, update, and delete tasks using {@link ITasksDAO}.</li>
  *   <li>Maintain an in-memory collection of all tasks and a working list that can be filtered and sorted.</li>
- *   <li>Notify registered {@link TasksObserver} instances whenever the visible tasks list changes.</li>
  *   <li>Apply sorting via pluggable {@link ISortingStrategy} implementations.</li>
  *   <li>Filter tasks using combinable predicates from {@link TaskFilter}.</li>
  *   <li>Generate reports using a Visitor + Adapter approach ({@link ReportVisitor}, {@link IReportExporter}).</li>
@@ -47,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  * <h3>Threading</h3>
  * <ul>
  *   <li>DAO interactions are executed on a background {@link ExecutorService}.</li>
- *   <li>{@link #notifyObservers()} is called from the thread that performs the change; in this class
+ *   <li>{@link IObservableProperty#notifyListeners()} is called from the thread that performs the change; in this class
  *       that is typically a worker thread.</li>
  *   <li>The class is not designed for concurrent external mutation; callers should not modify returned lists.</li>
  *   <li>If the UI must be updated on a specific thread, observers should marshal to that thread.</li>
@@ -72,13 +70,6 @@ public class TasksViewModel implements IViewModel {
 
     // The data-access object used to persist and retrieve tasks.
     private ITasksDAO tasksDAO;
-
-    /**
-     * Observer list that gets notified whenever {@link #tasks} changes.
-     * This list will contain observers to UI components that need to be updated
-     * to start, we will update the whole UI everytime the list of tasks changes
-     */
-    private final List<TasksObserver> observers = new ArrayList<>();
 
     // The current working list of tasks, after filtering and sorting.
     private List<ITask> tasks = new ArrayList<>();
@@ -131,36 +122,6 @@ public class TasksViewModel implements IViewModel {
         loadTasks(); // Initial load
     }
 
-    /**
-     * Registers a {@link TasksObserver} to receive updates when the visible task list changes.
-     *
-     * @param observer the observer to add; must not be null
-     */
-    @Override
-    public void addObserver(TasksObserver observer) {
-        observers.add(observer);
-    }
-
-    /**
-     * Unregisters a previously registered {@link TasksObserver}.
-     *
-     * @param observer the observer to remove; must not be null
-     */
-    @Override
-    public void removeObserver(TasksObserver observer) {
-        observers.remove(observer);
-    }
-
-    /**
-     * Notifies all registered observers that the visible task list has changed.
-     * Observers are invoked on the calling thread.
-     */
-    @Override
-    public void notifyObservers() {
-        for (TasksObserver observer : observers) {
-            observer.onTasksChanged(tasks);
-        }
-    }
 
     /**
      * Associates this ViewModel with a view.
@@ -262,7 +223,6 @@ public class TasksViewModel implements IViewModel {
                 getModel().addTask(newTask);
                 getAllTasks().add(newTask);
                 getTasksList().appendValue(newTask);
-//                notifyObservers();
             } catch (TasksDAOException e) {
                 System.err.println("Error adding task: " + e.getMessage());
             }
@@ -342,8 +302,6 @@ public class TasksViewModel implements IViewModel {
                 getAllTasks().replaceAll(t -> t.getId() == taskId ? task : t);
                 getTasksList().get().replaceAll(t -> t.getId() == taskId ? task : t);
                 getTasksList().notifyListeners();
-//                getTasksList().get().replaceAll(t -> t.getId() == taskId ? task : t);
-//                notifyObservers();
             } catch (TasksDAOException e) {
                 System.err.println("Error updating task state: " + e.getMessage());
             }
@@ -352,7 +310,6 @@ public class TasksViewModel implements IViewModel {
 
     /**
      * Convenience handler that delegates to {@link #moveTaskStateUp(int)}.
-     *
      */
     public void upButtonPressed() {
         moveTaskStateUp(getSelectedTask().get().getId());
@@ -388,7 +345,6 @@ public class TasksViewModel implements IViewModel {
 
     /**
      * Convenience handler that delegates to {@link #moveTaskStateDown(int)}.
-     *
      */
     public void downButtonPressed() {
         moveTaskStateDown(getSelectedTask().get().getId());
@@ -405,8 +361,10 @@ public class TasksViewModel implements IViewModel {
             try {
                 getModel().deleteTask(id);
                 getAllTasks().removeIf(task -> task.getId() == id);
+                getTasksList().get().removeIf(task -> task.getId() == id);
+                getTasksList().notifyListeners();
+                //TODO: check if statement is useless
                 getTasks().removeIf(task -> task.getId() == id);
-                notifyObservers();
             } catch (TasksDAOException e) {
                 System.err.println("Error deleting task: " + e.getMessage());
             }
@@ -415,7 +373,6 @@ public class TasksViewModel implements IViewModel {
 
     /**
      * Convenience handler that delegates to {@link #deleteTask(int)}.
-     *
      */
     public void deleteButtonPressed() {
         deleteTask(getSelectedTask().get().getId());
@@ -431,7 +388,8 @@ public class TasksViewModel implements IViewModel {
                 getModel().deleteTasks();
                 getAllTasks().clear();
                 getTasks().clear();
-                notifyObservers();
+                getTasksList().get().clear();
+                getTasksList().notifyListeners();
             } catch (TasksDAOException e) {
                 System.err.println("Error deleting tasks: " + e.getMessage());
             }
@@ -450,9 +408,13 @@ public class TasksViewModel implements IViewModel {
     public void generateReport(String format) {
         //Wrap DB calls with our service executor
         getService().submit(() -> {
-            // 1. Use the Visitor to gather data
             ReportVisitor visitor = new ReportVisitor();
-            getAllTasks().forEach(task -> task.accept(visitor));
+            getAllTasks().forEach(task -> {
+                if (task instanceof Task t) { // Pattern matching for the Task type
+                    visitor.visit(t);
+                }
+            });
+
             ReportData reportData = visitor.getReport();
 
             IReportExporter exporter = exporters.get(format);

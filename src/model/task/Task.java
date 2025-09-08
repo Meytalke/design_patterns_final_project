@@ -1,6 +1,5 @@
 package model.task;
 
-import model.report.TaskVisitor;
 
 import java.util.Date;
 
@@ -8,7 +7,6 @@ import java.util.Date;
  * Mutable implementation of {@link ITask} representing a single task item.
  * <p>
  * Stores basic metadata (id, title, description), workflow {@link TaskState},
- * via {@link #accept(TaskVisitor)} to decouple reporting/export logic from the model.
  *
  * <h3>Nullability and validation</h3>
  * Unless otherwise noted, the constructor and setters are expected to receive non-null
@@ -79,16 +77,6 @@ public class Task implements ITask {
      */
     @Override
     public TaskState getState() {return state;}
-
-    /**
-     * Accepts a visitor to perform an operation on this task instance.
-     *
-     * @param visitor the visitor to accept (expected non-null)
-     */
-    @Override
-    public void accept(TaskVisitor visitor) {
-        visitor.visit(this);
-    }
 
     /**
      * Returns a human-readable representation containing the id, title, state,

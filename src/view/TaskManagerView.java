@@ -9,7 +9,6 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.util.List;
 
 /**
  * Swing-based view for managing tasks in an MVVM setup.
@@ -26,13 +25,11 @@ import java.util.List;
  * <h3>Responsibilities</h3>
  * <ul>
  *   <li>Implements the View side of MVVM via {@link IView}.</li>
- *   <li>Observes task updates via {@link TasksObserver} and refreshes the list accordingly.</li>
  *   <li>Forwards user intents (add/update/delete/filter/sort/export) to the bound {@link IViewModel}.</li>
  * </ul>
  * @see IView
- * @see TasksObserver
  */
-public class TaskManagerView extends JPanel implements TasksObserver, IView {
+public class TaskManagerView extends JPanel implements IView {
 
     private final JFrame window;
     private final JPanel contentPane;
@@ -437,22 +434,6 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
         taskList.clearSelection();
     }
 
-    /**
-     * Called by the ViewModel when the list of tasks has been updated.
-     * Schedules an update of the JList to show the new tasks.
-     * @param tasks The new, updated list of tasks.
-     */
-    @Override
-    public void onTasksChanged(List<ITask> tasks) {
-
-        SwingUtilities.invokeLater(() -> {
-            listModel.clear();
-            for (ITask task : tasks) {
-                listModel.addElement(task);
-            }
-        });
-    }
-
     @Override
     public IViewModel getViewModel() {
         return viewModel;
@@ -461,7 +442,6 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
     @Override
     public void setViewModel(IViewModel viewModel) {
         this.viewModel = viewModel;
-        viewModel.addObserver(this);
     }
 
     public JTextField getTaskTitleInputF() {

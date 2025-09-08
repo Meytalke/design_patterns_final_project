@@ -1,6 +1,5 @@
 package model.task;
 
-import model.report.TaskVisitor;
 /**
  * Read-only contract for a task domain object.
  * <p>
@@ -11,8 +10,6 @@ import model.report.TaskVisitor;
  * <p>Design notes:
  * <ul>
  *   <li>State transitions are modeled via {@link TaskState}.</li>
- *   <li>Reporting and export concerns are decoupled via the Visitor pattern
- *       (see {@link #accept(TaskVisitor)}).</li>
  * </ul>
  *
  * @see TaskState
@@ -46,16 +43,4 @@ public interface ITask {
      * @return the non-null task state
      */
     TaskState getState();
-
-    /**
-     * Accepts a visitor to perform an operation on this task without coupling
-     * the task model to concrete reporting/export logic.
-     * <p>
-     * This follows the Visitor pattern (double dispatch). Implementations should
-     * delegate to the appropriate {@code visit(...)} method on the given visitor.
-     *
-     * @param visitor the visitor to accept; must not be {@code null}
-     * @throws NullPointerException if {@code visitor} is {@code null} (recommended behavior)
-     */
-    void accept(TaskVisitor visitor);
 }

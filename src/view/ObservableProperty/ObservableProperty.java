@@ -29,7 +29,6 @@ public class ObservableProperty<T> implements IObservableProperty<T> {
         }
     }
 
-
     @Override
     public void addListener(IPropertyObserver<T> listener) {
         listeners.add(listener);
