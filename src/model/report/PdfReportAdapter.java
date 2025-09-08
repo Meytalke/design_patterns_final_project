@@ -38,6 +38,7 @@ public class PdfReportAdapter implements IReportExporter {
      */
     @Override
     public void export(ReportData data, String path) {
+        // Generate combined tasks bucket (with titles) string
         List<String> buckets = new ArrayList<>();
         buckets.add("--- Completed Tasks Bucket ---");
         data.completedTasksBucket().forEach(task -> {buckets.add("" + task);});
@@ -46,11 +47,13 @@ public class PdfReportAdapter implements IReportExporter {
         buckets.add("--- ToDo Tasks Bucket ---");
         data.toDoTasksBucket().forEach(task -> {buckets.add("" + task);});
 
+        // Create summary report section
         List<String> reportContent = new ArrayList<>(List.of(
                 "Completed Tasks: " + data.completedTasks(),
                 "In Progress Tasks: " + data.inProgressTasks(),
                 "To Do Tasks: " + data.todoTasks()
         ));
+        //Chain summary report with task buckets
         reportContent.addAll(buckets);
         System.out.println(reportContent);
 

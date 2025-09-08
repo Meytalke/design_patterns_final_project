@@ -76,8 +76,9 @@ public class TaskCellRenderer extends JPanel implements ListCellRenderer<ITask> 
      * @return a component that renders the current cell's value
      */
     @Override
-    public Component getListCellRendererComponent(JList<? extends ITask> list, ITask task, int index,
-                                                  boolean isSelected, boolean cellHasFocus) {
+    // JList<? extends ITask> list wildcard anonymous type
+    public Component getListCellRendererComponent(JList<? extends ITask> list, ITask task,
+    int index,boolean isSelected,boolean cellHasFocus) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
         // Set the content for each label based on the task object

@@ -5,7 +5,6 @@ import model.report.external.JSONReportGenerator;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -43,7 +42,7 @@ public class JsonReportAdapter implements IReportExporter {
             record TotalTasksDTO(String type, int totalTasks) {}
             record FinalData(List<TotalTasksDTO> totalTasksDTO, List<TasksDTO> tasksDTO ) {}
 
-            //Two sections to JSON document -1: total tasks per category.
+            //Two sections to JSON document -1: total tasks per category
             List<TotalTasksDTO> totalTasks = new ArrayList<>();
             totalTasks.add(new TotalTasksDTO("Completed",(int)data.completedTasks()));
             totalTasks.add(new TotalTasksDTO("InProgress",(int)data.inProgressTasks()));

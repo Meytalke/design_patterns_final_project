@@ -37,20 +37,25 @@ public class CsvReportAdapter implements IReportExporter {
      * Adapts ReportData to the CSV generator's expected input and writes a file at the given path.
      * The resulting CSV contains two columns: Type and Count, with rows ordered as
      * "Completed", "In Progress", and "To Do".
+     * 
+     * The detailed CSV file contains columns for ID, Title, Description, State, Priority, and CreationDate.
      *
      * @param data non-null report data with task counts
      * @param path non-null destination file path; may overwrite if the file exists
      */
     @Override
     public void export(ReportData data, String path) {
-        Map<String, Long> summaryReportData = new LinkedHashMap<>(); // preserve row order in CSV
+        // preserve row order in CSV
+        Map<String, Long> summaryReportData = new LinkedHashMap<>(); 
         summaryReportData.put("Completed", data.completedTasks());
         summaryReportData.put("In Progress", data.inProgressTasks());
         summaryReportData.put("To Do", data.todoTasks());
+        // combine completed, in-progress, and to-do tasks
         List<ITask> detailedReportData = new ArrayList<>(data.completedTasksBucket());
         detailedReportData.addAll(data.inProgressTasksBucket());
         detailedReportData.addAll(data.toDoTasksBucket());
 
+        //generate reports
         try {
             generator.createSummaryCSV(summaryReportData, "summary-"+ path);
             generator.createDetailedCSV(detailedReportData, "detailed-"+path);

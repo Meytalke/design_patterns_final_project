@@ -25,6 +25,7 @@ public class ReportVisitor implements TaskVisitor {
      * Classifies the given task by its state and updates internal counters.
      *
      * @param task the task to process; must not be null
+     * @see #getReport()
      * @throws IllegalStateException if the task state is null or not recognized
      */
     @Override

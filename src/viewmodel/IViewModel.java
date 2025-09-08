@@ -4,7 +4,7 @@ import model.dao.ITasksDAO;
 import view.IView;
 import view.ObservableProperty.IObservableProperty;
 import view.ObservableProperty.IPropertyObserver;
-import view.TasksObserver;
+
 
 /**
  * MVVM ViewModel contract.

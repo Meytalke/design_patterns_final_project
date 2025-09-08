@@ -1,7 +1,6 @@
 package model.report.external;
 
 import model.task.ITask;
-import model.task.Task;
 
 import java.util.List;
 
@@ -11,6 +10,19 @@ import java.util.List;
  * that summarizes the counts of completed tasks, tasks in progress, and tasks to do.
  */
 public class SimpleTextReporter {
+    /**
+     * Generates a text-based report and prints it to the console.
+     * The report consists of a header, task counts, and then three sections
+     * showing tasks in each state. The task sections are labeled as "ToDo Bucket",
+     * "InProgress Bucket", and "Completed Bucket".
+     *
+     * @param completed number of completed tasks
+     * @param inProgress number of tasks in progress
+     * @param todo number of tasks to do
+     * @param completedBucket tasks that are completed
+     * @param inProgressBucket tasks that are in progress
+     * @param todoBucket tasks that are to do
+     */
     public void generateTextReport(long completed, long inProgress, long todo, List<ITask> completedBucket, List<ITask> inProgressBucket, List<ITask>  todoBucket) {
         System.out.println("--- Report ---");
         System.out.println("Completed: " + completed);

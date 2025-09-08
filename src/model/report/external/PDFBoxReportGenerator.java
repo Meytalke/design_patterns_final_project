@@ -16,8 +16,14 @@ import java.util.List;
  */
 public class PDFBoxReportGenerator {
 
+
     /**
      * Generates a PDF document with the given title and content.
+     * 
+     * @param title non-null title of the report
+     * @param content non-null list of strings to display in the report
+     * @param filePath non-null destination file path; may overwrite if the file exists
+     * @throws IOException if an IO error occurs while writing the PDF document
      */
     public void createDocument(String title, List<String> content, String filePath) throws IOException {
         // Create a new empty document

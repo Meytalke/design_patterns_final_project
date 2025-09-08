@@ -11,7 +11,6 @@ import view.ObservableProperty.IObservableProperty;
 import view.ObservableProperty.ObservableCollection;
 import view.ObservableProperty.ObservableProperty;
 import view.TaskManagerView;
-import view.TasksObserver;
 import view.IView;
 import viewmodel.combinator.TaskFilter;
 import viewmodel.strategy.SortByCreationDateStrategy;
@@ -36,7 +35,7 @@ import java.util.concurrent.TimeUnit;
  * <ul>
  *   <li>Asynchronously load, add, update, and delete tasks using {@link ITasksDAO}.</li>
  *   <li>Maintain an in-memory collection of all tasks and a working list that can be filtered and sorted.</li>
- *   <li>Notify registered {@link TasksObserver} instances whenever the visible tasks list changes.</li>
+ *   <li>Notify registered {@link IPropertyObserver} instances whenever the visible tasks list changes.</li>
  *   <li>Apply sorting via pluggable {@link ISortingStrategy} implementations.</li>
  *   <li>Filter tasks using combinable predicates from {@link TaskFilter}.</li>
  *   <li>Generate reports using a Visitor + Adapter approach ({@link ReportVisitor}, {@link IReportExporter}).</li>
@@ -76,7 +75,7 @@ public class TasksViewModel implements IViewModel {
      * This list will contain observers to UI components that need to be updated
      * to start, we will update the whole UI everytime the list of tasks changes
      */
-    private final List<TasksObserver> observers = new ArrayList<>();
+
 
     // The current working list of tasks, after filtering and sorting.
     private List<ITask> tasks = new ArrayList<>();
