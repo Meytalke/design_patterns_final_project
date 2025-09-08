@@ -10,7 +10,7 @@ import java.util.List;
  * Implementations define a specific ordering criterion and are free to sort
  * the provided list in place.
  */
-public interface SortingStrategy {
+public interface ISortingStrategy {
     /**
      * Sorts the provided list of tasks according to this strategy's ordering.
      *

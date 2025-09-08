@@ -18,8 +18,6 @@ public class TaskCellRenderer extends JPanel implements ListCellRenderer<ITask> 
     private final JLabel titleLabel;
     private final JLabel descriptionLabel;
     private final JLabel stateLabel;
-    private final JLabel creationDateLabel;
-    private final JLabel priorityLabel;
 
     public TaskCellRenderer() {
         setLayout(new BorderLayout(5, 5));
@@ -42,22 +40,16 @@ public class TaskCellRenderer extends JPanel implements ListCellRenderer<ITask> 
         titleLabel = new JLabel();
         descriptionLabel = new JLabel();
         stateLabel = new JLabel();
-        creationDateLabel = new JLabel();
-        priorityLabel = new JLabel();
 
         // Style the title to be bold
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 14f));
         descriptionLabel.setForeground(Color.GRAY);
-        creationDateLabel.setForeground(Color.GRAY);
-        priorityLabel.setFont(priorityLabel.getFont().deriveFont(Font.ITALIC, 11f));
 
         // Add labels to the text panel
         centerPanel.add(titleLabel);
         centerPanel.add(descriptionLabel);
-        centerPanel.add(creationDateLabel);
 
         eastPanel.add(stateLabel);
-        eastPanel.add(priorityLabel);
 
         // Add the main parts to the renderer panel
         add(idLabel, BorderLayout.WEST);
@@ -85,8 +77,6 @@ public class TaskCellRenderer extends JPanel implements ListCellRenderer<ITask> 
         titleLabel.setText(task.getTitle());
         descriptionLabel.setText(task.getDescription());
         stateLabel.setText(task.getState().getDisplayName());
-        priorityLabel.setText(task.getPriority().getDisplayName());
-        creationDateLabel.setText(dateFormat.format(task.getCreationDate()));
 
         // Handle selection and focusing
         if (isSelected) {

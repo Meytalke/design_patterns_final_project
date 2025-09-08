@@ -9,7 +9,7 @@ import java.util.List;
  * Sorting strategy that orders tasks by their title in ascending, lexicographical order.
  */
 
-public class SortByTitleStrategy implements SortingStrategy {
+public class SortByTitleStrategy implements ISortingStrategy {
 
     /**
      * Sorts tasks by {@link ITask#getTitle()} using String natural ordering.
