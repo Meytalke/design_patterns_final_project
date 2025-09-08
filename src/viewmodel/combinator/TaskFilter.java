@@ -79,7 +79,7 @@ public interface TaskFilter {
             return tasks -> tasks;
         }
 
-        ITaskState taskState;
+        TaskState taskState;
         switch (state) {
             //Use the linking of object instances to save in memory (at most 3 states instances)
             case "To Do" -> taskState = new ToDoState();

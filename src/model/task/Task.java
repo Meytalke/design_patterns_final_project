@@ -34,7 +34,7 @@ public class Task implements ITask {
     /**
      * Current workflow state; expected to be non-null.
      */
-    private ITaskState state;
+    private TaskState state;
 
     /**
      * Constructs a new task with the provided values.
@@ -76,7 +76,7 @@ public class Task implements ITask {
      * {@inheritDoc}
      */
     @Override
-    public ITaskState getState() {return state;}
+    public TaskState getState() {return state;}
 
     /**
      * Returns a human-readable representation containing the id, title, state,
@@ -114,6 +114,6 @@ public class Task implements ITask {
      *
      * @param state the new state (expected non-null)
      */
-    public void setState(ITaskState state) {this.state = state;}
+    public void setState(TaskState state) {this.state = state;}
 
 }

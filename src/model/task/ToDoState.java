@@ -11,7 +11,7 @@ import java.util.Objects;
  * <p>
  * This class is immutable and thread-safe.
  */
-public class ToDoState implements ITaskState {
+public class ToDoState implements TaskState {
 
     /**
      * Cached reference to the next state in the workflow.
@@ -35,7 +35,7 @@ public class ToDoState implements ITaskState {
      * @return the corresponding {@code InProgressState} instance
      */
     @Override
-    public ITaskState next() {
+    public TaskState next() {
         return getInProgressState();
     }
 
@@ -45,7 +45,7 @@ public class ToDoState implements ITaskState {
      * @return {@code this}
      */
     @Override
-    public ITaskState previous() {
+    public TaskState previous() {
         return this;
     }
 
@@ -54,7 +54,7 @@ public class ToDoState implements ITaskState {
      *
      * @return a non-null {@code InProgressState}
      */
-    public ITaskState getInProgressState() {
+    public TaskState getInProgressState() {
         return inProgressState;
     }
 
