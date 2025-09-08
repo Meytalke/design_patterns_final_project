@@ -1,5 +1,82 @@
 {
-  "completedTasks": 0,
-  "inProgressTasks": 0,
-  "todoTasks": 2
+  "totalTasksDTO": [
+    {
+      "type": "Completed",
+      "totalTasks": 1
+    },
+    {
+      "type": "InProgress",
+      "totalTasks": 1
+    },
+    {
+      "type": "To Do",
+      "totalTasks": 6
+    }
+  ],
+  "tasksDTO": [
+    {
+      "ID": 3,
+      "title": "test3",
+      "description": "test3",
+      "state": "Completed",
+      "priority": "Low",
+      "creationDate": "Sep 6, 2025, 9:45:51 PM"
+    },
+    {
+      "ID": 1,
+      "title": "test1",
+      "description": "test1",
+      "state": "In Progress",
+      "priority": "Medium",
+      "creationDate": "Sep 6, 2025, 12:26:00 PM"
+    },
+    {
+      "ID": 2,
+      "title": "test2",
+      "description": "test2",
+      "state": "To Do",
+      "priority": "High",
+      "creationDate": "Sep 6, 2025, 9:45:39 PM"
+    },
+    {
+      "ID": 4,
+      "title": "test4",
+      "description": "test4",
+      "state": "To Do",
+      "priority": "Low",
+      "creationDate": "Sep 6, 2025, 9:54:37 PM"
+    },
+    {
+      "ID": 5,
+      "title": "test5",
+      "description": "test5",
+      "state": "To Do",
+      "priority": "Low",
+      "creationDate": "Sep 6, 2025, 9:58:56 PM"
+    },
+    {
+      "ID": 6,
+      "title": "test6",
+      "description": "test6",
+      "state": "To Do",
+      "priority": "Low",
+      "creationDate": "Sep 6, 2025, 10:32:18 PM"
+    },
+    {
+      "ID": 7,
+      "title": "test7",
+      "description": "test7",
+      "state": "To Do",
+      "priority": "Low",
+      "creationDate": "Sep 6, 2025, 11:37:22 PM"
+    },
+    {
+      "ID": 8,
+      "title": "Eat",
+      "description": "Food",
+      "state": "To Do",
+      "priority": "Medium",
+      "creationDate": "Sep 7, 2025, 11:28:31 PM"
+    }
+  ]
 }

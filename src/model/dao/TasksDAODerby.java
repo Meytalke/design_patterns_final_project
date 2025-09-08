@@ -202,6 +202,7 @@ public class TasksDAODerby implements ITasksDAO {
      */
     @Override
     public void addTask(ITask task) throws TasksDAOException {
+        //Clean data to avoid SQL injection
         String title = task.getTitle().replace("'", "''");
         String description = task.getDescription().replace("'", "''");
         String state = task.getState().getDisplayName();

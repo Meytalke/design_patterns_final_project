@@ -2,6 +2,8 @@ package viewmodel;
 
 import model.dao.ITasksDAO;
 import view.IView;
+import view.ObservableProperty.IObservableProperty;
+import view.ObservableProperty.IPropertyObserver;
 import view.TasksObserver;
 
 /**
@@ -16,25 +18,19 @@ import view.TasksObserver;
  *   <li>Create a ViewModel implementation.</li>
  *   <li>Provide the model via {@link #setModel(ITasksDAO)}.</li>
  *   <li>Attach the view via {@link #setView(IView)}.</li>
- *   <li>Register observers with {@link #addObserver(TasksObserver)} as needed.</li>
- *   <li>Invoke ViewModel operations; call {@link #notifyObservers()} after state changes.</li>
+ *   <li>Register observers with {@link view.ObservableProperty.IObservableProperty#addListener(IPropertyObserver)} as needed.</li>
+ *   <li>Invoke ViewModel operations; call {@link IObservableProperty#notifyListeners()} after state changes.</li>
  * </ol>
  *
  * <h3>Threading</h3>
  * Unless otherwise documented by an implementation, methods are expected to be called
  * from the UI thread; observer callbacks are invoked on the thread that calls
- * {@link #notifyObservers()}.
+ * {@link IObservableProperty#notifyListeners()}.
  *
  * <h3>Nullability</h3>
  * Parameters marked “must not be null” will result in undefined behavior if null is passed.
  */
 public interface IViewModel {
-
-    void addObserver(TasksObserver observer);
-
-    void removeObserver(TasksObserver observer);
-
-    void notifyObservers();
 
     void setView(IView view);
 

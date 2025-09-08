@@ -10,7 +10,7 @@ import java.io.IOException;
  * Responsible for generating JSON files from given data.
  * This class uses the Gson library to convert objects to their JSON representations.
  */
-public class JsonReportGenerator {
+public class JSONReportGenerator {
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public void createJson(Object data, String path) throws IOException {

@@ -34,6 +34,11 @@ public class InProgressState implements ITaskState {
         this.toDoState = toDoState;
     }
 
+    @Override
+    public String toString() {
+        return "InProgressState";
+    }
+
     /**
      * Human-readable name of this state.
      *

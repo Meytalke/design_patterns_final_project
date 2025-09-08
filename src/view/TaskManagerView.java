@@ -497,7 +497,6 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
     @Override
     public void setViewModel(IViewModel viewModel) {
         this.viewModel = viewModel;
-        viewModel.addObserver(this);
     }
 
     public JTextField getTaskTitleInputF() {

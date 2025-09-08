@@ -48,7 +48,7 @@ import java.util.concurrent.TimeUnit;
  * <h3>Threading</h3>
  * <ul>
  *   <li>DAO interactions are executed on a background {@link ExecutorService}.</li>
- *   <li>{@link #notifyObservers()} is called from the thread that performs the change; in this class
+ *   <li>{@link IObservableProperty#notifyListeners()} is called from the thread that performs the change; in this class
  *       that is typically a worker thread.</li>
  *   <li>The class is not designed for concurrent external mutation; callers should not modify returned lists.</li>
  *   <li>If the UI must be updated on a specific thread, observers should marshal to that thread.</li>
@@ -132,36 +132,6 @@ public class TasksViewModel implements IViewModel {
         loadTasks(); // Initial load
     }
 
-    /**
-     * Registers a {@link TasksObserver} to receive updates when the visible task list changes.
-     *
-     * @param observer the observer to add; must not be null
-     */
-    @Override
-    public void addObserver(TasksObserver observer) {
-        observers.add(observer);
-    }
-
-    /**
-     * Unregisters a previously registered {@link TasksObserver}.
-     *
-     * @param observer the observer to remove; must not be null
-     */
-    @Override
-    public void removeObserver(TasksObserver observer) {
-        observers.remove(observer);
-    }
-
-    /**
-     * Notifies all registered observers that the visible task list has changed.
-     * Observers are invoked on the calling thread.
-     */
-    @Override
-    public void notifyObservers() {
-        for (TasksObserver observer : observers) {
-            observer.onTasksChanged(tasks);
-        }
-    }
 
     /**
      * Associates this ViewModel with a view.
@@ -239,8 +209,7 @@ public class TasksViewModel implements IViewModel {
                 //Use the observer to update the list in the UI
                 getTasksList().setValue(new ArrayList<>(getAllTasks()));
                 System.out.println( "Task List:" +getTasksList().toString());
-                //Try this to begin with
-                //notifyObservers();
+
             } catch (TasksDAOException e){
                 System.err.println("Error loading tasks: " + e.getMessage() + (e.getCause() != null ? "\nCause: " + e.getCause() : ""));
             }
@@ -264,7 +233,6 @@ public class TasksViewModel implements IViewModel {
                 getModel().addTask(newTask);
                 getAllTasks().add(newTask);
                 getTasksList().appendValue(newTask);
-//                notifyObservers();
             } catch (TasksDAOException e) {
                 System.err.println("Error adding task: " + e.getMessage());
             }
@@ -347,8 +315,7 @@ public class TasksViewModel implements IViewModel {
                 getAllTasks().replaceAll(t -> t.getId() == taskId ? task : t);
                 getTasksList().get().replaceAll(t -> t.getId() == taskId ? task : t);
                 getTasksList().notifyListeners();
-//                getTasksList().get().replaceAll(t -> t.getId() == taskId ? task : t);
-//                notifyObservers();
+
             } catch (TasksDAOException e) {
                 System.err.println("Error updating task state: " + e.getMessage());
             }
@@ -410,8 +377,10 @@ public class TasksViewModel implements IViewModel {
             try {
                 getModel().deleteTask(id);
                 getAllTasks().removeIf(task -> task.getId() == id);
+                getTasksList().get().removeIf(task -> task.getId() == id);
+                getTasksList().notifyListeners();
+                //TODO: check if statement is useless
                 getTasks().removeIf(task -> task.getId() == id);
-                notifyObservers();
             } catch (TasksDAOException e) {
                 System.err.println("Error deleting task: " + e.getMessage());
             }
@@ -436,7 +405,8 @@ public class TasksViewModel implements IViewModel {
                 getModel().deleteTasks();
                 getAllTasks().clear();
                 getTasks().clear();
-                notifyObservers();
+                getTasksList().get().clear();
+                getTasksList().notifyListeners();
             } catch (TasksDAOException e) {
                 System.err.println("Error deleting tasks: " + e.getMessage());
             }

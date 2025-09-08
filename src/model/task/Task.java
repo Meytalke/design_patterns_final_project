@@ -113,7 +113,7 @@ public class Task implements ITask {
      */
     @Override
     public String toString() {
-        return "ID: "+ id + " | Title: " + title + " | State: " + state.toString() + " | Creation Date:" + creationDate.toString() + " | priority: " + priority.toString() ;
+        return "ID: "+ id + " | Title: " + title + " | State: " + state.toString() + " | Creation Date:" + creationDate.toLocaleString() + " | priority: " + priority.toString() ;
     }
 
     /**

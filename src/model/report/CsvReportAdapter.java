@@ -1,9 +1,12 @@
 package model.report;
 
-import model.report.external.CsvReportGenerator;
+import model.report.external.CSVReportGenerator;
+import model.task.ITask;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +19,7 @@ import java.util.Map;
  * Roles:
  * - Target: IReportExporter
  * - Adapter: CsvReportAdapter (this class)
- * - Adaptee: CsvReportGenerator (external CSV writer)
+ * - Adaptee: CSVReportGenerator (external CSV writer)
  * - Client: Code that calls IReportExporter#export
  * <p>
  * How it adapts:
@@ -28,7 +31,7 @@ import java.util.Map;
 public class CsvReportAdapter implements IReportExporter {
 
     /** Underlying CSV generator responsible for writing the file. */
-    private final CsvReportGenerator generator = new CsvReportGenerator();
+    private final CSVReportGenerator generator = new CSVReportGenerator();
 
     /**
      * Adapts ReportData to the CSV generator's expected input and writes a file at the given path.
@@ -40,13 +43,17 @@ public class CsvReportAdapter implements IReportExporter {
      */
     @Override
     public void export(ReportData data, String path) {
-        Map<String, Long> reportData = new LinkedHashMap<>(); // preserve row order in CSV
-        reportData.put("Completed", data.completedTasks());
-        reportData.put("In Progress", data.inProgressTasks());
-        reportData.put("To Do", data.todoTasks());
+        Map<String, Long> summaryReportData = new LinkedHashMap<>(); // preserve row order in CSV
+        summaryReportData.put("Completed", data.completedTasks());
+        summaryReportData.put("In Progress", data.inProgressTasks());
+        summaryReportData.put("To Do", data.todoTasks());
+        List<ITask> detailedReportData = new ArrayList<>(data.completedTasksBucket());
+        detailedReportData.addAll(data.inProgressTasksBucket());
+        detailedReportData.addAll(data.toDoTasksBucket());
 
         try {
-            generator.createCsv(reportData, path);
+            generator.createSummaryCSV(summaryReportData, "summary-"+ path);
+            generator.createDetailedCSV(detailedReportData, "detailed-"+path);
             System.out.println("CSV document generated successfully at: " + path);
         } catch (IOException e) {
             System.err.println("Error generating CSV document: " + e.getMessage());

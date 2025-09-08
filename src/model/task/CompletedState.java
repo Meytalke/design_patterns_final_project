@@ -47,6 +47,11 @@ public class CompletedState implements ITaskState {
     @Override
     public ITaskState next() {return this;}
 
+    @Override
+    public String toString() {
+        return "CompletedState";
+    }
+
     /**
      * Moves the task back to the "In Progress" state.
      *
