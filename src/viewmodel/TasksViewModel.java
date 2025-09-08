@@ -3,11 +3,8 @@ package viewmodel;
 import model.dao.ITasksDAO;
 import model.dao.TasksDAOException;
 import model.report.*;
-import model.task.TaskPriority;
-import model.task.ITask;
-import model.task.Task;
-import model.task.ITaskState;
-import model.task.ToDoState;
+import model.task.*;
+import model.task.TaskState;
 import view.ObservableProperty.IObservableCollection;
 import view.ObservableProperty.IPropertyObserver;
 import view.ObservableProperty.IObservableProperty;
@@ -262,7 +259,7 @@ public class TasksViewModel implements IViewModel {
      * @param newState      the new state; must not be null
      * @param newPriority   the new priority; must not be null
      */
-    public void updateTask(int id, String newTitle, String newDescription, ITaskState newState, TaskPriority newPriority) {
+    public void updateTask(int id, String newTitle, String newDescription, TaskState newState, TaskPriority newPriority) {
         //Wrap DB calls with our service executor
         getService().submit(() -> {
             try {
@@ -290,9 +287,9 @@ public class TasksViewModel implements IViewModel {
     }
 
     /**
-     * Convenience handler that delegates to {@link #updateTask(int, String, String, ITaskState, TaskPriority)}.
+     * Convenience handler that delegates to {@link #updateTask(int, String, String, TaskState, TaskPriority)}.
      */
-    public void updateButtonPressed(int id, String newTitle, String newDescription, ITaskState newState,TaskPriority newPriority) {
+    public void updateButtonPressed(int id, String newTitle, String newDescription, TaskState newState, TaskPriority newPriority) {
         updateTask(id, newTitle, newDescription, newState, newPriority);
     }
 

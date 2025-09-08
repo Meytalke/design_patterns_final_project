@@ -29,7 +29,7 @@ public class ReportVisitor implements TaskVisitor {
      */
     @Override
     public void visit(ITask task) {
-        ITaskState state = task.getState();
+        TaskState state = task.getState();
         switch (state) {
             case CompletedState _ -> {completedTasks++; completedTasksBucket.add(task);}
             case InProgressState _ -> {inProgressTasks++; inProgressTasksBucket.add(task);}

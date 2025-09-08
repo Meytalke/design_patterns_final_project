@@ -13,7 +13,7 @@ import java.util.Date;
  *
  * <p>Design notes:
  * <ul>
- *   <li>State transitions are modeled via {@link ITaskState}.</li>
+ *   <li>State transitions are modeled via {@link TaskState}.</li>
  *   <li>Priority presentation can be obtained from {@link TaskPriority}.</li>
  *   <li>Reporting and export concerns are decoupled via the Visitor pattern
  *       (see {@link #accept(TaskVisitor)}).</li>
@@ -50,7 +50,7 @@ public interface ITask {
      *
      * @return the non-null task state
      */
-    ITaskState getState();
+    TaskState getState();
 
     /**
      * Returns the priority classification of the task.

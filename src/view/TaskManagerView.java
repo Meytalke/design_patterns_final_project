@@ -53,8 +53,8 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
     private final JComboBox<String> exportFormatComboBox;
     // Task State in string value, convert to IState to control action behavior on each task
     // Or just make a visual difference depending on the state (color).
-    private final JComboBox<ITaskState> taskStateComboBox;
-    private final ITaskState selectedTaskState = new ToDoState();
+    private final JComboBox<TaskState> taskStateComboBox;
+    private final TaskState selectedTaskState = new ToDoState();
     private final JComboBox<TaskPriority> taskPriorityComboBox;
     private final JLabel creationDateLabel;
     private ITask selectedTask = null;
@@ -80,7 +80,7 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
      * Constructs the task manager view and initializes the UI hierarchy.
      * <p>
      * This constructor creates and lays out all Swing components, configures renderers for
-     * {@link ITaskState} and {@link TaskPriority} selectors, initializes the sorting and filtering
+     * {@link TaskState} and {@link TaskPriority} selectors, initializes the sorting and filtering
      * controls, and prepares the list model for displaying tasks.
      * <p>
      */
@@ -123,7 +123,7 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
          * The initial state is obtained from getSelectedTaskState(), and subsequent states are
          * derived via next() calls to present a canonical ordered list for selection.
          */
-        taskStateComboBox = new JComboBox<ITaskState>(new ITaskState[]{
+        taskStateComboBox = new JComboBox<TaskState>(new TaskState[]{
                 getSelectedTaskState(),//ToDoState
                 getSelectedTaskState().next(), //InProgressState
                 getSelectedTaskState().next().next() //CompletedState
@@ -138,7 +138,7 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value instanceof ITaskState state) {
+                if (value instanceof TaskState state) {
                     setText(state.getDisplayName());
                 }
                 return this;
@@ -200,9 +200,9 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
      *
      * @param stateToSelect the non-null state whose class should be selected
      */
-    public void selectTaskStateInComboBox(ITaskState stateToSelect) {
+    public void selectTaskStateInComboBox(TaskState stateToSelect) {
         for (int i = 0; i < taskStateComboBox.getItemCount(); i++) {
-            ITaskState state = taskStateComboBox.getItemAt(i);
+            TaskState state = taskStateComboBox.getItemAt(i);
             if (state.getClass() == stateToSelect.getClass()) {
                 taskStateComboBox.setSelectedIndex(i);
                 return;
@@ -352,7 +352,7 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
             if (viewModel.getSelectedTask().get() != null) {
                 String title = taskTitleInputF.getText();
                 String description = descriptionInputTA.getText();
-                ITaskState state = (ITaskState) taskStateComboBox.getSelectedItem();
+                TaskState state = (TaskState) taskStateComboBox.getSelectedItem();
                 TaskPriority priority = (TaskPriority) taskPriorityComboBox.getSelectedItem();
                 viewModel.updateButtonPressed(viewModel.getSelectedTask().get().getId(), title, description, state, priority);
 
@@ -552,7 +552,7 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
         return searchIdInput;
     }
 
-    public JComboBox<ITaskState> getTaskStateComboBox() {
+    public JComboBox<TaskState> getTaskStateComboBox() {
         return taskStateComboBox;
     }
 
@@ -596,5 +596,5 @@ public class TaskManagerView extends JPanel implements TasksObserver, IView {
         return sortByTitleStrat;
     }
 
-    public ITaskState getSelectedTaskState() {return selectedTaskState;}
+    public TaskState getSelectedTaskState() {return selectedTaskState;}
 }

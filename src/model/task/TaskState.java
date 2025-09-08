@@ -13,10 +13,10 @@ public interface TaskState {
     /**
      * Next state in the workflow; return this if no forward transition.
      */
-    ITaskState next();
+    TaskState next();
 
     /**
      * Previous state in the workflow; return this if no backward transition.
      */
-    ITaskState previous();
+    TaskState previous();
 }

@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.task.ITaskState;
+import model.task.TaskState;
 import model.task.ToDoState;
 
 /**
@@ -113,12 +113,12 @@ public class TasksDAODerby implements ITasksDAO {
      * additional allocations and keep state transitions consistent.
      *
      * @param stateStr the display name of the state to convert; must be one of the supported values
-     * @return a ITaskState instance corresponding to {@code stateStr}
+     * @return a TaskState instance corresponding to {@code stateStr}
      * @throws IllegalArgumentException if {@code stateStr} is not a recognized state name
      */
-    private ITaskState stateFromString(String stateStr) {
+    private TaskState stateFromString(String stateStr) {
         //Starting with a ToDoState and advancing it using the next function to save up on new instances
-        ITaskState state = new ToDoState();
+        TaskState state = new ToDoState();
         return switch (stateStr) {
             case "To Do" -> state;
             case "In Progress" -> state.next();

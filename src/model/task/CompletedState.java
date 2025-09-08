@@ -11,20 +11,20 @@ package model.task;
  * - Participates in a simple workflow (To Do -> In Progress -> Completed).
  * - Immutable and thread-safe: the single field is final and set via the constructor.
  */
-public class CompletedState implements ITaskState {
+public class CompletedState implements TaskState {
 
     /**
      * Reference to the prior state in the workflow ("In Progress").
      * Used to navigate back when {@link #previous()} is called.
      */
-    private final ITaskState inProgressState;
+    private final TaskState inProgressState;
 
     /**
      * Creates a "Completed" state that can navigate back to the given "In Progress" state.
      *
      * @param inProgressState the state to return to on {@link #previous()}; expected to be non-null
      */
-    public CompletedState(ITaskState inProgressState) {
+    public CompletedState(TaskState inProgressState) {
         this.inProgressState = inProgressState;
     }
 
@@ -45,7 +45,7 @@ public class CompletedState implements ITaskState {
      * @return this same {@code CompletedState} instance
      */
     @Override
-    public ITaskState next() {return this;}
+    public TaskState next() {return this;}
 
     @Override
     public String toString() {
@@ -58,7 +58,7 @@ public class CompletedState implements ITaskState {
      * @return the associated "In Progress" state instance
      */
     @Override
-    public ITaskState previous() {
+    public TaskState previous() {
         return getInProgressState();
     }
 
@@ -67,5 +67,5 @@ public class CompletedState implements ITaskState {
      *
      * @return a non-null {@link TaskState} representing the "In Progress" state
      */
-    public ITaskState getInProgressState() {return  inProgressState;}
+    public TaskState getInProgressState() {return  inProgressState;}
 }

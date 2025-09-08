@@ -37,7 +37,7 @@ public class Task implements ITask {
     /**
      * Current workflow state; expected to be non-null.
      */
-    private ITaskState state;
+    private TaskState state;
 
     /**
      * Timestamp of when the task was created; expected to be non-null.
@@ -63,7 +63,7 @@ public class Task implements ITask {
      * @param creationDate  creation timestamp (expected non-null; no defensive copy)
      * @param priority      priority classification (expected non-null)
      */
-    public Task(int id, String title, String description, ITaskState state, Date creationDate, TaskPriority priority) {
+    public Task(int id, String title, String description, TaskState state, Date creationDate, TaskPriority priority) {
         setId(id);
         setTitle(title);
         setDescription(description);
@@ -94,7 +94,7 @@ public class Task implements ITask {
      * {@inheritDoc}
      */
     @Override
-    public ITaskState getState() {return state;}
+    public TaskState getState() {return state;}
 
     /**
      * Accepts a visitor to perform an operation on this task instance.
@@ -158,7 +158,7 @@ public class Task implements ITask {
      *
      * @param state the new state (expected non-null)
      */
-    public void setState(ITaskState state) {this.state = state;}
+    public void setState(TaskState state) {this.state = state;}
 
     /**
      * Sets the creation timestamp.
