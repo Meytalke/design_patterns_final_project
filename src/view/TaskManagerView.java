@@ -413,6 +413,43 @@ public class TaskManagerView extends JPanel implements IView {
         viewModel.loadTasks();
     }
 
+    @Override
+    public void setTasks(java.util.List<ITask> tasks) {
+        SwingUtilities.invokeLater(() -> {
+            getListModel().clear();
+            for (ITask task : tasks) {
+                getListModel().addElement(task);
+            }
+        });
+    }
+
+    @Override
+    public void showMessage(String message, MessageType type) {
+        String title;
+        int messageType;
+
+        switch (type) {
+            case SUCCESS:
+                title = "Success";
+                messageType = JOptionPane.INFORMATION_MESSAGE;
+                break;
+            case ERROR:
+                title = "Error";
+                messageType = JOptionPane.ERROR_MESSAGE;
+                break;
+            case WARNING:
+                title = "Warning";
+                messageType = JOptionPane.WARNING_MESSAGE;
+                break;
+            case INFO:
+            default:
+                title = "Information";
+                messageType = JOptionPane.INFORMATION_MESSAGE;
+                break;
+        }
+
+        JOptionPane.showMessageDialog(this, message, title, messageType);
+    }
     private void applyAllFilters() {
         String selectedState = (String) stateFilterComboBox.getSelectedItem();
         String titleTerm = searchTitleInput.getText();
@@ -421,6 +458,26 @@ public class TaskManagerView extends JPanel implements IView {
         ((TasksViewModel) getViewModel()).filterTasks(selectedState, titleTerm, descriptionTerm, idTerm);
     }
 
+    @Override
+    public void setFormData(ITask task) {
+        if (task != null) {
+            getTaskTitleInputF().setText(task.getTitle());
+            getDescriptionInputTA().setText(task.getDescription());
+            selectTaskStateInComboBox(task.getState());
+            // Set button states
+            getTaskStateComboBox().setEnabled(true);
+            getAddButton().setEnabled(false);
+            getUpdateButton().setEnabled(true);
+            getDeleteButton().setEnabled(true);
+            getUpButton().setEnabled(true);
+            getDownButton().setEnabled(true);
+            getDeselectButton().setEnabled(true);
+        } else {
+            resetForm();
+        }
+    }
+
+    @Override
     public void resetForm() {
         taskTitleInputF.setText("");
         descriptionInputTA.setText("");
@@ -433,6 +490,7 @@ public class TaskManagerView extends JPanel implements IView {
         deselectButton.setEnabled(false);
         taskList.clearSelection();
     }
+
 
     @Override
     public IViewModel getViewModel() {

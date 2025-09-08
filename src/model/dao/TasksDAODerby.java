@@ -29,7 +29,6 @@ public class TasksDAODerby implements ITasksDAO {
     // Singleton instance
     private static TasksDAODerby instance = null;
     private final Connection connection;
-    private final String DB_URL = "jdbc:derby:./taskDB;create=true";
 
     /**
      * Private constructor to prevent direct instantiation
@@ -37,14 +36,23 @@ public class TasksDAODerby implements ITasksDAO {
      * @throws TasksDAOException If the driver or connection is missing
      */
     private TasksDAODerby() throws TasksDAOException {
+        System.out.println("DEBUG: TasksDAODerby is connecting to the real DB.");
         try {
-            // Load the driver (not strictly necessary for Java 7+ but good practice)
             Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-            connection = DriverManager.getConnection(DB_URL);
-            createTableIfNotExists(connection);
+            String DB_URL = "jdbc:derby:./taskDB;create=true";
+            this.connection = DriverManager.getConnection(DB_URL);
+            createTableIfNotExists(this.connection);
         } catch (ClassNotFoundException | SQLException e) {
             throw new TasksDAOException("Error initializing DB connection.", e);
         }
+    }
+
+    // A separate, public constructor for integration tests
+    // This allows the test to manually provide a connection
+    public TasksDAODerby(Connection connection) throws TasksDAOException {
+        this.connection = connection;
+        // The table creation logic can be handled here as well, if needed.
+        createTableIfNotExists(this.connection);
     }
 
     /**
@@ -128,11 +136,10 @@ public class TasksDAODerby implements ITasksDAO {
     @Override
     public ITask[] getTasks() throws TasksDAOException {
         List<ITask> tasks = new ArrayList<>();
-        String sql = "SELECT * FROM tasks";
-        try {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
-            // While we have any results (if at all), extract data into an object and add to the list.
+        String sql = "SELECT * FROM tasks ORDER BY id ASC";
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+
             while (resultSet.next()) {
                 tasks.add(new Task(
                         resultSet.getInt("id"),
@@ -144,8 +151,7 @@ public class TasksDAODerby implements ITasksDAO {
         } catch (SQLException e) {
             throw new TasksDAOException("Error retrieving tasks", e);
         }
-        // Convert a list to array
-        return tasks.toArray(ITask[]::new );
+        return tasks.toArray(new ITask[0]);
     }
 
     /**

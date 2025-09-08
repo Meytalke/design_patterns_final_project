@@ -1,6 +1,9 @@
 package view;
 
+import model.task.ITask;
 import viewmodel.IViewModel;
+
+import java.util.List;
 
 /**
  * UI-facing contract for a View in an MVVM architecture.
@@ -47,4 +50,9 @@ public interface IView {
      * be ignored or may result in implementation-defined behavior.
      */
     void start();
+
+    void setTasks(List<ITask> tasks);
+    void setFormData(ITask task);
+    void resetForm();
+    void showMessage(String message, MessageType type);
 }
