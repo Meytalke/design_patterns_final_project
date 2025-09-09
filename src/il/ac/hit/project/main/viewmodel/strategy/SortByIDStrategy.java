@@ -17,7 +17,7 @@ public class SortByIDStrategy implements ISortingStrategy {
      */
     @Override
     public void sort(List<ITask> tasks) {
-        // Sort in ascending order (smallest to largest ID)
+        // Sort in ascending order (the smallest to largest ID)
         tasks.sort(Comparator.comparing(ITask::getId));
 
         System.out.println("Sorted Tasks by ID:");

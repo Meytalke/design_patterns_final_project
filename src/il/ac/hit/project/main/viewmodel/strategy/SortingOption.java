@@ -15,6 +15,9 @@ public enum SortingOption {
     /** Sort by the task's title (lexicographical). */
     TITLE("Title"),;
 
+    /**
+     * The human-readable label for the UI.
+     */
     private final String displayName;
 
     SortingOption(String displayName) {

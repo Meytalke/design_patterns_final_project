@@ -37,6 +37,7 @@ import static il.ac.hit.project.main.view.MessageType.ERROR;
  * <ul>
  *   <li>Asynchronously load, add, update, and delete tasks using {@link ITasksDAO}.</li>
  *   <li>Maintain an in-memory collection of all tasks and a working list that can be filtered and sorted.</li>
+ *   <li>Notify registered {@link IPropertyObserver} instances whenever the visible tasks list changes.</li>
  *   <li>Apply sorting via pluggable {@link ISortingStrategy} implementations.</li>
  *   <li>Filter tasks using combinable predicates from {@link TaskFilter}.</li>
  *   <li>Generate reports using a Visitor + Adapter approach ({@link ReportVisitor}, {@link IReportExporter}).</li>

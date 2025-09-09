@@ -1,8 +1,9 @@
 package il.ac.hit.project.main.model.report;
 
-import il.ac.hit.project.main.model.report.external.PdfBoxReportGenerator;
+import il.ac.hit.project.main.model.report.external.PDFBoxReportGenerator;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ import java.util.List;
  * Roles:
  * - Target: IReportExporter
  * - Adapter: PdfReportAdapter (this class)
- * - Adaptee: PdfBoxReportGenerator (external PDF writer)
+ * - Adaptee: PDFBoxReportGenerator (external PDF writer)
  * - Client: Code that calls IReportExporter#export
  * <p>
  * How it adapts:
@@ -27,7 +28,7 @@ import java.util.List;
 public class PdfReportAdapter implements IReportExporter {
 
     /** Underlying PDF generator responsible for writing the document. */
-    private final PdfBoxReportGenerator adaptee = new PdfBoxReportGenerator();
+    private final PDFBoxReportGenerator adaptee = new PDFBoxReportGenerator();
 
     /**
      * Adapts ReportData into a title and content lines and writes a PDF at the given path.
@@ -37,11 +38,24 @@ public class PdfReportAdapter implements IReportExporter {
      */
     @Override
     public void export(ReportData data, String path) {
-        List<String> reportContent = List.of(
+        // Generate combined tasks bucket (with titles) string
+        List<String> buckets = new ArrayList<>();
+        buckets.add("--- Completed Tasks Bucket ---");
+        data.completedTasksBucket().forEach(task -> {buckets.add("" + task);});
+        buckets.add("--- InProgress Tasks Bucket ---");
+        data.inProgressTasksBucket().forEach(task -> {buckets.add("" + task);});
+        buckets.add("--- ToDo Tasks Bucket ---");
+        data.toDoTasksBucket().forEach(task -> {buckets.add("" + task);});
+
+        // Create summary report section
+        List<String> reportContent = new ArrayList<>(List.of(
                 "Completed Tasks: " + data.completedTasks(),
                 "In Progress Tasks: " + data.inProgressTasks(),
                 "To Do Tasks: " + data.todoTasks()
-        );
+        ));
+        //Chain summary report with task buckets
+        reportContent.addAll(buckets);
+        System.out.println(reportContent);
 
         try {
             adaptee.createDocument("Task Status Report", reportContent, path);

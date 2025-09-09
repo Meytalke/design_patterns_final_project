@@ -31,41 +31,110 @@ import java.awt.*;
  */
 public class TaskManagerView extends JPanel implements IView {
 
+    /**
+     * The main application window.
+     */
     private final JFrame window;
+    /**
+     * The main content pane for the window.
+     */
     private final JPanel contentPane;
-    //Task title and description input field and textArea
+    /**
+     * Text field for entering the task title.
+     */
     private final JTextField taskTitleInputF;
+    /**
+     * Text area for entering the task description.
+     */
     private final JTextArea descriptionInputTA;
-    //Control buttons - addTask, updateTask, deleteTask, deleteAllTasks, report, up, down ,deselect
+    /**
+     * Button to add a new task.
+     */
     private final JButton addButton;
+    /**
+     * Button to update an existing task.
+     */
     private final JButton updateButton;
+    /**
+     * Button to delete the selected task.
+     */
     private final JButton deleteButton;
+    /**
+     * Button to delete all tasks.
+     */
     private final JButton deleteAllButton;
+    /**
+     * Button to generate a report.
+     */
     private final JButton reportButton;
-    private final JButton upButton,downButton;
+    /**
+     * Button to move a task up in the list.
+     */
+    private final JButton upButton;
+    /**
+     * Button to move a task down in the list.
+     */
+    private final JButton downButton;
+    /**
+     * Button to deselect the current task.
+     */
     private final JButton deselectButton;
-    //Task state in string value, convert to IState to control more accurate filtering
+    /**
+     * Combo box to filter tasks by state.
+     */
     private final JComboBox<String> stateFilterComboBox;
+    /**
+     * Combo box to select a sorting option.
+     */
     private final JComboBox<SortingOption> sortComboBox;
+    /**
+     * Combo box to select the report export format.
+     */
     private final JComboBox<String> exportFormatComboBox;
+    /**
+     * Combo box to select the task state.
+     */
     private final JComboBox<TaskState> taskStateComboBox;
+    /**
+     * The initial "To Do" state for a new task.
+     */
     private final TaskState selectedTaskState = new ToDoState();
-    private ITask selectedTask = null;
-
-    //Task list in memory and a listModel list to store the tasks visually
-    private JList<ITask> taskList;
+    /**
+     * The visual list component displaying tasks.
+     */
+    private final JList<ITask> taskList;
+    /**
+     * The model for the task list.
+     */
     private DefaultListModel<ITask> listModel;
-
-    //Search specific regex fields
+    /**
+     * Text field for searching by title.
+     */
     private final JTextField searchTitleInput;
+    /**
+     * Text field for searching by description.
+     */
     private final JTextField searchDescriptionInput;
+    /**
+     * Text field for searching by ID.
+     */
     private final JTextField searchIdInput;
-
+    /**
+     * Sorting strategy for sorting by ID.
+     */
     private final ISortingStrategy sortById =  new SortByIDStrategy();
+    /**
+     * Sorting strategy for sorting by state.
+     */
     private final ISortingStrategy sortByState =  new SortByStateStrategy();
+    /**
+     * Sorting strategy for sorting by title.
+     */
     private final ISortingStrategy sortByTitleStrat =  new SortByTitleStrategy();
 
-    //Interface over class
+    /**
+     * The associated ViewModel.
+     */
     private IViewModel viewModel;
 
     /**
@@ -181,6 +250,19 @@ public class TaskManagerView extends JPanel implements IView {
         }
     }
 
+    /**
+     * Sets up the initial UI components and layout.
+     * <p>
+     * This includes:
+     * <ul>
+     *     <li>A panel for adding/updating tasks with input fields for title, description, state, and priority.</li>
+     *     <li>A panel for searching/filtering tasks with input fields for search title, description, and ID, as well as a combo box for selecting a task state to filter by.</li>
+     *     <li>A panel for displaying the current task list with a JList component.</li>
+     *     <li>A panel for controlling the task list with action buttons (add, update, delete, delete all, report, export) and a combo box for selecting the export format.</li>
+     * </ul>
+     * <p>
+     * Also sets up event listeners for the buttons and combo boxes, and initializes the ViewModel with the initial data.
+     */
     public void start() {
         JPanel addTaskPanel = new JPanel(new GridBagLayout());
         addTaskPanel.setBorder(BorderFactory.createTitledBorder("Add/Update Task"));
@@ -450,6 +532,13 @@ public class TaskManagerView extends JPanel implements IView {
 
         JOptionPane.showMessageDialog(this, message, title, messageType);
     }
+
+    /**
+     * Applies all current filter settings to the ViewModel, causing the visible task list to
+     * be refreshed accordingly.
+     * <p>
+     * This method is called in response to user actions on the filter controls.
+     */
     private void applyAllFilters() {
         String selectedState = (String) stateFilterComboBox.getSelectedItem();
         String titleTerm = searchTitleInput.getText();
@@ -477,6 +566,12 @@ public class TaskManagerView extends JPanel implements IView {
         }
     }
 
+    /**
+     * Resets the form to its initial state: clears input fields, selects the first
+     * option in the state and priority combo boxes, disables the state combo box,
+     * and enables/disables the control buttons as appropriate. Also clears the
+     * selection in the task list.
+     */
     @Override
     public void resetForm() {
         taskTitleInputF.setText("");
@@ -492,96 +587,196 @@ public class TaskManagerView extends JPanel implements IView {
     }
 
 
+    /**
+     * Returns the ViewModel associated with this il.ac.hit.project.main.view.
+     *
+     * @return the ViewModel
+     */
     @Override
     public IViewModel getViewModel() {
         return viewModel;
     }
 
+    /**
+     * Associates this View with a ViewModel.
+     *
+     * @param viewModel the ViewModel to set; must not be null
+     */
     @Override
     public void setViewModel(IViewModel viewModel) {
         this.viewModel = viewModel;
     }
 
+    /**
+     * Returns the input field for the task title.
+     *
+     * @return the text field for task title input
+     */
     public JTextField getTaskTitleInputF() {
         return taskTitleInputF;
     }
 
 
+    /**
+     * Returns the text area for the task description input.
+     *
+     * @return the text area for task description input
+     */
     public JTextArea getDescriptionInputTA() {
         return descriptionInputTA;
     }
 
+    /**
+     * Returns the button that triggers adding a new task to the ViewModel.
+     *
+     * @return the add task button
+     */
     public JButton getAddButton() {
         return addButton;
     }
 
+    /**
+     * Returns the button that triggers updating the selected task in the ViewModel.
+     *
+     * @return the update task button
+     */
     public JButton getUpdateButton() {
         return updateButton;
     }
 
-    public ITask getSelectedTask() {
-        return selectedTask;
-    }
 
-    public void setSelectedTask(ITask selectedTask) {
-        this.selectedTask = selectedTask;
-    }
 
-    public JList<ITask> getTaskList() {
-        return taskList;
-    }
-
-    public void setTaskList(JList<ITask> taskList) {
-        this.taskList = taskList;
-    }
-
+    /**
+     * Returns the list il.ac.hit.project.main.model for the task list component.
+     * <p>
+     * The list il.ac.hit.project.main.model contains the tasks that are currently visible in the
+     * task list. The ViewModel uses this il.ac.hit.project.main.model to update the task list
+     * component when the visible tasks change.
+     *
+     * @return the list il.ac.hit.project.main.model for the task list
+     */
     public DefaultListModel<ITask> getListModel() {
         return listModel;
     }
 
+    /**
+     * Sets the list il.ac.hit.project.main.model for the task list component.
+     * <p>
+     * This method is intended for use by the ViewModel to update the task list
+     * when the visible tasks change. The new list il.ac.hit.project.main.model will be used to update
+     * the task list component.
+     *
+     * @param listModel the list il.ac.hit.project.main.model to set; must not be null
+     */
     public void setListModel(DefaultListModel<ITask> listModel) {
         this.listModel = listModel;
     }
 
+    /**
+     * Returns the text field for searching tasks by title.
+     *
+     * @return the text field for searching tasks by title
+     */
     public JTextField getSearchTitleInput() {
         return searchTitleInput;
     }
 
+    /**
+     * Getter for the text field
+     *
+     * @return the text field for searching tasks by description
+     */
     public JTextField getSearchDescriptionInput() {
         return searchDescriptionInput;
     }
 
+
+    /**
+     * Allows users to enter an ID to search for a task by its ID.
+     *
+     * @return the text field for searching tasks by ID
+     */
     public JTextField getSearchIdInput() {
         return searchIdInput;
     }
 
+    /**
+     * Returns the combo box that allows users to select a task state
+     * to filter the task list by.
+     *
+     * @return the combo box for selecting a task state to filter by
+     */
     public JComboBox<TaskState> getTaskStateComboBox() {
         return taskStateComboBox;
     }
 
+    /**
+     * Returns the button for deleting the selected task.
+     *
+     * @return the delete task button
+     */
     public JButton getDeleteButton() {
         return deleteButton;
     }
 
+    /**
+     * Returns the button for moving the selected task up in the task list.
+     *
+     * @return the button for moving the selected task up
+     */
     public JButton getUpButton() {
         return upButton;
     }
 
+    /**
+     * Returns the button for moving the selected task down in the task list.
+     *
+     * @return the button for moving the selected task down
+     */
     public JButton getDownButton() {
         return downButton;
     }
 
+    /**
+     * Returns the button for de-selecting the currently selected task.
+     *
+     * @return the button for de-selecting the task
+     */
     public JButton getDeselectButton() {
         return deselectButton;
     }
 
+    /**
+     * Returns the button for deleting all tasks in the task list.
+     *
+     * @return the button for deleting all tasks
+     */
     public JButton getDeleteAllButton() {
         return deleteAllButton;
     }
 
-    public ISortingStrategy getSortByTitleStrat() {
+    /**
+     * Returns the sorting strategy for sorting tasks by creation date (oldest to newest).
+     *
+     * @return the sorting strategy for sorting tasks by creation date
+     */
+    public ISortingStrategy getSortByStateStrat() {
         return sortByTitleStrat;
     }
 
+    /**
+     * Returns the sorting strategy for sorting tasks by priority (highest to lowest).
+     *
+     * @return the sorting strategy for sorting tasks by priority
+     */
+    public ISortingStrategy getSortByIdStrat() {
+        return sortById;
+    }
+
+    /**
+     * Returns the currently selected {@link TaskState} in the UI state filter combo box.
+     *
+     * @return the selected task state
+     */
     public TaskState getSelectedTaskState() {return selectedTaskState;}
 }

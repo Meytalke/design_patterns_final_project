@@ -9,14 +9,23 @@ import javax.swing.*;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Unit tests for the {@link TaskManagerView} class.
+ * <p>
+ * This class specifically tests the behavior of the {@code selectTaskStateInComboBox} method
+ * to ensure that the correct state is selected within the combo box.
+ */
 class TaskManagerViewTest {
 
+    /**
+     * Tests that the combo box correctly selects the first state (ToDoState).
+     */
     @Test
     void testSelectTaskStateInComboBox_selectFirstState() {
         // Arrange
         TaskState state1 = new ToDoState();
         TaskState state2 = new ToDoState().next();
-        TaskState state3 = new ToDoState().next().next(); // Assuming you have this class
+        TaskState state3 = new ToDoState().next().next();
 
         TaskManagerView taskManagerView = new TaskManagerView();
         JComboBox<TaskState> taskStateComboBox = taskManagerView.getTaskStateComboBox();
@@ -32,6 +41,9 @@ class TaskManagerViewTest {
         assertEquals(state1, taskStateComboBox.getSelectedItem());
     }
 
+    /**
+     * Tests that the combo box correctly selects the second state (InProgressState).
+     */
     @Test
     void testSelectTaskStateInComboBox_selectSecondState() {
         // Arrange
@@ -53,6 +65,9 @@ class TaskManagerViewTest {
         assertEquals(state2, taskStateComboBox.getSelectedItem());
     }
 
+    /**
+     * Tests that the combo box correctly selects the third state (CompletedState).
+     */
     @Test
     void testSelectTaskStateInComboBox_selectThirdState() {
         // Arrange
@@ -74,6 +89,9 @@ class TaskManagerViewTest {
         assertEquals(state3, taskStateComboBox.getSelectedItem());
     }
 
+    /**
+     * Tests that the combo box correctly defaults to the first item when the provided state is not found.
+     */
     @Test
     void testSelectTaskStateInComboBox_stateNotFound() {
         // Arrange

@@ -51,8 +51,42 @@ public interface IView {
      */
     void start();
 
+    /**
+     * Sets the list of tasks to be displayed by the il.ac.hit.project.main.view.
+     *
+     * This method is typically used to refresh the entire task list
+     * in the UI after a change, such as adding, deleting, or updating a task.
+     *
+     * @param tasks the list of tasks to display; expected to be non-null
+     */
     void setTasks(List<ITask> tasks);
+
+    /**
+     * Populates the il.ac.hit.project.main.view's form with data from a given task.
+     *
+     * This is useful for editing an existing task, where the form fields
+     * need to be pre-filled with the task's current title, description, and state.
+     *
+     * @param task the task object containing the data to display in the form
+     */
     void setFormData(ITask task);
+
+    /**
+     * Resets the UI form to its initial, empty state.
+     *
+     * This method should clear all input fields, radio buttons, or any
+     * other form elements, making them ready for creating a new task.
+     */
     void resetForm();
+
+    /**
+     * Displays a message to the user, with a specific type indicating success or failure.
+     *
+     * The il.ac.hit.project.main.view is responsible for determining how to render the message based on its type
+     * (e.g., a green bar for success, a red box for an error).
+     *
+     * @param message the text of the message to display
+     * @param type    the type of message (e.g., success, error, warning)
+     */
     void showMessage(String message, MessageType type);
 }

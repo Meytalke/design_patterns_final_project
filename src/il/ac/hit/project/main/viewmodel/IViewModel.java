@@ -2,6 +2,8 @@ package il.ac.hit.project.main.viewmodel;
 
 import il.ac.hit.project.main.model.dao.ITasksDAO;
 import il.ac.hit.project.main.view.IView;
+import il.ac.hit.project.main.view.ObservableProperty.IObservableProperty;
+import il.ac.hit.project.main.view.ObservableProperty.IPropertyObserver;
 
 /**
  * MVVM ViewModel contract.
@@ -15,11 +17,14 @@ import il.ac.hit.project.main.view.IView;
  *   <li>Create a ViewModel implementation.</li>
  *   <li>Provide the il.ac.hit.project.main.model via {@link #setModel(ITasksDAO)}.</li>
  *   <li>Attach the il.ac.hit.project.main.view via {@link #setView(IView)}.</li>
+ *   <li>Register observers with {@link il.ac.hit.project.main.view.ObservableProperty.IObservableProperty#addListener(IPropertyObserver)} as needed.</li>
+ *   <li>Invoke ViewModel operations; call {@link IObservableProperty#notifyListeners()} after state changes.</li>
  * </ol>
  *
  * <h3>Threading</h3>
  * Unless otherwise documented by an implementation, methods are expected to be called
  * from the UI thread; observer callbacks are invoked on the thread that calls
+ * {@link IObservableProperty#notifyListeners()}.
  *
  * <h3>Nullability</h3>
  * Parameters marked “must not be null” will result in undefined behavior if null is passed.

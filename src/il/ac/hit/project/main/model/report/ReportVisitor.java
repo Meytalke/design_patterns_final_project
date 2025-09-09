@@ -2,6 +2,9 @@ package il.ac.hit.project.main.model.report;
 
 import il.ac.hit.project.main.model.task.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A visitor that aggregates a task counting by state for reporting.
  * <p>
@@ -17,6 +20,9 @@ public class ReportVisitor {
     private long completedTasks = 0;
     private long inProgressTasks = 0;
     private long todoTasks = 0;
+    private final List<ITask> toDoTasksBucket = new ArrayList<>();
+    private final List<ITask> inProgressTasksBucket = new ArrayList<>();
+    private final List<ITask> completedTasksBucket = new ArrayList<>();
 
     /**
      * Classifies a given task by its state and updates the internal counters.
@@ -26,14 +32,15 @@ public class ReportVisitor {
      * determine the correct visit method.
      *
      * @param task the task to process; must not be null
+     * @see #getReport()
      * @throws IllegalStateException if the task state is null or not recognized
      */
     public void visit(Task task) {
         TaskState state = task.getState();
         switch (state) {
-            case CompletedState _ -> completedTasks++;
-            case InProgressState _ -> inProgressTasks++;
-            case ToDoState _ -> todoTasks++;
+            case CompletedState _ -> {completedTasks++; completedTasksBucket.add(task);}
+            case InProgressState _ -> {inProgressTasks++; inProgressTasksBucket.add(task);}
+            case ToDoState _ -> {todoTasks++;toDoTasksBucket.add(task);}
             case null, default -> throw new IllegalStateException("Unknown task state: " + state);
         }
     }
@@ -45,6 +52,6 @@ public class ReportVisitor {
      * completed, in-progress, and to-do tasks.
      */
     public ReportData getReport() {
-        return new ReportData(completedTasks, inProgressTasks, todoTasks);
+        return new ReportData(completedTasks, inProgressTasks, todoTasks, completedTasksBucket, inProgressTasksBucket, toDoTasksBucket);
     }
 }

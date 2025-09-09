@@ -1,8 +1,11 @@
 package il.ac.hit.project.main.model.report;
 
-import il.ac.hit.project.main.model.report.external.JsonReportGenerator;
+import il.ac.hit.project.main.model.report.external.JSONReportGenerator;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Adapter in the Adapter pattern.
@@ -14,7 +17,7 @@ import java.io.IOException;
  * Roles:
  * - Target: IReportExporter
  * - Adapter: JsonReportAdapter (this class)
- * - Adaptee: JsonReportGenerator (external JSON writer)
+ * - Adaptee: JSONReportGenerator (external JSON writer)
  * - Client: Code that calls IReportExporter#export
  * <p>
  * How it adapts:
@@ -23,7 +26,7 @@ import java.io.IOException;
  */
 public class JsonReportAdapter implements IReportExporter {
     /** Underlying JSON generator responsible for writing the file. */
-    private final JsonReportGenerator generator = new JsonReportGenerator();
+    private final JSONReportGenerator generator = new JSONReportGenerator();
 
     /**
      * Adapts ReportData to the JSON generator's API and writes a file at the given path.
@@ -34,7 +37,33 @@ public class JsonReportAdapter implements IReportExporter {
     @Override
     public void export(ReportData data, String path) {
         try {
-            generator.createJson(data, path);
+            //Convert ITask to a record class to avoid infinite JSON loop.
+            record TasksDTO(int ID, String title, String description, String state) {}
+            record TotalTasksDTO(String type, int totalTasks) {}
+            record FinalData(List<TotalTasksDTO> totalTasksDTO, List<TasksDTO> tasksDTO ) {}
+
+            //Two sections to JSON document -1: total tasks per category
+            List<TotalTasksDTO> totalTasks = new ArrayList<>();
+            totalTasks.add(new TotalTasksDTO("Completed",(int)data.completedTasks()));
+            totalTasks.add(new TotalTasksDTO("InProgress",(int)data.inProgressTasks()));
+            totalTasks.add(new TotalTasksDTO("To Do", (int)data.todoTasks()));
+
+            //2: Bucket of each task category
+            List<TasksDTO> tasks =
+                    Stream.of(
+                                    data.completedTasksBucket().stream(),
+                                    data.inProgressTasksBucket().stream(),
+                                    data.toDoTasksBucket().stream()
+                            ).flatMap(stream -> stream.map(t -> new TasksDTO(
+                                    t.getId(),
+                                    t.getTitle(),
+                                    t.getDescription(),
+                                    t.getState().getDisplayName()
+                            )))
+                            .toList();
+            //3: Joint JSON document.
+            FinalData sendData = new FinalData(totalTasks, tasks);
+            generator.createJson(sendData, path);
             System.out.println("JSON document generated successfully at: " + path);
         } catch (IOException e) {
             System.err.println("Error generating JSON document: " + e.getMessage());

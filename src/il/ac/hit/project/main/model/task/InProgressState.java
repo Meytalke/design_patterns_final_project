@@ -36,6 +36,11 @@ public class InProgressState implements TaskState {
         this.toDoState = toDoState;
     }
 
+    @Override
+    public String toString() {
+        return "InProgressState";
+    }
+
     /**
      * Human-readable name of this state.
      *

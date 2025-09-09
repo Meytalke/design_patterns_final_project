@@ -1,4 +1,3 @@
-// TasksViewModelTest.java
 package il.ac.hit.project.test.viewModel;
 
 import il.ac.hit.project.main.model.dao.ITasksDAO;
@@ -19,15 +18,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-public class TasksViewModelTest {
+/**
+ * Unit tests for the TasksViewModel.
+ * <p>
+ * This class verifies the behavior of the ViewModel's core functionalities,
+ * particularly its interaction with the data layer (ITasksDAO) in asynchronous
+ * scenarios.
+ */
+class TasksViewModelTest {
 
     /**
-     * Test class for the TasksViewModel.
-     * It verifies the behavior of the loadTasks method under different scenarios.
+     * Tests that the {@code loadTasks} method successfully loads tasks from the DAO.
+     * It verifies that the ViewModel's internal lists are populated correctly and
+     * that the DAO's getTasks method is called.
+     *
+     * @throws Exception if an unexpected error occurs during the test.
      */
-
     @Test
-    public void testLoadTasksSuccess() throws Exception {
+    void testLoadTasksSuccess() throws Exception {
         // Arrange
         ITasksDAO mockTasksDAO = mock(ITasksDAO.class);
         IView mockView = mock(IView.class);
@@ -55,17 +63,21 @@ public class TasksViewModelTest {
         verify(mockTasksDAO, times(1)).getTasks();
     }
 
+    /**
+     * Tests that the {@code loadTasks} method correctly handles exceptions thrown by the DAO.
+     * It verifies that an error message is shown to the view and the internal task list remains empty.
+     *
+     * @throws Exception if an unexpected error occurs during the test.
+     */
     @Test
-    public void testLoadTasksHandlesException() throws Exception {
+    void testLoadTasksHandlesException() throws Exception {
         // Arrange
         ITasksDAO mockTasksDAO = mock(ITasksDAO.class);
         IView mockView = mock(IView.class);
         ExecutorService mockExecutorService = mock(ExecutorService.class);
 
-        // Mock the DAO to throw an exception
         when(mockTasksDAO.getTasks()).thenThrow(new TasksDAOException("Test Exception"));
 
-        // Use a CountDownLatch to control async execution
         CountDownLatch latch = new CountDownLatch(1);
         doAnswer(invocation -> {
             ((Runnable) invocation.getArgument(0)).run();
@@ -80,14 +92,20 @@ public class TasksViewModelTest {
         latch.await(2, TimeUnit.SECONDS);
 
         // Assert
-        // Verify that the showMessage() method was called with an error type
         verify(mockView, times(1)).showMessage(anyString(), eq(MessageType.ERROR));
         assertTrue(viewModel.getAllTasks().isEmpty());
         verify(mockTasksDAO, times(1)).getTasks();
     }
 
+    /**
+     * Tests that the {@code loadTasks} method correctly updates the observable task list.
+     * It verifies that the ViewModel's public task list property is updated and
+     * that the view's {@code setTasks} method is called.
+     *
+     * @throws Exception if an unexpected error occurs during the test.
+     */
     @Test
-    public void testLoadTasksUpdatesTaskList() throws Exception {
+    void testLoadTasksUpdatesTaskList() throws Exception {
         // Arrange
         ITasksDAO mockTasksDAO = mock(ITasksDAO.class);
         IView mockView = mock(IView.class);
@@ -111,6 +129,6 @@ public class TasksViewModelTest {
         // Assert
         assertEquals(new ArrayList<>(mockTasks), viewModel.getTasksList().get());
         verify(mockTasksDAO, times(1)).getTasks();
-        verify(mockView, times(1)).setTasks(anyList()); // Use anyList() for flexibility
+        verify(mockView, times(1)).setTasks(anyList());
     }
 }

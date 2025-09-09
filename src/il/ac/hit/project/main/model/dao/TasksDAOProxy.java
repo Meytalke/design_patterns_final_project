@@ -15,13 +15,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
  */
 public class TasksDAOProxy implements ITasksDAO {
-    
+
     private final ITasksDAO tasksDAO;
     private final ConcurrentHashMap<Integer, ITask> cache = new ConcurrentHashMap<>();
     //Separate cache for all tasks - once gotten all the tasks at once, no need to retrieve separate tasks.
     private final ConcurrentHashMap<Integer, ITask> allCache = new ConcurrentHashMap<>();
 
-    
+
     /**
      * Constructs a new TasksDAOProxy instance with the given
      * ITasksDAO instance to delegate queries to.

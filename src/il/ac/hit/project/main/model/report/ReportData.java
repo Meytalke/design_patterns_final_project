@@ -1,5 +1,9 @@
 package il.ac.hit.project.main.model.report;
 
+import il.ac.hit.project.main.model.task.ITask;
+
+import java.util.List;
+
 /**
  * Immutable snapshot of a task counts per status for export.
  * Acts as a simple transport object; contains no I/O or formatting logic.
@@ -9,5 +13,5 @@ package il.ac.hit.project.main.model.report;
  * @param todoTasks number of tasks not yet started (>= 0)
  */
 
-public record ReportData(long completedTasks, long inProgressTasks, long todoTasks) {}
+public record ReportData(long completedTasks, long inProgressTasks, long todoTasks, List<ITask> completedTasksBucket, List<ITask> inProgressTasksBucket, List<ITask> toDoTasksBucket ) {}
 

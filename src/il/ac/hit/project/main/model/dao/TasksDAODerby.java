@@ -85,7 +85,7 @@ public class TasksDAODerby implements ITasksDAO {
      * @throws TasksDAOException If there is an error creating the table (for example, if
      *         the table already exists with a different schema).
      */
-     private void createTableIfNotExists(Connection connection) throws TasksDAOException {
+    private void createTableIfNotExists(Connection connection) throws TasksDAOException {
         try (Statement derbyStatement = connection.createStatement()) {
             /*SQL in English: 
             Create a table called "tasks" with the following columns:
@@ -131,7 +131,7 @@ public class TasksDAODerby implements ITasksDAO {
         };
     }
 
-    /** 
+    /**
      * Retrieves all tasks from the database.
      *
      * @return {@code ITask[]} An array of all tasks in the database.
@@ -142,6 +142,7 @@ public class TasksDAODerby implements ITasksDAO {
     public ITask[] getTasks() throws TasksDAOException {
         List<ITask> tasks = new ArrayList<>();
         String sql = "SELECT * FROM tasks ORDER BY id ASC";
+        //tryWith block, automatically closes AutoCloseable classes
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
 
@@ -156,7 +157,8 @@ public class TasksDAODerby implements ITasksDAO {
         } catch (SQLException e) {
             throw new TasksDAOException("Error retrieving tasks", e);
         }
-        return tasks.toArray(new ITask[0]);
+        // Convert a list to array
+        return tasks.toArray(ITask[]::new );
     }
 
     /**
@@ -182,13 +184,12 @@ public class TasksDAODerby implements ITasksDAO {
                         stateFromString(resultSet.getString("state"))
                 );
             }
-            
+
         } catch (SQLException e) {
             throw new TasksDAOException("Error retrieving task", e);
         }
-        /*If we haven't found any results, we throw an exception instead of 
-        returning null to explicitly indicate that the task doesn't exist.*/
-        throw new TasksDAOException("Task not found");
+
+        return null;
     }
 
     /**
@@ -199,6 +200,7 @@ public class TasksDAODerby implements ITasksDAO {
      */
     @Override
     public void addTask(ITask task) throws TasksDAOException {
+        //Clean data to avoid SQL injection
         String title = task.getTitle().replace("'", "''");
         String description = task.getDescription().replace("'", "''");
         String state = task.getState().getDisplayName();
@@ -216,14 +218,14 @@ public class TasksDAODerby implements ITasksDAO {
                 throw new SQLException("Creating task failed, no rows affected.");
 
             ResultSet generatedKeys = statement.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    // Get the auto-generated ID
-                    int newId = generatedKeys.getInt(1);
-                    // Update the task object with the new ID
-                    ((Task) task).setId(newId);
-                } else {
-                    throw new SQLException("Creating task failed, no ID obtained.");
-                }
+            if (generatedKeys.next()) {
+                // Get the auto-generated ID
+                int newId = generatedKeys.getInt(1);
+                // Update the task object with the new ID
+                ((Task) task).setId(newId);
+            } else {
+                throw new SQLException("Creating task failed, no ID obtained.");
+            }
 
         } catch (SQLException e) {
             throw new TasksDAOException("Error adding task", e);
@@ -267,7 +269,7 @@ public class TasksDAODerby implements ITasksDAO {
         //Delete all tasks
         String sql = "DELETE FROM tasks";
         try {
-            Statement statement = connection.createStatement(); 
+            Statement statement = connection.createStatement();
             statement.executeUpdate(sql);
         } catch (SQLException e) {
             throw new TasksDAOException("Error deleting all tasks", e);

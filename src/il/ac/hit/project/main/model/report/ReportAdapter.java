@@ -32,6 +32,6 @@ public class ReportAdapter implements IReportExporter {
     @Override
     public void export(ReportData data, String path) {
         // Adapt the ReportData record to the external library's method signature
-        adaptee.generateTextReport(data.completedTasks(), data.inProgressTasks(), data.todoTasks());
+        adaptee.generateTextReport(data.completedTasks(), data.inProgressTasks(), data.todoTasks(), data.completedTasksBucket(), data.inProgressTasksBucket(), data.toDoTasksBucket());
     }
 }

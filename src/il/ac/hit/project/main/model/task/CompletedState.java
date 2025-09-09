@@ -49,6 +49,11 @@ public class CompletedState implements TaskState {
     @Override
     public TaskState next() {return this;}
 
+    @Override
+    public String toString() {
+        return "CompletedState";
+    }
+
     /**
      * Moves the task back to the "In Progress" state.
      *

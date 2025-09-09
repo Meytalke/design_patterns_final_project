@@ -39,6 +39,11 @@ public class ToDoState implements TaskState {
         return getInProgressState();
     }
 
+    @Override
+    public String toString() {
+        return "ToDoState";
+    }
+
     /**
      * There is no state prior to "To Do".
      *
