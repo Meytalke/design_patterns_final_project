@@ -1,5 +1,7 @@
 package model.task;
 
+import java.util.Objects;
+
 /**
  * Intermediate task state: "In Progress".
  * <p>
@@ -78,4 +80,17 @@ public class InProgressState implements TaskState {
      * @return a non-null {@link TaskState} representing the "Completed" state
      */
     public TaskState getCompletedState() {return completedState;}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InProgressState that = (InProgressState) o;
+        return Objects.equals(getDisplayName(), that.getDisplayName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDisplayName());
+    }
 }

@@ -31,12 +31,37 @@ import view.ObservableProperty.IPropertyObserver;
  * Parameters marked “must not be null” will result in undefined behavior if null is passed.
  */
 public interface IViewModel {
-
+    /**
+     * Associates the ViewModel with a view.
+     *
+     * <p>Setting a new view replaces the previous association. Implementations may
+     * perform initial synchronization (e.g., pushing the current state to the view).</p>
+     *
+     * @param view the view to attach; must not be null
+     */
     void setView(IView view);
 
+    /**
+     * Provides the backing data-access object.
+     *
+     * <p>Setting a new model replaces the previous association. Implementations should
+     * not assume ownership beyond the DAO's public contract.</p>
+     *
+     * @param tasksDAO the model/DAO to use; must not be null
+     */
     void setModel(ITasksDAO tasksDAO);
 
+    /**
+     * Returns the currently associated view, if any.
+     *
+     * @return the view, or null if none has been set
+     */
     IView getView();
 
+    /**
+     * Returns the currently associated data-access object, if any.
+     *
+     * @return the model/DAO, or null if none has been set
+     */
     ITasksDAO getModel();
 }

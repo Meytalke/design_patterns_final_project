@@ -1,5 +1,7 @@
 package model.task;
 
+import java.util.Objects;
+
 /**
  * Terminal task state: "Completed".
  * <p>
@@ -58,9 +60,7 @@ public class CompletedState implements TaskState {
      * @return the associated "In Progress" state instance
      */
     @Override
-    public TaskState previous() {
-        return getInProgressState();
-    }
+    public TaskState previous() {return getInProgressState();}
 
     /**
      * Exposes the prior state reference ("In Progress").
@@ -68,4 +68,17 @@ public class CompletedState implements TaskState {
      * @return a non-null {@link TaskState} representing the "In Progress" state
      */
     public TaskState getInProgressState() {return  inProgressState;}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CompletedState that = (CompletedState) o;
+        return Objects.equals(getDisplayName(), that.getDisplayName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDisplayName());
+    }
 }

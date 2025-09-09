@@ -9,7 +9,6 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.util.List;
 
 /**
  * Swing-based view for managing tasks in an MVVM setup.
@@ -26,11 +25,9 @@ import java.util.List;
  * <h3>Responsibilities</h3>
  * <ul>
  *   <li>Implements the View side of MVVM via {@link IView}.</li>
- *   <li>Observes task updates via {@link TasksObserver} and refreshes the list accordingly.</li>
  *   <li>Forwards user intents (add/update/delete/filter/sort/export) to the bound {@link IViewModel}.</li>
  * </ul>
  * @see IView
- * @see TasksObserver
  */
 public class TaskManagerView extends JPanel implements IView {
 
@@ -51,14 +48,8 @@ public class TaskManagerView extends JPanel implements IView {
     private final JComboBox<String> stateFilterComboBox;
     private final JComboBox<SortingOption> sortComboBox;
     private final JComboBox<String> exportFormatComboBox;
-    // Task State in string value, convert to IState to control action behavior on each task
-    // Or just make a visual difference depending on the state (color).
     private final JComboBox<TaskState> taskStateComboBox;
     private final TaskState selectedTaskState = new ToDoState();
-    private final JComboBox<TaskPriority> taskPriorityComboBox;
-    private final JLabel creationDateLabel;
-
-
     //Task list in memory and a listModel list to store the tasks visually
     private final JList<ITask> taskList;
     private DefaultListModel<ITask> listModel;
@@ -69,8 +60,8 @@ public class TaskManagerView extends JPanel implements IView {
     private final JTextField searchIdInput;
 
     //Sorting strategies to shuffle through
-    private final ISortingStrategy sortByCreationStrat =  new SortByCreationDateStrategy();
-    private final ISortingStrategy sortByPriorityStrat =  new SortByPriorityStrategy();
+    private final ISortingStrategy sortById =  new SortByIDStrategy();
+    private final ISortingStrategy sortByState =  new SortByStateStrategy();
     private final ISortingStrategy sortByTitleStrat =  new SortByTitleStrategy();
 
     //Interface over class
@@ -80,12 +71,11 @@ public class TaskManagerView extends JPanel implements IView {
      * Constructs the task manager view and initializes the UI hierarchy.
      * <p>
      * This constructor creates and lays out all Swing components, configures renderers for
-     * {@link TaskState} and {@link TaskPriority} selectors, initializes the sorting and filtering
+     * {@link TaskState} selector, initializes the sorting and filtering
      * controls, and prepares the list model for displaying tasks.
      * <p>
      */
     public TaskManagerView() {
-
 
         //Create UI base components
         contentPane = new JPanel(new BorderLayout(10, 10));
@@ -146,24 +136,6 @@ public class TaskManagerView extends JPanel implements IView {
         });
 
         /*
-         * Task priority selector.
-         *
-         * Populates from the available priority values.
-         * The custom renderer uses getDisplayName() to show a human-friendly label.
-         */
-        taskPriorityComboBox = new JComboBox<>(TaskPriority.values());
-        taskPriorityComboBox.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value instanceof TaskPriority priority) {
-                    setText(priority.getDisplayName());
-                }
-                return this;
-            }
-        });
-
-        /*
          * Sorting option selector.
          *
          * Populates from the available sorting options (e.g., by date, priority, title).
@@ -180,8 +152,6 @@ public class TaskManagerView extends JPanel implements IView {
                 return this;
             }
         });
-
-        creationDateLabel = new JLabel("Creation Date: N/A");
 
         exportFormatComboBox = new JComboBox<>(new String[]{"Terminal","PDF", "CSV" , "JSON"});
 
@@ -248,15 +218,6 @@ public class TaskManagerView extends JPanel implements IView {
         gbc.gridx = 1; gbc.gridy = 2; gbc.gridwidth = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
         addTaskPanel.add(taskStateComboBox, gbc);
 
-        // Row 4: Task Priority
-        gbc.gridx = 0; gbc.gridy = 3; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
-        addTaskPanel.add(new JLabel("Priority:"), gbc);
-        gbc.gridx = 1; gbc.gridy = 3; gbc.gridwidth = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
-        addTaskPanel.add(taskPriorityComboBox, gbc);
-
-        // Row 5: Creation Date
-        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2; gbc.anchor = GridBagConstraints.WEST; gbc.fill = GridBagConstraints.NONE;
-        addTaskPanel.add(creationDateLabel, gbc);
 
         // Row 4: Action Buttons
         gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 2; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.anchor = GridBagConstraints.EAST;
@@ -279,6 +240,7 @@ public class TaskManagerView extends JPanel implements IView {
         // Changed to GridBagLayout
         JPanel searchAndFilterPanel = new JPanel(new GridBagLayout());
         searchAndFilterPanel.setBorder(BorderFactory.createTitledBorder("Search and Filter"));
+
         // New GBC for this panel
         GridBagConstraints searchGBC = new GridBagConstraints();
         // Padding
@@ -340,6 +302,7 @@ public class TaskManagerView extends JPanel implements IView {
         // Assemble the main content pane
         contentPane.add(topPanel, BorderLayout.NORTH);
         contentPane.add(taskListPanel, BorderLayout.CENTER);
+        contentPane.add(addTaskPanel, BorderLayout.WEST);
         contentPane.add(actionsPanel, BorderLayout.SOUTH);
 
         window.setContentPane(contentPane);
@@ -354,8 +317,7 @@ public class TaskManagerView extends JPanel implements IView {
         addButton.addActionListener(e -> {
             String title = taskTitleInputF.getText();
             String description = descriptionInputTA.getText();
-            TaskPriority priority = (TaskPriority) taskPriorityComboBox.getSelectedItem();
-            viewModel.addButtonPressed(title, description, priority);
+            viewModel.addButtonPressed(title, description);
 
             resetForm();
         });
@@ -366,8 +328,7 @@ public class TaskManagerView extends JPanel implements IView {
                 String title = taskTitleInputF.getText();
                 String description = descriptionInputTA.getText();
                 TaskState state = (TaskState) taskStateComboBox.getSelectedItem();
-                TaskPriority priority = (TaskPriority) taskPriorityComboBox.getSelectedItem();
-                viewModel.updateButtonPressed(viewModel.getSelectedTask().get().getId(), title, description, state, priority);
+                viewModel.updateButtonPressed(viewModel.getSelectedTask().get().getId(), title, description, state);
 
                 resetForm();
             }
@@ -394,19 +355,19 @@ public class TaskManagerView extends JPanel implements IView {
             SortingOption selectedOption = (SortingOption) sortComboBox.getSelectedItem();
 
             switch (selectedOption) {
-                case PRIORITY:
-                    viewModel.setSortingStrategy(getSortByPriorityStrat());
+                case STATE:
+                    viewModel.setSortingStrategy(new SortByStateStrategy());
                     break;
-                case CREATION_DATE:
-                    viewModel.setSortingStrategy(getSortByCreationStrat());
+                case ID:
+                    viewModel.setSortingStrategy(new SortByIDStrategy());
                     break;
                 case TITLE:
-                    viewModel.setSortingStrategy(getSortByTitleStrat());
+                    viewModel.setSortingStrategy(new SortByTitleStrategy());
                     break;
                 case null:
                     break;
                 default:
-                    viewModel.setSortingStrategy(getSortByTitleStrat());
+                    viewModel.setSortingStrategy(new SortByTitleStrategy());
                     break;
             }
         });
@@ -464,6 +425,44 @@ public class TaskManagerView extends JPanel implements IView {
         viewModel.loadTasks();
     }
 
+    @Override
+    public void setTasks(java.util.List<ITask> tasks) {
+        SwingUtilities.invokeLater(() -> {
+            getListModel().clear();
+            for (ITask task : tasks) {
+                getListModel().addElement(task);
+            }
+        });
+    }
+
+    @Override
+    public void showMessage(String message, MessageType type) {
+        String title;
+        int messageType;
+
+        switch (type) {
+            case SUCCESS:
+                title = "Success";
+                messageType = JOptionPane.INFORMATION_MESSAGE;
+                break;
+            case ERROR:
+                title = "Error";
+                messageType = JOptionPane.ERROR_MESSAGE;
+                break;
+            case WARNING:
+                title = "Warning";
+                messageType = JOptionPane.WARNING_MESSAGE;
+                break;
+            case INFO:
+            default:
+                title = "Information";
+                messageType = JOptionPane.INFORMATION_MESSAGE;
+                break;
+        }
+
+        JOptionPane.showMessageDialog(this, message, title, messageType);
+    }
+
     /**
      * Applies all current filter settings to the ViewModel, causing the visible task list to
      * be refreshed accordingly.
@@ -478,17 +477,36 @@ public class TaskManagerView extends JPanel implements IView {
         ((TasksViewModel) getViewModel()).filterTasks(selectedState, titleTerm, descriptionTerm, idTerm);
     }
 
+    @Override
+    public void setFormData(ITask task) {
+        if (task != null) {
+            getTaskTitleInputF().setText(task.getTitle());
+            getDescriptionInputTA().setText(task.getDescription());
+            selectTaskStateInComboBox(task.getState());
+            // Set button states
+            getTaskStateComboBox().setEnabled(true);
+            getAddButton().setEnabled(false);
+            getUpdateButton().setEnabled(true);
+            getDeleteButton().setEnabled(true);
+            getUpButton().setEnabled(true);
+            getDownButton().setEnabled(true);
+            getDeselectButton().setEnabled(true);
+        } else {
+            resetForm();
+        }
+    }
+
     /**
      * Resets the form to its initial state: clears input fields, selects the first
      * option in the state and priority combo boxes, disables the state combo box,
      * and enables/disables the control buttons as appropriate. Also clears the
      * selection in the task list.
      */
+    @Override
     public void resetForm() {
         taskTitleInputF.setText("");
         descriptionInputTA.setText("");
         taskStateComboBox.setSelectedIndex(0);
-        taskPriorityComboBox.setSelectedIndex(0);
         taskStateComboBox.setEnabled(false);
         addButton.setEnabled(true);
         updateButton.setEnabled(false);
@@ -499,10 +517,9 @@ public class TaskManagerView extends JPanel implements IView {
     }
 
 
-
     /**
      * Returns the ViewModel associated with this view.
-     * 
+     *
      * @return the ViewModel
      */
     @Override
@@ -512,7 +529,7 @@ public class TaskManagerView extends JPanel implements IView {
 
     /**
      * Associates this View with a ViewModel.
-     * 
+     *
      * @param viewModel the ViewModel to set; must not be null
      */
     @Override
@@ -558,7 +575,7 @@ public class TaskManagerView extends JPanel implements IView {
     }
 
 
-    
+
     /**
      * Returns the list model for the task list component.
      * <p>
@@ -578,7 +595,7 @@ public class TaskManagerView extends JPanel implements IView {
      * This method is intended for use by the ViewModel to update the task list
      * when the visible tasks change. The new list model will be used to update
      * the task list component.
-     * 
+     *
      * @param listModel the list model to set; must not be null
      */
     public void setListModel(DefaultListModel<ITask> listModel) {
@@ -595,8 +612,8 @@ public class TaskManagerView extends JPanel implements IView {
     }
 
     /**
-     * Getter for the text field 
-     * 
+     * Getter for the text field
+     *
      * @return the text field for searching tasks by description
      */
     public JTextField getSearchDescriptionInput() {
@@ -606,7 +623,7 @@ public class TaskManagerView extends JPanel implements IView {
 
     /**
      * Allows users to enter an ID to search for a task by its ID.
-     * 
+     *
      * @return the text field for searching tasks by ID
      */
     public JTextField getSearchIdInput() {
@@ -616,7 +633,7 @@ public class TaskManagerView extends JPanel implements IView {
     /**
      * Returns the combo box that allows users to select a task state
      * to filter the task list by.
-     * 
+     *
      * @return the combo box for selecting a task state to filter by
      */
     public JComboBox<TaskState> getTaskStateComboBox() {
@@ -625,7 +642,7 @@ public class TaskManagerView extends JPanel implements IView {
 
     /**
      * Returns the button for deleting the selected task.
-     * 
+     *
      * @return the delete task button
      */
     public JButton getDeleteButton() {
@@ -634,7 +651,7 @@ public class TaskManagerView extends JPanel implements IView {
 
     /**
      * Returns the button for moving the selected task up in the task list.
-     * 
+     *
      * @return the button for moving the selected task up
      */
     public JButton getUpButton() {
@@ -643,7 +660,7 @@ public class TaskManagerView extends JPanel implements IView {
 
     /**
      * Returns the button for moving the selected task down in the task list.
-     * 
+     *
      * @return the button for moving the selected task down
      */
     public JButton getDownButton() {
@@ -652,7 +669,7 @@ public class TaskManagerView extends JPanel implements IView {
 
     /**
      * Returns the button for de-selecting the currently selected task.
-     * 
+     *
      * @return the button for de-selecting the task
      */
     public JButton getDeselectButton() {
@@ -660,29 +677,8 @@ public class TaskManagerView extends JPanel implements IView {
     }
 
     /**
-     * Returns the combo box that allows the user to select a priority
-     * classification for the task.
-     * 
-     * @return the combo box for selecting the task priority
-     */
-    public JComboBox<TaskPriority> getTaskPriorityComboBox() {
-        return taskPriorityComboBox;
-    }
-
-    /**
-     * Returns the label displaying the creation date of the selected task.
-     * <p>
-     * If no task is selected, the label will be empty.
-     *
-     * @return the label showing the creation date of the selected task
-     */
-    public JLabel getCreationDateLabel() {
-        return creationDateLabel;
-    }
-
-    /**
      * Returns the button for deleting all tasks in the task list.
-     * 
+     *
      * @return the button for deleting all tasks
      */
     public JButton getDeleteAllButton() {
@@ -691,29 +687,29 @@ public class TaskManagerView extends JPanel implements IView {
 
     /**
      * Returns the sorting strategy for sorting tasks by creation date (oldest to newest).
-     * 
+     *
      * @return the sorting strategy for sorting tasks by creation date
      */
-    public ISortingStrategy getSortByCreationStrat() {
-        return sortByCreationStrat;
+    public ISortingStrategy getSortByStateStrat() {
+        return sortByTitleStrat;
     }
 
     /**
      * Returns the sorting strategy for sorting tasks by priority (highest to lowest).
-     * 
+     *
      * @return the sorting strategy for sorting tasks by priority
      */
-    public ISortingStrategy getSortByPriorityStrat() {
-        return sortByPriorityStrat;
+    public ISortingStrategy getSortByIdStrat() {
+        return sortById;
     }
 
     /**
      * Returns the sorting strategy for sorting tasks by title (lexicographical order).
-     * 
+     *
      * @return the sorting strategy for sorting tasks by title
      */
-    public ISortingStrategy getSortByTitleStrat() {
-        return sortByTitleStrat;
+    public ISortingStrategy getSortByStateStrat() {
+        return sortByState;
     }
 
     /**

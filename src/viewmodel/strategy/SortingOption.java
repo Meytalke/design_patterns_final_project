@@ -7,10 +7,10 @@ package viewmodel.strategy;
 public enum SortingOption {
 
     /** Sort by the task's creation date (oldest to newest). */
-    CREATION_DATE("Creation Date"),
+    ID("Id"),
 
     /** Sort by the task's priority. */
-    PRIORITY("Priority"),
+    STATE("State"),
 
     /** Sort by the task's title (lexicographical). */
     TITLE("Title"),;

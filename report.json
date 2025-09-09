@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "totalTasksDTO": [
     {
       "type": "Completed",
@@ -79,4 +80,9 @@
       "creationDate": "Sep 7, 2025, 11:28:31 PM"
     }
   ]
+=======
+  "completedTasks": 0,
+  "inProgressTasks": 0,
+  "todoTasks": 2
+>>>>>>> master
 }
