@@ -1,15 +1,15 @@
 // TasksViewModelTest.java
 package test.viewModel;
 
-import model.dao.ITasksDAO;
-import model.dao.TasksDAOException;
-import model.task.ITask;
-import model.task.Task;
-import model.task.ToDoState;
+import il.ac.hit.project.main.model.dao.ITasksDAO;
+import il.ac.hit.project.main.model.dao.TasksDAOException;
+import il.ac.hit.project.main.model.task.ITask;
+import il.ac.hit.project.main.model.task.Task;
+import il.ac.hit.project.main.model.task.ToDoState;
 import org.junit.jupiter.api.Test;
-import view.IView;
-import view.MessageType;
-import viewmodel.TasksViewModel;
+import il.ac.hit.project.main.view.IView;
+import il.ac.hit.project.main.view.MessageType;
+import il.ac.hit.project.main.viewmodel.TasksViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,6 @@ import java.util.concurrent.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
-import static view.MessageType.ERROR;
 
 public class TasksViewModelTest {
 

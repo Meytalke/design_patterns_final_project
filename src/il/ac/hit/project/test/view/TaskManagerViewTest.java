@@ -1,9 +1,8 @@
 package test.view;
 
-import model.task.TaskState;
-import model.task.ToDoState;
-import model.task.InProgressState;
-import view.TaskManagerView;
+import il.ac.hit.project.main.model.task.TaskState;
+import il.ac.hit.project.main.model.task.ToDoState;
+import il.ac.hit.project.main.view.TaskManagerView;
 
 import javax.swing.*;
 

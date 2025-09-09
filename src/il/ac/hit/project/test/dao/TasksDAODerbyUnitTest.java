@@ -1,15 +1,13 @@
 package test.model.dao;
 
-import model.dao.TasksDAODerby;
-import model.dao.TasksDAOException;
-import model.task.ITask;
-import model.task.Task;
-import model.task.ToDoState;
+import il.ac.hit.project.main.model.dao.TasksDAODerby;
+import il.ac.hit.project.main.model.dao.TasksDAOException;
+import il.ac.hit.project.main.model.task.ITask;
+import il.ac.hit.project.main.model.task.Task;
+import il.ac.hit.project.main.model.task.ToDoState;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -56,17 +54,14 @@ class TasksDAODerbyUnitTest {
         Statement mockedStatement = mock(Statement.class);
         ResultSet mockedResultSet = mock(ResultSet.class);
 
-        // מדמה את יצירת הטבלה על מנת שהבנאי לא יזרוק חריגה
         when(mockedConnection.createStatement()).thenReturn(mockedStatement);
         when(mockedStatement.execute(anyString())).thenReturn(true);
 
-        // מדמה את הוספת המשימה בהצלחה
         when(mockedStatement.executeUpdate(anyString(), eq(Statement.RETURN_GENERATED_KEYS))).thenReturn(1);
 
-        // מדמה את ה-ResultSet שמוחזר מ-getGeneratedKeys
         when(mockedStatement.getGeneratedKeys()).thenReturn(mockedResultSet);
-        when(mockedResultSet.next()).thenReturn(true, false); // מדמה שיש שורה אחת של מפתח שנוצר
-        when(mockedResultSet.getInt(1)).thenReturn(100); // מדמה את מזהה המשימה החדש
+        when(mockedResultSet.next()).thenReturn(true, false);
+        when(mockedResultSet.getInt(1)).thenReturn(100);
 
         TasksDAODerby tasksDAODerby = new TasksDAODerby(mockedConnection);
 
@@ -74,7 +69,6 @@ class TasksDAODerbyUnitTest {
         ITask task = new Task(0, "New Task", "Description", new ToDoState());
         assertDoesNotThrow(() -> tasksDAODerby.addTask(task));
 
-        // ודא שהמתודה updateTask נקראה עם הפרמטרים הנכונים
         verify(mockedStatement).executeUpdate(anyString(), eq(Statement.RETURN_GENERATED_KEYS));
     }
 }
