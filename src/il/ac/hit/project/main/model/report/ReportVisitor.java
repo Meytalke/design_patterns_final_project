@@ -31,9 +31,9 @@ public class ReportVisitor {
     public void visit(Task task) {
         TaskState state = task.getState();
         switch (state) {
-            case CompletedState completedState -> completedTasks++;
-            case InProgressState inProgressState -> inProgressTasks++;
-            case ToDoState toDoState -> todoTasks++;
+            case CompletedState _ -> completedTasks++;
+            case InProgressState _ -> inProgressTasks++;
+            case ToDoState _ -> todoTasks++;
             case null, default -> throw new IllegalStateException("Unknown task state: " + state);
         }
     }

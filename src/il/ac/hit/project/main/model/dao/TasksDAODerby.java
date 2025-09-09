@@ -3,7 +3,12 @@ package il.ac.hit.project.main.model.dao;
 import il.ac.hit.project.main.model.task.*;
 
 //Sql imports
-import java.sql.*;
+import java.sql.DriverManager;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
 
 //Util imports
 import java.util.ArrayList;
@@ -168,7 +173,7 @@ public class TasksDAODerby implements ITasksDAO {
             String sql = "SELECT * FROM tasks WHERE id = " + id;
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
-            //If we find any results... we return to a task.
+            //If we find any results... we return a task.
             if (resultSet.next()) {
                 return new Task(
                         resultSet.getInt("id"),

@@ -36,7 +36,7 @@ public class TaskManagerView extends JPanel implements IView {
     //Task title and description input field and textArea
     private final JTextField taskTitleInputF;
     private final JTextArea descriptionInputTA;
-    //Control buttons - addTask, updateTask, deleteTask, deleteAllTasks, report, up, down
+    //Control buttons - addTask, updateTask, deleteTask, deleteAllTasks, report, up, down ,deselect
     private final JButton addButton;
     private final JButton updateButton;
     private final JButton deleteButton;
