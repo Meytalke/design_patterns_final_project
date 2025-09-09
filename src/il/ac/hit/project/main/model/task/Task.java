@@ -1,7 +1,5 @@
-package model.task;
+package il.ac.hit.project.main.model.task;
 
-
-import java.util.Date;
 
 /**
  * Mutable implementation of {@link ITask} representing a single task item.

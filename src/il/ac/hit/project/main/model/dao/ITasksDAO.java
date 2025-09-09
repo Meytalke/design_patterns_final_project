@@ -1,6 +1,6 @@
-package model.dao;
+package il.ac.hit.project.main.model.dao;
 
-import model.task.ITask;
+import il.ac.hit.project.main.model.task.ITask;
 
 /**
  * Data-access contract for working with tasks in a persistence layer.

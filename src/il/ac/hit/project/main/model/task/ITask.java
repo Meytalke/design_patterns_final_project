@@ -1,4 +1,4 @@
-package model.task;
+package il.ac.hit.project.main.model.task;
 
 /**
  * Read-only contract for a task domain object.

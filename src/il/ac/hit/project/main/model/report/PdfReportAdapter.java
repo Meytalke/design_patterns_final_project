@@ -1,6 +1,6 @@
-package model.report;
+package il.ac.hit.project.main.model.report;
 
-import model.report.external.PdfBoxReportGenerator;
+import il.ac.hit.project.main.model.report.external.PdfBoxReportGenerator;
 
 import java.io.IOException;
 import java.util.List;

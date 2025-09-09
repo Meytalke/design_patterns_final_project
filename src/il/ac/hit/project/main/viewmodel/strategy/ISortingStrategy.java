@@ -1,6 +1,6 @@
-package viewmodel.strategy;
+package il.ac.hit.project.main.viewmodel.strategy;
 
-import model.task.ITask;
+import il.ac.hit.project.main.model.task.ITask;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
-package view;
+package il.ac.hit.project.main.view;
 
-import model.task.ITask;
+import il.ac.hit.project.main.model.task.ITask;
 import javax.swing.*;
 import java.awt.*;
 import java.text.SimpleDateFormat;

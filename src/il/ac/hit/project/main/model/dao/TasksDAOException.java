@@ -1,8 +1,8 @@
-package model.dao;
+package il.ac.hit.project.main.model.dao;
 
 /**
  * A checked exception that is thrown when there is an error in the {@link
- * model.dao.ITasksDAO} implementation.
+ * il.ac.hit.project.main.model.dao.ITasksDAO} implementation.
  *
  */
 public class TasksDAOException extends Exception {

@@ -1,4 +1,4 @@
-package view.ObservableProperty;
+package il.ac.hit.project.main.view.ObservableProperty;
 
 /*
  * IPropertyObserver is a functional interface.

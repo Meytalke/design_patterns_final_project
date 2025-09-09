@@ -1,6 +1,6 @@
-package model.report;
+package il.ac.hit.project.main.model.report;
 
-import model.report.external.JsonReportGenerator;
+import il.ac.hit.project.main.model.report.external.JsonReportGenerator;
 
 import java.io.IOException;
 

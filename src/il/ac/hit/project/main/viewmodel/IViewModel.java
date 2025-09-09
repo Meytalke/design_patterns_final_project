@@ -1,20 +1,20 @@
-package viewmodel;
+package il.ac.hit.project.main.viewmodel;
 
-import model.dao.ITasksDAO;
-import view.IView;
+import il.ac.hit.project.main.model.dao.ITasksDAO;
+import il.ac.hit.project.main.view.IView;
 
 /**
  * MVVM ViewModel contract.
  * <p>
  * Coordinates between the UI-facing {@link IView} and the data layer ({@link ITasksDAO}),
- * exposes observer registration for view-related updates, and provides lifecycle hooks
- * for wiring the view and the model.
+ * exposes observer registration for il.ac.hit.project.main.view-related updates, and provides lifecycle hooks
+ * for wiring the il.ac.hit.project.main.view and the il.ac.hit.project.main.model.
  *
  * <h3>Typical lifecycle</h3>
  * <ol>
  *   <li>Create a ViewModel implementation.</li>
- *   <li>Provide the model via {@link #setModel(ITasksDAO)}.</li>
- *   <li>Attach the view via {@link #setView(IView)}.</li>
+ *   <li>Provide the il.ac.hit.project.main.model via {@link #setModel(ITasksDAO)}.</li>
+ *   <li>Attach the il.ac.hit.project.main.view via {@link #setView(IView)}.</li>
  * </ol>
  *
  * <h3>Threading</h3>
@@ -26,36 +26,36 @@ import view.IView;
  */
 public interface IViewModel {
     /**
-     * Associates the ViewModel with a view.
+     * Associates the ViewModel with a il.ac.hit.project.main.view.
      *
-     * <p>Setting a new view replaces the previous association. Implementations may
-     * perform initial synchronization (e.g., pushing the current state to the view).</p>
+     * <p>Setting a new il.ac.hit.project.main.view replaces the previous association. Implementations may
+     * perform initial synchronization (e.g., pushing the current state to the il.ac.hit.project.main.view).</p>
      *
-     * @param view the view to attach; must not be null
+     * @param view the il.ac.hit.project.main.view to attach; must not be null
      */
     void setView(IView view);
 
     /**
      * Provides the backing data-access object.
      *
-     * <p>Setting a new model replaces the previous association. Implementations should
+     * <p>Setting a new il.ac.hit.project.main.model replaces the previous association. Implementations should
      * not assume ownership beyond the DAO's public contract.</p>
      *
-     * @param tasksDAO the model/DAO to use; must not be null
+     * @param tasksDAO the il.ac.hit.project.main.model/DAO to use; must not be null
      */
     void setModel(ITasksDAO tasksDAO);
 
     /**
-     * Returns the currently associated view, if any.
+     * Returns the currently associated il.ac.hit.project.main.view, if any.
      *
-     * @return the view, or null if none has been set
+     * @return the il.ac.hit.project.main.view, or null if none has been set
      */
     IView getView();
 
     /**
      * Returns the currently associated data-access object, if any.
      *
-     * @return the model/DAO, or null if none has been set
+     * @return the il.ac.hit.project.main.model/DAO, or null if none has been set
      */
     ITasksDAO getModel();
 }

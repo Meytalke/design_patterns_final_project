@@ -1,10 +1,10 @@
-package viewmodel.strategy;
+package il.ac.hit.project.main.viewmodel.strategy;
 
-import model.task.ITask;
-import model.task.TaskState;
-import model.task.ToDoState;
-import model.task.InProgressState;
-import model.task.CompletedState;
+import il.ac.hit.project.main.model.task.ITask;
+import il.ac.hit.project.main.model.task.TaskState;
+import il.ac.hit.project.main.model.task.ToDoState;
+import il.ac.hit.project.main.model.task.InProgressState;
+import il.ac.hit.project.main.model.task.CompletedState;
 
 import java.util.Comparator;
 import java.util.List;

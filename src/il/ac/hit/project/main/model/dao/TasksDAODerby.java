@@ -1,6 +1,6 @@
-package model.dao;
+package il.ac.hit.project.main.model.dao;
 
-import model.task.*;
+import il.ac.hit.project.main.model.task.*;
 
 //Sql imports
 import java.sql.*;
@@ -9,8 +9,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.task.TaskState;
-import model.task.ToDoState;
+import il.ac.hit.project.main.model.task.TaskState;
+import il.ac.hit.project.main.model.task.ToDoState;
 
 /**
  * A concrete implementation of the {@code ITasksDAO} interface that interacts with

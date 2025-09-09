@@ -1,4 +1,4 @@
-package model.report.external;
+package il.ac.hit.project.main.model.report.external;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;

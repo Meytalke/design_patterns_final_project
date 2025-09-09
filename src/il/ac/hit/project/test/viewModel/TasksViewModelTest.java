@@ -1,5 +1,5 @@
 // TasksViewModelTest.java
-package test.viewModel;
+package il.ac.hit.project.test.viewModel;
 
 import il.ac.hit.project.main.model.dao.ITasksDAO;
 import il.ac.hit.project.main.model.dao.TasksDAOException;

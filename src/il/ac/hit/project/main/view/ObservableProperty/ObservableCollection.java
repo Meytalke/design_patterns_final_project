@@ -1,4 +1,4 @@
-package view.ObservableProperty;
+package il.ac.hit.project.main.view.ObservableProperty;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,6 @@
-package model.report;
+package il.ac.hit.project.main.model.report;
 
-import model.task.*;
+import il.ac.hit.project.main.model.task.*;
 
 /**
  * A visitor that aggregates a task counting by state for reporting.

@@ -1,4 +1,4 @@
-package model.report;
+package il.ac.hit.project.main.model.report;
 
 /**
  * Contract for exporting report data (e.g., CSV, JSON, PDF).

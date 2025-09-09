@@ -1,4 +1,4 @@
-package model.report;
+package il.ac.hit.project.main.model.report;
 
 /**
  * Immutable snapshot of a task counts per status for export.

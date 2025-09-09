@@ -1,4 +1,4 @@
-package model.report.external;
+package il.ac.hit.project.main.model.report.external;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

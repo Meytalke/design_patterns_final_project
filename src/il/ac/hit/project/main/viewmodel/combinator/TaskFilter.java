@@ -1,6 +1,6 @@
-package viewmodel.combinator;
+package il.ac.hit.project.main.viewmodel.combinator;
 
-import model.task.*;
+import il.ac.hit.project.main.model.task.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;

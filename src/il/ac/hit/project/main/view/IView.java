@@ -1,7 +1,7 @@
-package view;
+package il.ac.hit.project.main.view;
 
-import model.task.ITask;
-import viewmodel.IViewModel;
+import il.ac.hit.project.main.model.task.ITask;
+import il.ac.hit.project.main.viewmodel.IViewModel;
 
 import java.util.List;
 
@@ -13,8 +13,8 @@ import java.util.List;
  *
  * <h3>Typical lifecycle</h3>
  * <ol>
- *   <li>Create the view instance.</li>
- *   <li>Provide a view model via {@link #setViewModel(IViewModel)}.</li>
+ *   <li>Create the il.ac.hit.project.main.view instance.</li>
+ *   <li>Provide a il.ac.hit.project.main.view il.ac.hit.project.main.model via {@link #setViewModel(IViewModel)}.</li>
  *   <li>Invoke {@link #start()} to display and interact with the UI.</li>
  * </ol>
  *
@@ -25,28 +25,28 @@ import java.util.List;
 public interface IView {
 
     /**
-     * Returns the view model currently associated with this view.
+     * Returns the il.ac.hit.project.main.view il.ac.hit.project.main.model currently associated with this il.ac.hit.project.main.view.
      * <p>
-     * Implementations may return {@code null} if a view model has not yet been assigned.
+     * Implementations may return {@code null} if a il.ac.hit.project.main.view il.ac.hit.project.main.model has not yet been assigned.
      *
      * @return the current {@link IViewModel}, or {@code null} if none is set
      */
     IViewModel getViewModel();
 
     /**
-     * Associates a view model with this view and (re)binds UI elements as needed.
+     * Associates a il.ac.hit.project.main.view il.ac.hit.project.main.model with this il.ac.hit.project.main.view and (re)binds UI elements as needed.
      * <p>
-     * Calling this method more than once should update bindings to the new model.
+     * Calling this method more than once should update bindings to the new il.ac.hit.project.main.model.
      *
-     * @param viewModel the view model to bind; expected to be non-null
+     * @param viewModel the il.ac.hit.project.main.view il.ac.hit.project.main.model to bind; expected to be non-null
      * @throws IllegalArgumentException if {@code viewModel} is {@code null} (implementations may enforce this)
      */
     void setViewModel(IViewModel viewModel);
 
     /**
-     * Starts the view, creating UI bindings and presenting the interface to the user.
+     * Starts the il.ac.hit.project.main.view, creating UI bindings and presenting the interface to the user.
      * <p>
-     * This method is typically called once per view instance. Later calls may
+     * This method is typically called once per il.ac.hit.project.main.view instance. Later calls may
      * be ignored or may result in implementation-defined behavior.
      */
     void start();

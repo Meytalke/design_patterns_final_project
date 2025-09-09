@@ -1,4 +1,4 @@
-package viewmodel.strategy;
+package il.ac.hit.project.main.viewmodel.strategy;
 
 /**
  * Enumerates the available sorting options exposed to the UI.

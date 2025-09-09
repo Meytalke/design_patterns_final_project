@@ -1,9 +1,9 @@
-package view;
+package il.ac.hit.project.main.view;
 
-import model.task.*;
-import viewmodel.IViewModel;
-import viewmodel.TasksViewModel;
-import viewmodel.strategy.*;
+import il.ac.hit.project.main.model.task.*;
+import il.ac.hit.project.main.viewmodel.IViewModel;
+import il.ac.hit.project.main.viewmodel.TasksViewModel;
+import il.ac.hit.project.main.viewmodel.strategy.*;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -11,7 +11,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 
 /**
- * Swing-based view for managing tasks in an MVVM setup.
+ * Swing-based il.ac.hit.project.main.view for managing tasks in an MVVM setup.
  * <p>
  * This component composes the task management UI, including:
  * <ul>
@@ -69,11 +69,11 @@ public class TaskManagerView extends JPanel implements IView {
     private IViewModel viewModel;
 
     /**
-     * Constructs the task manager view and initializes the UI hierarchy.
+     * Constructs the task manager il.ac.hit.project.main.view and initializes the UI hierarchy.
      * <p>
      * This constructor creates and lays out all Swing components, configures renderers for
      * {@link TaskState} selector, initializes the sorting and filtering
-     * controls, and prepares the list model for displaying tasks.
+     * controls, and prepares the list il.ac.hit.project.main.model for displaying tasks.
      * <p>
      */
     public TaskManagerView() {
@@ -409,7 +409,7 @@ public class TaskManagerView extends JPanel implements IView {
         searchDescriptionInput.addActionListener(e -> applyAllFilters());
         searchIdInput.addActionListener(e -> applyAllFilters());
 
-        // Initial data load: fetch tasks into the ViewModel (and indirectly refresh the view via observers/bindings).
+        // Initial data load: fetch tasks into the ViewModel (and indirectly refresh the il.ac.hit.project.main.view via observers/bindings).
         viewModel.loadTasks();
     }
 

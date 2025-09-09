@@ -1,4 +1,4 @@
-package view.ObservableProperty;
+package il.ac.hit.project.main.view.ObservableProperty;
 
 public interface IObservableProperty<T> {
     T get();

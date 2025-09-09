@@ -1,4 +1,4 @@
-package test.view;
+package il.ac.hit.project.test.view;
 
 import il.ac.hit.project.main.model.task.TaskState;
 import il.ac.hit.project.main.model.task.ToDoState;

@@ -1,4 +1,4 @@
-package model.task;
+package il.ac.hit.project.main.model.task;
 
 /**
  * Represents a task state with forward/backward transitions.

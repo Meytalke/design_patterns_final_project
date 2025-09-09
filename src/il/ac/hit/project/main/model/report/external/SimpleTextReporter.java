@@ -1,4 +1,4 @@
-package model.report.external;
+package il.ac.hit.project.main.model.report.external;
 
 /**
  * A simple text-based reporter for generating console output reports.

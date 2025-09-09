@@ -1,4 +1,4 @@
-package model.task;
+package il.ac.hit.project.main.model.task;
 
 import java.util.Objects;
 

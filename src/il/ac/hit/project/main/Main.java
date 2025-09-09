@@ -1,12 +1,13 @@
+package il.ac.hit.project.main;
 
-import model.dao.ITasksDAO;
-import model.dao.TasksDAODerby;
-import model.dao.TasksDAOException;
-import model.dao.TasksDAOProxy;
-import view.IView;
-import view.TaskManagerView;
-import viewmodel.IViewModel;
-import viewmodel.TasksViewModel;
+import il.ac.hit.project.main.model.dao.ITasksDAO;
+import il.ac.hit.project.main.model.dao.TasksDAODerby;
+import il.ac.hit.project.main.model.dao.TasksDAOException;
+import il.ac.hit.project.main.model.dao.TasksDAOProxy;
+import il.ac.hit.project.main.view.IView;
+import il.ac.hit.project.main.view.TaskManagerView;
+import il.ac.hit.project.main.viewmodel.IViewModel;
+import il.ac.hit.project.main.viewmodel.TasksViewModel;
 
 import javax.swing.*;
 import java.sql.DriverManager;
@@ -24,7 +25,7 @@ import java.sql.SQLException;
  * <ol>
  *   <li>Obtain a singleton {@link ITasksDAO} implementation (Derby-backed).</li>
  *   <li>Wrap it with {@link TasksDAOProxy} for caching.</li>
- *   <li>Create the {@link view.TaskManagerView} and {@link viewmodel.TasksViewModel}.</li>
+ *   <li>Create the {@link il.ac.hit.project.main.view.TaskManagerView} and {@link il.ac.hit.project.main.viewmodel.TasksViewModel}.</li>
  *   <li>Wire ViewModel ↔ View and start the UI on the EDT.</li>
  * </ol>
  *

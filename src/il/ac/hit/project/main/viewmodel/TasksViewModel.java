@@ -1,37 +1,34 @@
-package viewmodel;
+package il.ac.hit.project.main.viewmodel;
 
-import model.dao.ITasksDAO;
-import model.dao.TasksDAOException;
-import model.report.*;
-import model.task.ITask;
-import model.task.Task;
-import model.task.TaskState;
-import model.task.ToDoState;
-import view.MessageType;
-import view.ObservableProperty.IObservableCollection;
-import view.ObservableProperty.IPropertyObserver;
-import view.ObservableProperty.IObservableProperty;
-import view.ObservableProperty.ObservableCollection;
-import view.ObservableProperty.ObservableProperty;
-import view.TaskManagerView;
-import view.IView;
-import viewmodel.combinator.TaskFilter;
-import viewmodel.strategy.SortByIDStrategy;
-import viewmodel.strategy.ISortingStrategy;
+import il.ac.hit.project.main.model.dao.ITasksDAO;
+import il.ac.hit.project.main.model.dao.TasksDAOException;
+import il.ac.hit.project.main.model.report.*;
+import il.ac.hit.project.main.model.task.ITask;
+import il.ac.hit.project.main.model.task.Task;
+import il.ac.hit.project.main.model.task.TaskState;
+import il.ac.hit.project.main.model.task.ToDoState;
+import il.ac.hit.project.main.view.MessageType;
+import il.ac.hit.project.main.view.ObservableProperty.IObservableCollection;
+import il.ac.hit.project.main.view.ObservableProperty.IPropertyObserver;
+import il.ac.hit.project.main.view.ObservableProperty.IObservableProperty;
+import il.ac.hit.project.main.view.ObservableProperty.ObservableCollection;
+import il.ac.hit.project.main.view.ObservableProperty.ObservableProperty;
+import il.ac.hit.project.main.view.IView;
+import il.ac.hit.project.main.viewmodel.combinator.TaskFilter;
+import il.ac.hit.project.main.viewmodel.strategy.SortByIDStrategy;
+import il.ac.hit.project.main.viewmodel.strategy.ISortingStrategy;
 
 
-import javax.swing.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static view.MessageType.ERROR;
+import static il.ac.hit.project.main.view.MessageType.ERROR;
 
 /**
  * ViewModel that coordinates between the View and the Tasks data layer in an MVVM architecture.
@@ -56,7 +53,7 @@ import static view.MessageType.ERROR;
  *
  * <h3>Lifecycle</h3>
  * <ul>
- *   <li>Provide the DAO and view via the constructor or via setters.</li>
+ *   <li>Provide the DAO and il.ac.hit.project.main.view via the constructor or via setters.</li>
  *   <li>Invoke {@link #shutdown()} when the ViewModel is no longer needed to stop the executor.</li>
  * </ul>
  *
@@ -68,7 +65,7 @@ import static view.MessageType.ERROR;
  */
 public class TasksViewModel implements IViewModel {
 
-    // The currently attached view. Maybe null until explicitly set.
+    // The currently attached il.ac.hit.project.main.view. Maybe null until explicitly set.
     private IView view;
 
     // The data-access object used to persist and retrieve tasks.
@@ -110,7 +107,7 @@ public class TasksViewModel implements IViewModel {
      * sets the default sorting strategy, and triggers an initial asynchronous load of tasks.
      *
      * @param tasksDAO the DAO used for persistence; must not be null
-     * @param view     the view to associate; must not be null
+     * @param view     the il.ac.hit.project.main.view to associate; must not be null
      */
     public TasksViewModel(ITasksDAO tasksDAO, IView view) {
         setModel(tasksDAO);
@@ -133,9 +130,9 @@ public class TasksViewModel implements IViewModel {
 
 
     /**
-     * Associates this ViewModel with a view.
+     * Associates this ViewModel with a il.ac.hit.project.main.view.
      *
-     * @param view the view to attach; must not be null
+     * @param view the il.ac.hit.project.main.view to attach; must not be null
      */
     @Override
     public void setView(IView view){
@@ -153,9 +150,9 @@ public class TasksViewModel implements IViewModel {
     }
 
     /**
-     * Returns the currently attached view, or null if none has been set.
+     * Returns the currently attached il.ac.hit.project.main.view, or null if none has been set.
      *
-     * @return the view, or null
+     * @return the il.ac.hit.project.main.view, or null
      */
     @Override
     public IView getView() {
