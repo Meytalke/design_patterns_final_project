@@ -183,9 +183,8 @@ public class TasksDAODerby implements ITasksDAO {
         } catch (SQLException e) {
             throw new TasksDAOException("Error retrieving task", e);
         }
-        /*If we haven't found any results, we throw an exception instead of
-        returning null to explicitly indicate that the task doesn't exist.*/
-        throw new TasksDAOException("Task not found");
+
+        return null;
     }
 
     /**

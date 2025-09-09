@@ -21,24 +21,18 @@ public class SortByStateStrategy implements ISortingStrategy {
      */
     @Override
     public void sort(List<ITask> tasks) {
-        tasks.sort(new Comparator<ITask>() {
-            @Override
-            public int compare(ITask task1, ITask task2) {
-                return Integer.compare(getRank(task1.getState()), getRank(task2.getState()));
+        tasks.sort(Comparator.comparingInt(task -> {
+            TaskState state = task.getState();
+            if (state instanceof ToDoState) {
+                return 1;
             }
-
-            private int getRank(TaskState state) {
-                if (state instanceof ToDoState) {
-                    return 1;
-                }
-                if (state instanceof InProgressState) {
-                    return 2;
-                }
-                if (state instanceof CompletedState) {
-                    return 3;
-                }
-                return 4;
+            if (state instanceof InProgressState) {
+                return 2;
             }
-        });
+            if (state instanceof CompletedState) {
+                return 3;
+            }
+            return 4;
+        }));
     }
 }

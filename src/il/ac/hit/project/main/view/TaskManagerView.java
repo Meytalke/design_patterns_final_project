@@ -31,40 +31,110 @@ import java.awt.*;
  */
 public class TaskManagerView extends JPanel implements IView {
 
+    /**
+     * The main application window.
+     */
     private final JFrame window;
+    /**
+     * The main content pane for the window.
+     */
     private final JPanel contentPane;
-    //Task title and description input field and textArea
+    /**
+     * Text field for entering the task title.
+     */
     private final JTextField taskTitleInputF;
+    /**
+     * Text area for entering the task description.
+     */
     private final JTextArea descriptionInputTA;
-    //Control buttons - addTask, updateTask, deleteTask, deleteAllTasks, report, up, down ,deselect
+    /**
+     * Button to add a new task.
+     */
     private final JButton addButton;
+    /**
+     * Button to update an existing task.
+     */
     private final JButton updateButton;
+    /**
+     * Button to delete the selected task.
+     */
     private final JButton deleteButton;
+    /**
+     * Button to delete all tasks.
+     */
     private final JButton deleteAllButton;
+    /**
+     * Button to generate a report.
+     */
     private final JButton reportButton;
-    private final JButton upButton,downButton;
+    /**
+     * Button to move a task up in the list.
+     */
+    private final JButton upButton;
+    /**
+     * Button to move a task down in the list.
+     */
+    private final JButton downButton;
+    /**
+     * Button to deselect the current task.
+     */
     private final JButton deselectButton;
-    //Task state in string value, convert to IState to control more accurate filtering
+    /**
+     * Combo box to filter tasks by state.
+     */
     private final JComboBox<String> stateFilterComboBox;
+    /**
+     * Combo box to select a sorting option.
+     */
     private final JComboBox<SortingOption> sortComboBox;
+    /**
+     * Combo box to select the report export format.
+     */
     private final JComboBox<String> exportFormatComboBox;
+    /**
+     * Combo box to select the task state.
+     */
     private final JComboBox<TaskState> taskStateComboBox;
+    /**
+     * The initial "To Do" state for a new task.
+     */
     private final TaskState selectedTaskState = new ToDoState();
-    //Task list in memory and a listModel list to store the tasks visually
+    /**
+     * The visual list component displaying tasks.
+     */
     private final JList<ITask> taskList;
+    /**
+     * The model for the task list.
+     */
     private DefaultListModel<ITask> listModel;
-
-    //Search specific regex fields
+    /**
+     * Text field for searching by title.
+     */
     private final JTextField searchTitleInput;
+    /**
+     * Text field for searching by description.
+     */
     private final JTextField searchDescriptionInput;
+    /**
+     * Text field for searching by ID.
+     */
     private final JTextField searchIdInput;
-
-    //Sorting strategies to shuffle through
+    /**
+     * Sorting strategy for sorting by ID.
+     */
     private final ISortingStrategy sortById =  new SortByIDStrategy();
+    /**
+     * Sorting strategy for sorting by state.
+     */
     private final ISortingStrategy sortByState =  new SortByStateStrategy();
+    /**
+     * Sorting strategy for sorting by title.
+     */
     private final ISortingStrategy sortByTitleStrat =  new SortByTitleStrategy();
 
-    //Interface over class
+    /**
+     * The associated ViewModel.
+     */
     private IViewModel viewModel;
 
     /**

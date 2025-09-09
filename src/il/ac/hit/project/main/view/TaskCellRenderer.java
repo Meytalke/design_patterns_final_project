@@ -14,11 +14,28 @@ import java.text.SimpleDateFormat;
  */
 public class TaskCellRenderer extends JPanel implements ListCellRenderer<ITask> {
 
+    /**
+     * Label for displaying the unique identifier of the task.
+     */
     private final JLabel idLabel;
+    /**
+     * Label for displaying the title of the task.
+     */
     private final JLabel titleLabel;
+    /**
+     * Label for displaying the description of the task.
+     */
     private final JLabel descriptionLabel;
+    /**
+     * Label for displaying the current state of the task.
+     */
     private final JLabel stateLabel;
 
+    /**
+     * Constructs a new TaskCellRenderer.
+     * <p>
+     * Initializes and lays out the various UI components used to render a single task item.
+     */
     public TaskCellRenderer() {
         setLayout(new BorderLayout(5, 5));
         setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));

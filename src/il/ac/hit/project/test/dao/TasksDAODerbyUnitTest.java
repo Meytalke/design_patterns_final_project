@@ -16,37 +16,45 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for the {@code TasksDAODerby} class using the Derby database.
+ * These tests verify the behavior of database operations and exception handling
+ * in various scenarios.
+ */
 class TasksDAODerbyUnitTest {
 
+    /**
+     * Tests that the getTasks method throws an exception when the database is invalid.
+     * It mocks a database connection to simulate a query failure.
+     *
+     * @throws SQLException      if a SQL error occurs during mocking.
+     * @throws TasksDAOException if the getTasks method throws the expected DAO exception.
+     */
     @Test
     void testGetTasks_withInvalidDatabase_throwsException() throws SQLException, TasksDAOException {
         // Arrange
         Connection mockedConnection = mock(Connection.class);
         Statement mockedStatement = mock(Statement.class);
 
-        // Fix: You need to mock the behavior of `createTableIfNotExists` within the constructor.
-        // The constructor's call to createStatement() and then execute() must be mocked to
-        // succeed, otherwise the test fails on initialization.
         when(mockedConnection.createStatement()).thenReturn(mockedStatement);
-        // We're mocking the behavior of `Statement.execute()` which is a boolean method, not void.
-        // So we use when(...).thenReturn(...)
         when(mockedStatement.execute(anyString())).thenReturn(true);
 
-        // Mock the behavior of `executeQuery` to throw an exception
         when(mockedStatement.executeQuery(anyString()))
                 .thenThrow(new SQLException("Simulated database query failure"));
 
-        // Inject the mocked connection into the TasksDAODerby class instance.
         TasksDAODerby tasksDAODerby = new TasksDAODerby(mockedConnection);
 
         // Act & Assert
-        // Assert that calling getTasks() throws the expected exception.
         assertThrows(TasksDAOException.class, tasksDAODerby::getTasks);
-
-        // Verify that the executeQuery method was called
         verify(mockedStatement).executeQuery(anyString());
     }
 
+    /**
+     * Tests the addTask method for a successful operation by mocking database interactions.
+     * It verifies that the method does not throw an exception.
+     *
+     * @throws Exception if an unexpected error occurs during the test.
+     */
     @Test
     void testAddTask_successful() throws Exception {
         // Arrange
@@ -54,17 +62,13 @@ class TasksDAODerbyUnitTest {
         Statement mockedStatement = mock(Statement.class);
         ResultSet mockedResultSet = mock(ResultSet.class);
 
-        // מדמה את יצירת הטבלה על מנת שהבנאי לא יזרוק חריגה
         when(mockedConnection.createStatement()).thenReturn(mockedStatement);
         when(mockedStatement.execute(anyString())).thenReturn(true);
 
-        // מדמה את הוספת המשימה בהצלחה
         when(mockedStatement.executeUpdate(anyString(), eq(Statement.RETURN_GENERATED_KEYS))).thenReturn(1);
-
-        // מדמה את ה-ResultSet שמוחזר מ-getGeneratedKeys
         when(mockedStatement.getGeneratedKeys()).thenReturn(mockedResultSet);
-        when(mockedResultSet.next()).thenReturn(true, false); // מדמה שיש שורה אחת של מפתח שנוצר
-        when(mockedResultSet.getInt(1)).thenReturn(100); // מדמה את מזהה המשימה החדש
+        when(mockedResultSet.next()).thenReturn(true, false);
+        when(mockedResultSet.getInt(1)).thenReturn(100);
 
         TasksDAODerby tasksDAODerby = new TasksDAODerby(mockedConnection);
 
@@ -72,7 +76,6 @@ class TasksDAODerbyUnitTest {
         ITask task = new Task(0, "New Task", "Description", new ToDoState());
         assertDoesNotThrow(() -> tasksDAODerby.addTask(task));
 
-        // ודא שהמתודה updateTask נקראה עם הפרמטרים הנכונים
         verify(mockedStatement).executeUpdate(anyString(), eq(Statement.RETURN_GENERATED_KEYS));
     }
 }
