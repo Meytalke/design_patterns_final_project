@@ -28,7 +28,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static il.ac.hit.project.main.java.view.MessageType.ERROR;
+import static il.ac.hit.project.main.view.MessageType.ERROR;
 
 /**
  * ViewModel that coordinates between the View and the Tasks data layer in an MVVM architecture.
@@ -233,7 +233,8 @@ public class TasksViewModel implements IViewModel {
                 // Success message: Operation completed successfully.
                 getView().showMessage("Task \"" + title + "\" added successfully!", MessageType.SUCCESS);
             } catch (TasksDAOException e) {
-                System.err.println("Error adding task: " + e.getMessage());
+                String message = "Error adding task: " + e.getMessage() + (e.getCause() != null ? "\nCause: " + e.getCause() : "");
+                System.err.println(message);
                 // Error message: The operation failed.
                 getView().showMessage("Error adding task: " + e.getMessage(), MessageType.ERROR);
             }
@@ -281,13 +282,13 @@ public class TasksViewModel implements IViewModel {
                 //Updating the task on DB and in memory by searching for it using its id.
                 getModel().updateTask(task);
                 getAllTasks().replaceAll(t -> t.getId() == id ? task : t);
-                loadTasks();
+                getTasksList().setValue(getAllTasks());
                 // Success message: Task updated successfully
                 getView().showMessage("Task \"" + newTitle + "\" updated successfully!", MessageType.SUCCESS);
 
             } catch (TasksDAOException e) {
-                System.err.println("Error updating task: " + e.getMessage());
-                getView().showMessage("Error updating task: " + e.getMessage(), MessageType.ERROR);
+                System.err.println("Error updating task: " + e.getMessage()+ ((e.getCause()!=null)? "\nCause: "+e.getCause(): ""));
+                getView().showMessage("Error updating task: " + e.getMessage() , MessageType.ERROR);
             }
         });
     }
@@ -296,7 +297,9 @@ public class TasksViewModel implements IViewModel {
      * Convenience handler that delegates to {@link #updateTask(int, String, String, TaskState)}.
      */
     public void updateButtonPressed(int id, String newTitle, String newDescription, TaskState newState) {
-        updateTask(id, newTitle, newDescription, newState);
+        if(id<0 || newTitle.isEmpty())
+            getView().showMessage("Please enter a title!", MessageType.ERROR);
+        else updateTask(id, newTitle, newDescription, newState);
     }
 
     /**
@@ -306,27 +309,7 @@ public class TasksViewModel implements IViewModel {
      * @param taskId the task identifier
      */
     public void moveTaskStateUp(int taskId) {
-        //Wrap DB calls with our service executor
-        getService().submit(() -> {
-            try {
-                Task task = (Task) getModel().getTask(taskId);
-                if (task == null) {
-                    getView().showMessage("Error: Task with ID " + taskId + " not found.", MessageType.ERROR);
-                    return;
-                }
-
-                task.setState(task.getState().next());
-                getModel().updateTask(task);
-
-                getAllTasks().replaceAll(t -> t.getId() == taskId ? task : t);
-                getTasksList().get().replaceAll(t -> t.getId() == taskId ? task : t);
-                getTasksList().notifyListeners();
-                getView().showMessage("Task state updated to " + task.getState().getDisplayName() + ".", MessageType.SUCCESS);
-            } catch (TasksDAOException e) {
-                System.err.println("Error updating task state: " + e.getMessage());
-                getView().showMessage("Error updating task state: " + e.getMessage(), MessageType.ERROR);
-            }
-        });
+        moveTaskState(taskId, 1);
     }
 
     /**
@@ -343,6 +326,18 @@ public class TasksViewModel implements IViewModel {
      * @param taskId the task identifier
      */
     public void moveTaskStateDown(int taskId) {
+        moveTaskState(taskId, 0);
+    }
+
+    /**
+     * Convenience handler that delegates to {@link #moveTaskStateDown(int)}.
+     */
+    public void downButtonPressed() {
+        moveTaskStateDown(getSelectedTask().get().getId());
+    }
+
+
+    private void moveTaskState(int taskId, int direction){
         //Wrap DB calls with our service executor
         getService().submit(() -> {
             try {
@@ -351,26 +346,23 @@ public class TasksViewModel implements IViewModel {
                     getView().showMessage("Error: Task with ID " + taskId + " not found.", MessageType.ERROR);
                     return;
                 }
+                //Down
+                if(direction == 0){
+                    task.setState(task.getState().previous());}
+                //Up
+                else if(direction == 1){
+                    task.setState(task.getState().next());}
 
-                task.setState(task.getState().previous());
                 getModel().updateTask(task);
 
                 getAllTasks().replaceAll(t -> t.getId() == taskId ? task : t);
-                getTasksList().get().replaceAll(t -> t.getId() == taskId ? task : t);
-                getTasksList().notifyListeners();
+                getTasksList().setValue(getAllTasks());
                 getView().showMessage("Task state updated to " + task.getState().getDisplayName() + ".", MessageType.SUCCESS);
             } catch (TasksDAOException e) {
                 System.err.println("Error updating task state: " + e.getMessage());
                 getView().showMessage("Error updating task state: " + e.getMessage(), MessageType.ERROR);
             }
         });
-    }
-
-    /**
-     * Convenience handler that delegates to {@link #moveTaskStateDown(int)}.
-     */
-    public void downButtonPressed() {
-        moveTaskStateDown(getSelectedTask().get().getId());
     }
 
     /**
@@ -384,10 +376,7 @@ public class TasksViewModel implements IViewModel {
             try {
                 getModel().deleteTask(id);
                 getAllTasks().removeIf(task -> task.getId() == id);
-                getTasksList().get().removeIf(task -> task.getId() == id);
-                getTasksList().notifyListeners();
-                //TODO: check if statement is useless
-                getTasks().removeIf(task -> task.getId() == id);
+                getTasksList().setValue(getAllTasks());
                 getView().showMessage("Task with ID " + id + " deleted successfully.", MessageType.SUCCESS);
             } catch (TasksDAOException e) {
                 System.err.println("Error deleting task: " + e.getMessage());
@@ -416,6 +405,7 @@ public class TasksViewModel implements IViewModel {
                 getTasksList().get().clear();
                 getTasksList().notifyListeners();
                 getView().showMessage("All tasks deleted successfully.", MessageType.SUCCESS);
+                //Let's reset the id value
             } catch (TasksDAOException e) {
                 System.err.println("Error deleting tasks: " + e.getMessage());
                 getView().showMessage("Error deleting all tasks: " + e.getMessage(), MessageType.ERROR);
@@ -435,29 +425,25 @@ public class TasksViewModel implements IViewModel {
     public void generateReport(String format) {
         //Wrap DB calls with our service executor
         getService().submit(() -> {
-            try {
-                ReportVisitor visitor = new ReportVisitor();
-                getAllTasks().forEach(task -> {
-                    if (task instanceof Task t) {
-                        visitor.visit(t);
-                    }
-                });
 
-                ReportData reportData = visitor.getReport();
-
-                IReportExporter exporter = exporters.get(format);
-
-                if (exporter != null) {
-                    String fileName = "report." + format.toLowerCase();
-                    exporter.export(reportData, fileName);
-                    getView().showMessage("Report generated successfully: " + fileName, MessageType.SUCCESS);
-                } else {
-                    System.err.println("Unsupported report format: " + format);
-                    getView().showMessage("Unsupported report format: " + format, MessageType.WARNING);
+            ReportVisitor visitor = new ReportVisitor();
+            getAllTasks().forEach(task -> {
+                if (task instanceof Task t) {
+                    visitor.visit(t);
                 }
-            } catch (Exception e) {
-                System.err.println("Error generating report: " + e.getMessage());
-                getView().showMessage("Error generating report: " + e.getMessage(), MessageType.ERROR);
+            });
+
+            ReportData reportData = visitor.getReport();
+
+            IReportExporter exporter = exporters.get(format);
+
+            if (exporter != null) {
+                String fileName = "report." + format.toLowerCase();
+                exporter.export(reportData, fileName);
+                getView().showMessage("Report generated successfully: " + fileName, MessageType.SUCCESS);
+            } else {
+                System.err.println("Unsupported report format: " + format);
+                getView().showMessage("Unsupported report format: " + format, MessageType.WARNING);
             }
         });
     }
@@ -523,7 +509,6 @@ public class TasksViewModel implements IViewModel {
 
         getTasksList().setValue(combinedFilter.filter(getAllTasks()));
         sortTasks();
-        getTasksList().notifyListeners();
     }
 
     public void setPropertyListeners(){
@@ -588,6 +573,10 @@ public class TasksViewModel implements IViewModel {
 
     public IObservableCollection<ITask> getTasksList() {
         return tasksList;
+    }
+
+    public Map<String, IReportExporter> getExporters() {
+        return exporters;
     }
 
     /**

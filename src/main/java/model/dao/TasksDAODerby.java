@@ -145,6 +145,7 @@ public class TasksDAODerby implements ITasksDAO {
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
 
+            //While (and if) we found any tasks....
             while (resultSet.next()) {
                 tasks.add(new Task(
                         resultSet.getInt("id"),
@@ -153,7 +154,15 @@ public class TasksDAODerby implements ITasksDAO {
                         stateFromString(resultSet.getString("state"))
                 ));
             }
-        } catch (SQLException e) {
+            //DB is empty, reset ID colum to 1
+            ResultSet rs = statement.executeQuery("VALUES IDENTITY_VAL_LOCAL()");
+            if(rs.next()) {
+                if(tasks.isEmpty() && rs.getLong(1)!=0 ) {
+                    statement.executeUpdate("ALTER TABLE tasks ALTER COLUMN id RESTART WITH 1");
+                }
+            }
+        }
+        catch (SQLException e) {
             throw new TasksDAOException("Error retrieving tasks", e);
         }
         // Convert a list to array
@@ -270,7 +279,12 @@ public class TasksDAODerby implements ITasksDAO {
         String sql = "DELETE FROM tasks";
         try {
             Statement statement = connection.createStatement(); 
-            statement.executeUpdate(sql);
+            int affectedRows = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+            if (affectedRows == 0)
+                throw new SQLException("Deleting tasks failed, no rows affected.");
+
+            // Reset auto-increment / identity column
+            statement.executeUpdate("ALTER TABLE tasks ALTER COLUMN id RESTART WITH 1");
         } catch (SQLException e) {
             throw new TasksDAOException("Error deleting all tasks", e);
         }

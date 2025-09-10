@@ -690,7 +690,7 @@ public class TaskManagerView extends JPanel implements IView {
      *
      * @return the sorting strategy for sorting tasks by creation date
      */
-    public ISortingStrategy getSortByStateStrat() {
+    public ISortingStrategy getSortByTitleStrat() {
         return sortByTitleStrat;
     }
 

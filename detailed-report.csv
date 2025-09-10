@@ -1,9 +1,2 @@
 ID,Title,Description,State,Priority,CreationDate
-3,test3,test3,Completed,Low,"Sep 6, 2025, 9:45:51 PM"
-1,test1,test1,In Progress,Medium,"Sep 6, 2025, 12:26:00 PM"
-8,Eat,Food,In Progress,High,"Sep 7, 2025, 11:28:31 PM"
-2,test2,test2,To Do,High,"Sep 6, 2025, 9:45:39 PM"
-4,test4,test4,To Do,Low,"Sep 6, 2025, 9:54:37 PM"
-5,test5,test5,To Do,Low,"Sep 6, 2025, 9:58:56 PM"
-6,test6,test6,To Do,Low,"Sep 6, 2025, 10:32:18 PM"
-7,test7,test7,To Do,Low,"Sep 6, 2025, 11:37:22 PM"
+1,Test,Desc,To Do

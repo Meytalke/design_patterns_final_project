@@ -74,7 +74,7 @@ public interface TaskFilter {
      * @return a filter selecting tasks in the given state
      * @throws IllegalArgumentException if {@code state} is not recognized
      */
-    static TaskFilter byState(String state) {
+    static TaskFilter byState(String state) throws IllegalArgumentException {
         if (state == null || "All".equalsIgnoreCase(state)) {
             return tasks -> tasks;
         }

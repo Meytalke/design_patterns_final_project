@@ -1,12 +1,11 @@
-package model.dao;
+package il.ac.hit.project.test.model.dao;
 
-import model.dao.TasksDAODerby;
-import model.dao.TasksDAOException;
-import model.task.ITask;
-import model.task.Task;
-import model.task.ToDoState;
+import il.ac.hit.project.main.model.dao.TasksDAODerby;
+import il.ac.hit.project.main.model.dao.TasksDAOException;
+import il.ac.hit.project.main.model.task.ITask;
+import il.ac.hit.project.main.model.task.Task;
+import il.ac.hit.project.main.model.task.ToDoState;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,9 +25,12 @@ class TasksDAODerbyUnitTest {
         Connection mockedConnection = mock(Connection.class);
         Statement mockedStatement = mock(Statement.class);
 
-        // Fix: You need to mock the behavior of `createTableIfNotExists` within the constructor.
-        // The constructor's call to createStatement() and then execute() must be mocked to
-        // succeed, otherwise the test fails on initialization.
+        /*
+        FIXME:
+            You need to mock the behavior of `createTableIfNotExists` within the constructor.
+            The constructor's call to createStatement() and then execute() must be mocked to
+            succeed, otherwise the test fails on initialization.
+        */
         when(mockedConnection.createStatement()).thenReturn(mockedStatement);
         // We're mocking the behavior of `Statement.execute()` which is a boolean method, not void.
         // So we use when(...).thenReturn(...)
@@ -48,7 +50,6 @@ class TasksDAODerbyUnitTest {
         // Verify that the executeQuery method was called
         verify(mockedStatement).executeQuery(anyString());
     }
-
     @Test
     void testAddTask_successful() throws Exception {
         // Arrange
