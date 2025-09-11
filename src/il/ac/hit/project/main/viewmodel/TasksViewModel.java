@@ -234,6 +234,10 @@ public class TasksViewModel implements IViewModel {
                 getView().showMessage("Task \"" + title + "\" added successfully!", MessageType.SUCCESS);
             } catch (TasksDAOException e) {
                 System.err.println("Error adding task: " + e.getMessage());
+                // This line is missing in your code, so we add it here.
+                if (e.getCause() != null) {
+                    System.err.println("Cause: " + e.getCause());
+                }
                 // Error message: The operation failed.
                 getView().showMessage("Error adding task: " + e.getMessage(), MessageType.ERROR);
             }
@@ -590,6 +594,9 @@ public class TasksViewModel implements IViewModel {
         return tasksList;
     }
 
+    public Map<String, IReportExporter> getExporters() {
+        return exporters;
+    }
     /**
      * Returns the current set sorting strategy
      *

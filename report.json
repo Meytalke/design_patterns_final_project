@@ -15,27 +15,27 @@
   ],
   "tasksDTO": [
     {
-      "ID": 3,
-      "title": "test3",
-      "description": "test3",
-      "state": "Completed"
-    },
-    {
       "ID": 2,
       "title": "test2",
       "description": "test2",
-      "state": "In Progress"
+      "state": "Completed"
     },
     {
       "ID": 1,
-      "title": "test",
-      "description": "test",
+      "title": "test1",
+      "description": "test1",
+      "state": "In Progress"
+    },
+    {
+      "ID": 3,
+      "title": "test3",
+      "description": "test3",
       "state": "To Do"
     },
     {
       "ID": 4,
-      "title": "aa",
-      "description": "aa",
+      "title": "test",
+      "description": "test",
       "state": "To Do"
     }
   ]
