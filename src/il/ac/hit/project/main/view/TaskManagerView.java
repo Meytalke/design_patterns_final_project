@@ -778,7 +778,29 @@ public class TaskManagerView extends JPanel implements IView {
      *
      * @return the selected task state
      */
+
     public TaskState getSelectedTaskState() {return selectedTaskState;}
-    public JList<ITask> getTaskList() {return taskList;}
-    public JComboBox<String> getStateFilterComboBox() {return stateFilterComboBox;}
+    /**
+     * Returns the visual list component that displays tasks.
+     * <p>
+     * This method is primarily used by tests and the view's internal logic
+     * to access and manipulate the JList component directly.
+     *
+     * @return the JList component displaying the tasks.
+     */
+    public JList<ITask> getTaskList() {
+        return taskList;
+    }
+
+    /**
+     * Returns the combo box used to filter tasks by their state.
+     * <p>
+     * This method is used by the view's event listeners and tests to
+     * retrieve the currently selected filter state.
+     *
+     * @return the JComboBox component for state filtering.
+     */
+    public JComboBox<String> getStateFilterComboBox() {
+        return stateFilterComboBox;
+    }
 }
