@@ -779,4 +779,6 @@ public class TaskManagerView extends JPanel implements IView {
      * @return the selected task state
      */
     public TaskState getSelectedTaskState() {return selectedTaskState;}
+    public JList<ITask> getTaskList() {return taskList;}
+    public JComboBox<String> getStateFilterComboBox() {return stateFilterComboBox;}
 }
