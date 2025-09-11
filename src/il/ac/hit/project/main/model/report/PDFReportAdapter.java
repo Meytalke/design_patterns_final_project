@@ -15,7 +15,7 @@ import java.util.List;
  * <p>
  * Roles:
  * - Target: IReportExporter
- * - Adapter: PdfReportAdapter (this class)
+ * - Adapter: PDFReportAdapter (this class)
  * - Adaptee: PDFBoxReportGenerator (external PDF writer)
  * - Client: Code that calls IReportExporter#export
  * <p>
@@ -25,7 +25,7 @@ import java.util.List;
  * adaptee with a fixed title ("Task Status Report"). IO failures are caught
  * and logged to stderr; no exception is rethrown, and no success message is printed.
  */
-public class PdfReportAdapter implements IReportExporter {
+public class PDFReportAdapter implements IReportExporter {
 
     /** Underlying PDF generator responsible for writing the document. */
     private final PDFBoxReportGenerator adaptee = new PDFBoxReportGenerator();

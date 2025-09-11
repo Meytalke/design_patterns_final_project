@@ -19,7 +19,7 @@ import java.util.List;
  * <p>
  * Roles:
  * - Target: IReportExporter
- * - Adapter: CsvReportAdapter (this class)
+ * - Adapter: CSVReportAdapter (this class)
  * - Adaptee: CSVReportGenerator (external CSV writer)
  * - Client: Code that calls IReportExporter#export
  * <p>
@@ -29,7 +29,7 @@ import java.util.List;
  * Row order is preserved using LinkedHashMap. Success is reported to stdout;
  * IO failures are caught and logged to stderr (no exception is rethrown).
  */
-public class CsvReportAdapter implements IReportExporter {
+public class CSVReportAdapter implements IReportExporter {
 
     /** Underlying CSV generator responsible for writing the file. */
     private final CSVReportGenerator generator = new CSVReportGenerator();

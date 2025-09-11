@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  * <p>
  * Roles:
  * - Target: IReportExporter
- * - Adapter: JsonReportAdapter (this class)
+ * - Adapter: JSONReportAdapter (this class)
  * - Adaptee: JSONReportGenerator (external JSON writer)
  * - Client: Code that calls IReportExporter#export
  * <p>
@@ -24,7 +24,7 @@ import java.util.stream.Stream;
  * Delegates to the adaptee to serialize the provided ReportData to JSON and write it to the given path.
  * Success is reported to stdout; IO failures are caught and logged to stderr.
  */
-public class JsonReportAdapter implements IReportExporter {
+public class JSONReportAdapter implements IReportExporter {
     /** Underlying JSON generator responsible for writing the file. */
     private final JSONReportGenerator generator = new JSONReportGenerator();
 
