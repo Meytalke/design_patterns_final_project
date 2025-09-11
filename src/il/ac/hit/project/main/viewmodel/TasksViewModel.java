@@ -114,9 +114,9 @@ public class TasksViewModel implements IViewModel {
         setModel(tasksDAO);
         setView(view);
         exporters.put("Terminal", new ReportAdapter());
-        exporters.put("PDF", new PdfReportAdapter());
-        exporters.put("CSV", new CsvReportAdapter());
-        exporters.put("JSON", new JsonReportAdapter());
+        exporters.put("PDF", new PDFReportAdapter());
+        exporters.put("CSV", new CSVReportAdapter());
+        exporters.put("JSON", new JSONReportAdapter());
         setSortingStrategy(new SortByIDStrategy());
         this.service = Executors.newFixedThreadPool(8);
         setPropertyListeners();
