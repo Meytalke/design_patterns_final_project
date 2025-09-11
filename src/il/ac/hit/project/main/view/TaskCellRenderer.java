@@ -1,0 +1,114 @@
+package il.ac.hit.project.main.view;
+
+import il.ac.hit.project.main.model.task.ITask;
+import javax.swing.*;
+import java.awt.*;
+import java.text.SimpleDateFormat;
+
+/**
+ * ListCellRenderer for rendering {@link ITask} items in a list component.
+ * <p>
+ * Displays task attributes such as ID, title, description, state, creation date, and priority
+ * using a panel with labeled fields. Selection and focus states are reflected in the background
+ * and foreground as per the host look-and-feel.
+ */
+public class TaskCellRenderer extends JPanel implements ListCellRenderer<ITask> {
+
+    /**
+     * Label for displaying the unique identifier of the task.
+     */
+    private final JLabel idLabel;
+    /**
+     * Label for displaying the title of the task.
+     */
+    private final JLabel titleLabel;
+    /**
+     * Label for displaying the description of the task.
+     */
+    private final JLabel descriptionLabel;
+    /**
+     * Label for displaying the current state of the task.
+     */
+    private final JLabel stateLabel;
+
+    /**
+     * Constructs a new TaskCellRenderer.
+     * <p>
+     * Initializes and lays out the various UI components used to render a single task item.
+     */
+    public TaskCellRenderer() {
+        setLayout(new BorderLayout(5, 5));
+        setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        // Create a main panel for all the content
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+
+        // Create a panel for the top-right section (state and priority)
+        JPanel eastPanel = new JPanel();
+        eastPanel.setLayout(new BoxLayout(eastPanel, BoxLayout.Y_AXIS));
+
+        // Create a panel for the center section (title and description)
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+
+        // Initialize labels
+        idLabel = new JLabel();
+        titleLabel = new JLabel();
+        descriptionLabel = new JLabel();
+        stateLabel = new JLabel();
+
+        // Style the title to be bold
+        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 14f));
+        descriptionLabel.setForeground(Color.GRAY);
+
+        // Add labels to the text panel
+        centerPanel.add(titleLabel);
+        centerPanel.add(descriptionLabel);
+
+        eastPanel.add(stateLabel);
+
+        // Add the main parts to the renderer panel
+        add(idLabel, BorderLayout.WEST);
+        add(centerPanel, BorderLayout.CENTER);
+        add(eastPanel, BorderLayout.EAST);
+    }
+
+    /**
+     * Configures and returns the component used to render the specified list cell.
+     *
+     * @param list the JList being painted
+     * @param task the task value to render for the current cell
+     * @param index the cell index
+     * @param isSelected whether the cell is selected
+     * @param cellHasFocus whether the cell currently has focus
+     * @return a component that renders the current cell's value
+     */
+    @Override
+    // JList<? extends ITask> list wildcard anonymous type
+    public Component getListCellRendererComponent(JList<? extends ITask> list, ITask task,
+<<<<<<<< HEAD:src/main/java/view/TaskCellRenderer.java
+    int index,boolean isSelected,boolean cellHasFocus) {
+========
+                                                  int index,boolean isSelected,boolean cellHasFocus) {
+>>>>>>>> master:src/il/ac/hit/project/main/view/TaskCellRenderer.java
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
+        // Set the content for each label based on the task object
+        idLabel.setText("#" + task.getId());
+        titleLabel.setText(task.getTitle());
+        descriptionLabel.setText(task.getDescription());
+        stateLabel.setText(task.getState().getDisplayName());
+
+        // Handle selection and focusing
+        if (isSelected) {
+            setBackground(list.getSelectionBackground());
+            setForeground(list.getSelectionForeground());
+        } else {
+            setBackground(list.getBackground());
+            setForeground(list.getForeground());
+        }
+
+        return this;
+    }
+}
