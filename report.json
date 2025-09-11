@@ -2,7 +2,7 @@
   "totalTasksDTO": [
     {
       "type": "Completed",
-      "totalTasks": 0
+      "totalTasks": 1
     },
     {
       "type": "InProgress",
@@ -10,7 +10,7 @@
     },
     {
       "type": "To Do",
-      "totalTasks": 1
+      "totalTasks": 2
     }
   ],
   "tasksDTO": [
@@ -18,12 +18,24 @@
       "ID": 2,
       "title": "test2",
       "description": "test2",
-      "state": "In Progress"
+      "state": "Completed"
     },
     {
       "ID": 1,
       "title": "test1",
       "description": "test1",
+      "state": "In Progress"
+    },
+    {
+      "ID": 3,
+      "title": "test3",
+      "description": "test3",
+      "state": "To Do"
+    },
+    {
+      "ID": 4,
+      "title": "test",
+      "description": "test",
       "state": "To Do"
     }
   ]
