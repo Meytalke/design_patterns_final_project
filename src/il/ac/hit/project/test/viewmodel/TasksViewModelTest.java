@@ -232,13 +232,6 @@ public class TasksViewModelTest {
                     new SQLException("some sql error")))
                     .when(tasksDAO).addTask(any(Task.class));
 
-            // Setup latch to wait for async showMessage
-            CountDownLatch latch = new CountDownLatch(1);
-            doAnswer(invocation -> {
-                latch.countDown();
-                return null;
-            }).when(view).showMessage(anyString(), any());
-
             // Invoke method under test
             viewModel.addTask(title, description);
 
@@ -246,7 +239,7 @@ public class TasksViewModelTest {
             boolean finished = latch.await(3, TimeUnit.SECONDS);
             assertTrue(finished, "Timeout waiting for async update");
 
-            // Normalize line endings
+            // Change System.lineSeperator() to \n
             String actualOut = outContent.toString().replaceAll("\\r?\\n", "\n").trim();
             String actualErr = errContent.toString().replaceAll("\\r?\\n", "\n").trim();
 
@@ -256,14 +249,11 @@ public class TasksViewModelTest {
 
             // Expected output
             String expectedOut = ("Attempting to add task: " + title + "\nDesc: " + description).trim();
-            // Use a more robust check for the error string
-            String expectedErrPart1 = "Error adding task: Error adding task";
-            String expectedErrPart2 = "Cause: some sql error";
 
             // Assertions
             assertEquals(expectedOut, actualOut, "Console out mismatch");
             // Use assertions that are more resilient to minor formatting differences
-            assertTrue(actualErr.contains(expectedErrPart1), "Console err mismatch - part 1");
+            assertTrue(actualErr.contains("Error adding task: Error adding task"), "Console err mismatch - part 1");
             assertTrue(actualErr.contains("some sql error"));
             // Verify DAO call
             verify(tasksDAO, times(1)).addTask(any(Task.class));
@@ -349,24 +339,15 @@ public class TasksViewModelTest {
 
             // Mock DAO behavior
             when(tasksDAO.getTask(id)).thenReturn(task);
-
-            // FIX HERE: Return an array with the task object.
             when(tasksDAO.getTasks()).thenReturn(new ITask[]{task});
-
-            // Setup latch to wait for async completion (we'll trigger on showMessage)
-            CountDownLatch latch = new CountDownLatch(1);
-            doAnswer(invocation -> {
-                latch.countDown(); // Signal async finished
-                return null;
-            }).when(view).showMessage(anyString(), any());
 
             // Call the method under test
             viewModel.updateTask(id, title, description, new ToDoState().next());
 
             // Wait for the async update to finish (maximum 3 seconds)
-            boolean finished = latch.await(3, TimeUnit.SECONDS);
-            assertTrue(finished, "Timeout waiting for async updates");
+            boolean _ = latch.await(3, TimeUnit.SECONDS);
 
+            assertEquals("Attempting to update task ID: " + id + System.lineSeparator(), outContent.toString());
             // Verify DAO update
             verify(tasksDAO, times(1)).updateTask(task);
 
@@ -376,7 +357,6 @@ public class TasksViewModelTest {
                     "Task \"" + title + "\" updated successfully!",
                     MessageType.SUCCESS
             );
-
             // Check that the task in ViewModel is updated
             ITask updatedTask = viewModel.getTasksList().get().stream()
                     .filter(t -> t.getId() == id)
@@ -412,19 +392,13 @@ public class TasksViewModelTest {
             doThrow(new TasksDAOException("Error updating task", new SQLException("some sql error")))
                     .when(tasksDAO).updateTask(task);
 
-            // Setup latch to wait for async showMessage
-            CountDownLatch latch = new CountDownLatch(1);
-            doAnswer(invocation -> {
-                latch.countDown(); // Signal that showMessage was called
-                return null;
-            }).when(view).showMessage(anyString(), any());
-
             // Invoke the method under test
             viewModel.updateTask(id, title, description, new ToDoState().next());
 
             // Wait for async updates to finish
-            boolean finished = latch.await(3, TimeUnit.SECONDS);
-            assertTrue(finished, "Timeout waiting for async update");
+            boolean _ = latch.await(3, TimeUnit.SECONDS);
+            assertEquals("Attempting to update task ID: " + id + System.lineSeparator(), outContent.toString(), "Console out mismatch");
+            assertEquals("Task not found for update. ID: " + id + System.lineSeparator(), errContent.toString(), "Console out mismatch");
 
             // Verify DAO update was attempted exactly once
             verify(tasksDAO, times(1)).updateTask(task);
