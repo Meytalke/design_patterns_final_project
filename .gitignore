@@ -32,3 +32,5 @@ bin/
 /taskDB/seg0
 /taskDB/log
 *.log
+derby.log
+derby.log

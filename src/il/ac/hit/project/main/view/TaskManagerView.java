@@ -99,10 +99,6 @@ public class TaskManagerView extends JPanel implements IView {
      * The initial "To Do" state for a new task.
      */
     private final TaskState selectedTaskState = new ToDoState();
-<<<<<<<< HEAD:src/main/java/view/TaskManagerView.java
-    //Task list in memory and a listModel list to store the tasks visually
-    private final JList<ITask> taskList;
-========
     /**
      * The visual list component displaying tasks.
      */
@@ -110,7 +106,6 @@ public class TaskManagerView extends JPanel implements IView {
     /**
      * The model for the task list.
      */
->>>>>>>> master:src/il/ac/hit/project/main/view/TaskManagerView.java
     private DefaultListModel<ITask> listModel;
     /**
      * Text field for searching by title.
@@ -124,14 +119,11 @@ public class TaskManagerView extends JPanel implements IView {
      * Text field for searching by ID.
      */
     private final JTextField searchIdInput;
-<<<<<<<< HEAD:src/main/java/view/TaskManagerView.java
 
-    //Sorting strategies to shuffle through
-========
     /**
      * Sorting strategy for sorting by ID.
      */
->>>>>>>> master:src/il/ac/hit/project/main/view/TaskManagerView.java
+
     private final ISortingStrategy sortById =  new SortByIDStrategy();
     /**
      * Sorting strategy for sorting by state.
@@ -598,11 +590,9 @@ public class TaskManagerView extends JPanel implements IView {
 
 
     /**
-<<<<<<<< HEAD:src/main/java/view/TaskManagerView.java
-     * Returns the ViewModel associated with this view.
-========
+
      * Returns the ViewModel associated with this il.ac.hit.project.main.view.
->>>>>>>> master:src/il/ac/hit/project/main/view/TaskManagerView.java
+
      *
      * @return the ViewModel
      */
@@ -661,15 +651,7 @@ public class TaskManagerView extends JPanel implements IView {
 
 
     /**
-<<<<<<<< HEAD:src/main/java/view/TaskManagerView.java
-     * Returns the list model for the task list component.
-     * <p>
-     * The list model contains the tasks that are currently visible in the
-     * task list. The ViewModel uses this model to update the task list
-     * component when the visible tasks change.
-     *
-     * @return the list model for the task list
-========
+
      * Returns the list il.ac.hit.project.main.model for the task list component.
      * <p>
      * The list il.ac.hit.project.main.model contains the tasks that are currently visible in the
@@ -677,22 +659,13 @@ public class TaskManagerView extends JPanel implements IView {
      * component when the visible tasks change.
      *
      * @return the list il.ac.hit.project.main.model for the task list
->>>>>>>> master:src/il/ac/hit/project/main/view/TaskManagerView.java
      */
     public DefaultListModel<ITask> getListModel() {
         return listModel;
     }
 
     /**
-<<<<<<<< HEAD:src/main/java/view/TaskManagerView.java
-     * Sets the list model for the task list component.
-     * <p>
-     * This method is intended for use by the ViewModel to update the task list
-     * when the visible tasks change. The new list model will be used to update
-     * the task list component.
-     *
-     * @param listModel the list model to set; must not be null
-========
+
      * Sets the list il.ac.hit.project.main.model for the task list component.
      * <p>
      * This method is intended for use by the ViewModel to update the task list
@@ -700,7 +673,6 @@ public class TaskManagerView extends JPanel implements IView {
      * the task list component.
      *
      * @param listModel the list il.ac.hit.project.main.model to set; must not be null
->>>>>>>> master:src/il/ac/hit/project/main/view/TaskManagerView.java
      */
     public void setListModel(DefaultListModel<ITask> listModel) {
         this.listModel = listModel;
@@ -794,11 +766,8 @@ public class TaskManagerView extends JPanel implements IView {
      *
      * @return the sorting strategy for sorting tasks by creation date
      */
-<<<<<<<< HEAD:src/main/java/view/TaskManagerView.java
-    public ISortingStrategy getSortByTitleStrat() {
-========
+
     public ISortingStrategy getSortByStateStrat() {
->>>>>>>> master:src/il/ac/hit/project/main/view/TaskManagerView.java
         return sortByTitleStrat;
     }
 
@@ -812,18 +781,6 @@ public class TaskManagerView extends JPanel implements IView {
     }
 
     /**
-<<<<<<<< HEAD:src/main/java/view/TaskManagerView.java
-     * Returns the sorting strategy for sorting tasks by title (lexicographical order).
-     *
-     * @return the sorting strategy for sorting tasks by title
-     */
-    public ISortingStrategy getSortByStateStrat() {
-        return sortByState;
-    }
-
-    /**
-========
->>>>>>>> master:src/il/ac/hit/project/main/view/TaskManagerView.java
      * Returns the currently selected {@link TaskState} in the UI state filter combo box.
      *
      * @return the selected task state

@@ -1,6 +1,7 @@
-package il.ac.hit.project.main.model.report;
+package il.ac.hit.project.main.model.report.external;
 
-import il.ac.hit.project.main.model.report.external.CSVReportGenerator;
+import il.ac.hit.project.main.model.report.IReportExporter;
+import il.ac.hit.project.main.model.report.ReportData;
 import il.ac.hit.project.main.model.task.ITask;
 
 import java.io.IOException;
@@ -8,9 +9,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Adapter in the Adapter pattern.
@@ -55,11 +53,7 @@ public class CSVReportAdapter implements IReportExporter {
     @Override
     public void export(ReportData data, String path) {
         // preserve row order in CSV
-<<<<<<<< HEAD:src/main/java/model/report/CsvReportAdapter.java
-        Map<String, Long> summaryReportData = new LinkedHashMap<>(); 
-========
         Map<String, Long> summaryReportData = new LinkedHashMap<>();
->>>>>>>> master:src/il/ac/hit/project/main/model/report/CSVReportAdapter.java
         summaryReportData.put("Completed", data.completedTasks());
         summaryReportData.put("In Progress", data.inProgressTasks());
         summaryReportData.put("To Do", data.todoTasks());

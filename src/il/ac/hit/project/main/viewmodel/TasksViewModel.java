@@ -1,8 +1,10 @@
 package il.ac.hit.project.main.viewmodel;
 
+import il.ac.hit.project.main.Main;
 import il.ac.hit.project.main.model.dao.ITasksDAO;
 import il.ac.hit.project.main.model.dao.TasksDAOException;
 import il.ac.hit.project.main.model.report.*;
+import il.ac.hit.project.main.model.report.external.CSVReportAdapter;
 import il.ac.hit.project.main.model.task.ITask;
 import il.ac.hit.project.main.model.task.Task;
 import il.ac.hit.project.main.model.task.TaskState;
@@ -15,6 +17,9 @@ import il.ac.hit.project.main.view.ObservableProperty.ObservableCollection;
 import il.ac.hit.project.main.view.ObservableProperty.ObservableProperty;
 import il.ac.hit.project.main.view.IView;
 import il.ac.hit.project.main.viewmodel.combinator.TaskFilter;
+import il.ac.hit.project.main.viewmodel.state.DevState;
+import il.ac.hit.project.main.viewmodel.state.IAppState;
+import il.ac.hit.project.main.viewmodel.state.ProdState;
 import il.ac.hit.project.main.viewmodel.strategy.SortByIDStrategy;
 import il.ac.hit.project.main.viewmodel.strategy.ISortingStrategy;
 
@@ -84,18 +89,8 @@ public class TasksViewModel implements IViewModel {
     // The active sorting strategy used to order {@link #tasks}.
     private ISortingStrategy currentSortingStrategy;
 
-
     // Executor used to perform DAO operations and other background work.
     private final ExecutorService service;
-    /*
-     Viewport refresh actions to implement:
-     -add task -> new list item -> list updates | DONE
-     -update task -> list updates -> single cell updates | DONE
-     -select list item -> form fills, buttons activate | DONE
-     -press enter upon new value in filter fields -> list updates
-     #MAKE SURE -> no task selected -> delete buttons turn off
-     -update creation date label to show "now" on no task selected
-     */
 
     //Selected task data-bound
     private final IObservableProperty<ITask> selectedTask = new ObservableProperty<>(null);
@@ -206,9 +201,9 @@ public class TasksViewModel implements IViewModel {
                 //Use the observer to update the list in the UI
                 getTasksList().setValue(new ArrayList<>(getAllTasks()));
                 getView().setTasks(Arrays.asList(tasksArray));
-                System.out.println( "Task List:" +getTasksList().toString());
+                Main.logMessage("Task List:" + getTasksList().toString());
             } catch (TasksDAOException e){
-                System.err.println("Error loading tasks: " + e.getMessage() + (e.getCause() != null ? "\nCause: " + e.getCause() : ""));
+                Main.logMessage("Error loading tasks: " + e.getMessage() + (e.getCause() != null ? "\nCause: " + e.getCause() : ""));
                 getView().showMessage("Error loading tasks: " + e.getMessage(),ERROR);
             }
         });
@@ -225,7 +220,7 @@ public class TasksViewModel implements IViewModel {
         //Wrap DB calls with our service executor
         getService().submit(() -> {
             try {
-                System.out.println("Attempting to add task: " + title + "\nDesc: " + description);
+                Main.logMessage("Attempting to add task: " + title + "\nDesc: " + description);
                 ITask newTask = new Task(0,title, description, new ToDoState());
                 getModel().addTask(newTask);
                 getAllTasks().add(newTask);
@@ -233,16 +228,9 @@ public class TasksViewModel implements IViewModel {
                 // Success message: Operation completed successfully.
                 getView().showMessage("Task \"" + title + "\" added successfully!", MessageType.SUCCESS);
             } catch (TasksDAOException e) {
-<<<<<<<< HEAD:src/main/java/viewmodel/TasksViewModel.java
                 String message = "Error adding task: " + e.getMessage() + (e.getCause() != null ? "\nCause: " + e.getCause() : "");
                 System.err.println(message);
-========
-                System.err.println("Error adding task: " + e.getMessage());
-                // This line is missing in your code, so we add it here.
-                if (e.getCause() != null) {
-                    System.err.println("Cause: " + e.getCause());
-                }
->>>>>>>> master:src/il/ac/hit/project/main/viewmodel/TasksViewModel.java
+
                 // Error message: The operation failed.
                 getView().showMessage("Error adding task: " + e.getMessage(), MessageType.ERROR);
             }
@@ -586,10 +574,8 @@ public class TasksViewModel implements IViewModel {
     public Map<String, IReportExporter> getExporters() {
         return exporters;
     }
-<<<<<<<< HEAD:src/main/java/viewmodel/TasksViewModel.java
 
-========
->>>>>>>> master:src/il/ac/hit/project/main/viewmodel/TasksViewModel.java
+
     /**
      * Returns the current set sorting strategy
      *

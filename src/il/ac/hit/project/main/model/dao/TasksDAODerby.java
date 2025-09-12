@@ -1,5 +1,6 @@
 package il.ac.hit.project.main.model.dao;
 
+import il.ac.hit.project.main.Main;
 import il.ac.hit.project.main.model.task.*;
 
 //Sql imports
@@ -99,10 +100,11 @@ public class TasksDAODerby implements ITasksDAO {
                     "description VARCHAR(1024), " +
                     "state VARCHAR(50) NOT NULL)";
             derbyStatement.executeUpdate(sql);
+            Main.logMessage("Created Tasks Table successfully.");
         } catch (SQLException e) {
             // "X0Y32" indicates a table already exists
             if (e.getSQLState().equals("X0Y32")) {
-                System.out.println("Table already exists. Skipping..");
+                Main.logMessage("Table already exists. Skipping..");
             }
             else{
                 throw new TasksDAOException("Error creating table", e);
@@ -277,7 +279,6 @@ public class TasksDAODerby implements ITasksDAO {
         //Delete all tasks
         String sql = "DELETE FROM tasks";
         try {
-<<<<<<<< HEAD:src/main/java/model/dao/TasksDAODerby.java
             Statement statement = connection.createStatement(); 
             int affectedRows = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             if (affectedRows == 0)
@@ -285,10 +286,7 @@ public class TasksDAODerby implements ITasksDAO {
 
             // Reset auto-increment / identity column
             statement.executeUpdate("ALTER TABLE tasks ALTER COLUMN id RESTART WITH 1");
-========
-            Statement statement = connection.createStatement();
             statement.executeUpdate(sql);
->>>>>>>> master:src/il/ac/hit/project/main/model/dao/TasksDAODerby.java
         } catch (SQLException e) {
             throw new TasksDAOException("Error deleting all tasks", e);
         }

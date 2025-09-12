@@ -2,10 +2,6 @@ package il.ac.hit.project.test.view;
 
 import il.ac.hit.project.main.model.task.TaskState;
 import il.ac.hit.project.main.model.task.ToDoState;
-<<<<<<<< HEAD:src/test/java/view/TaskManagerViewTest.java
-import il.ac.hit.project.main.model.task.InProgressState;
-========
->>>>>>>> master:src/il/ac/hit/project/test/view/TaskManagerViewTest.java
 import il.ac.hit.project.main.view.TaskManagerView;
 
 import javax.swing.*;

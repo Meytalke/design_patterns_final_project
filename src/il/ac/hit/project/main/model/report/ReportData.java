@@ -2,10 +2,6 @@ package il.ac.hit.project.main.model.report;
 
 import il.ac.hit.project.main.model.task.ITask;
 
-<<<<<<<< HEAD:src/main/java/model/report/ReportData.java
-
-========
->>>>>>>> master:src/il/ac/hit/project/main/model/report/ReportData.java
 import java.util.List;
 
 /**

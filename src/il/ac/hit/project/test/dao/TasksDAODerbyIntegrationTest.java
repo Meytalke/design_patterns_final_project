@@ -1,8 +1,5 @@
-<<<<<<<< HEAD:src/test/java/model/dao/TasksDAODerbyIntegrationTest.java
-package il.ac.hit.project.test.model.dao;
-========
+
 package il.ac.hit.project.test.dao;
->>>>>>>> master:src/il/ac/hit/project/test/dao/TasksDAODerbyIntegrationTest.java
 
 import il.ac.hit.project.main.model.dao.TasksDAODerby;
 import il.ac.hit.project.main.model.dao.TasksDAOException;

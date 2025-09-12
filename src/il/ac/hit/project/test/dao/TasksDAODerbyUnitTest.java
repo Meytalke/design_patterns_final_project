@@ -1,8 +1,5 @@
-<<<<<<<< HEAD:src/test/java/model/dao/TasksDAODerbyUnitTest.java
-package il.ac.hit.project.test.model.dao;
-========
+
 package il.ac.hit.project.test.dao;
->>>>>>>> master:src/il/ac/hit/project/test/dao/TasksDAODerbyUnitTest.java
 
 import il.ac.hit.project.main.model.dao.TasksDAODerby;
 import il.ac.hit.project.main.model.dao.TasksDAOException;
@@ -40,15 +37,6 @@ class TasksDAODerbyUnitTest {
         Connection mockedConnection = mock(Connection.class);
         Statement mockedStatement = mock(Statement.class);
 
-<<<<<<<< HEAD:src/test/java/model/dao/TasksDAODerbyUnitTest.java
-        /*
-        FIXME:
-            You need to mock the behavior of `createTableIfNotExists` within the constructor.
-            The constructor's call to createStatement() and then execute() must be mocked to
-            succeed, otherwise the test fails on initialization.
-        */
-========
->>>>>>>> master:src/il/ac/hit/project/test/dao/TasksDAODerbyUnitTest.java
         when(mockedConnection.createStatement()).thenReturn(mockedStatement);
         when(mockedStatement.execute(anyString())).thenReturn(true);
 
@@ -61,8 +49,7 @@ class TasksDAODerbyUnitTest {
         assertThrows(TasksDAOException.class, tasksDAODerby::getTasks);
         verify(mockedStatement).executeQuery(anyString());
     }
-<<<<<<<< HEAD:src/test/java/model/dao/TasksDAODerbyUnitTest.java
-========
+
 
     /**
      * Tests the addTask method for a successful operation by mocking database interactions.
@@ -70,7 +57,7 @@ class TasksDAODerbyUnitTest {
      *
      * @throws Exception if an unexpected error occurs during the test.
      */
->>>>>>>> master:src/il/ac/hit/project/test/dao/TasksDAODerbyUnitTest.java
+
     @Test
     void testAddTask_successful() throws Exception {
         // Arrange

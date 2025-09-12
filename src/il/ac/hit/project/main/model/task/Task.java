@@ -1,9 +1,5 @@
 package il.ac.hit.project.main.model.task;
 
-<<<<<<<< HEAD:src/main/java/model/task/Task.java
-
-========
->>>>>>>> master:src/il/ac/hit/project/main/model/task/Task.java
 /**
  * Mutable implementation of {@link ITask} representing a single task item.
  * <p>

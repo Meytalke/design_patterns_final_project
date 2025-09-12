@@ -1,8 +1,6 @@
-<<<<<<<< HEAD:src/main/java/Main.java
-package il.ac.hit.project.main.java;
-========
+
 package il.ac.hit.project.main;
->>>>>>>> master:src/il/ac/hit/project/main/Main.java
+
 
 import il.ac.hit.project.main.model.dao.ITasksDAO;
 import il.ac.hit.project.main.model.dao.TasksDAODerby;
@@ -12,6 +10,9 @@ import il.ac.hit.project.main.view.IView;
 import il.ac.hit.project.main.view.TaskManagerView;
 import il.ac.hit.project.main.viewmodel.IViewModel;
 import il.ac.hit.project.main.viewmodel.TasksViewModel;
+import il.ac.hit.project.main.viewmodel.state.DevState;
+import il.ac.hit.project.main.viewmodel.state.IAppState;
+import il.ac.hit.project.main.viewmodel.state.ProdState;
 
 import javax.swing.*;
 import java.sql.DriverManager;
@@ -45,13 +46,15 @@ import java.sql.SQLException;
  */
 public class Main {
 
+    private static IAppState appState = new DevState();
+
     /**
      * Program entry point.
      *
      * @param args command-line arguments (unused)
      */
     public static void main(String[] args) {
-        // Container to make the ViewModel visible to the shutdown hook (captured by reference).
+
         final IViewModel[] viewModelContainer = new IViewModel[1];
 
         // Initialize and start the UI on the Event Dispatch Thread.
@@ -65,11 +68,12 @@ public class Main {
 
                 // Construct the View and ViewModel and wire them together.
                 IView taskManagerView = new TaskManagerView();
-                IViewModel viewModel = new TasksViewModel(proxyDAO,  taskManagerView);
+                IViewModel viewModel = new TasksViewModel(proxyDAO, taskManagerView);
                 viewModelContainer[0] = viewModel;
 
+
                 taskManagerView.setViewModel(viewModel);
-                System.out.println("System starting");
+                logMessage("System starting");
                 taskManagerView.start();
 
             } catch (TasksDAOException e) {
@@ -84,20 +88,22 @@ public class Main {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
                 // Give the ViewModel a chance to release resources.
-                if (viewModelContainer[0] instanceof TasksViewModel) {
-                    ((TasksViewModel) viewModelContainer[0]).shutdown();
-                }
+                ((TasksViewModel) viewModelContainer[0]).shutdown();
 
                 // Derby's proper shutdown throws an SQLException with SQLState "08006".
                 DriverManager.getConnection("jdbc:derby:;shutdown=true");
-                System.out.println("Derby database shut down successfully.");
+                logMessage("Derby database shut down successfully.");
             } catch (SQLException e) {
                 if (e.getSQLState().equals("08006")) {
-                    System.out.println("Derby database shut down successfully.");
+                    logMessage("Derby database shut down successfully.");
                 } else {
-                    System.err.println("Error shutting down Derby: " + e.getMessage());
+                    logMessage("Error shutting down Derby: " + e.getMessage());
                 }
             }
         }));
+    }
+
+    public static void logMessage(String message ) {
+        appState.logMessage(message);
     }
 }
