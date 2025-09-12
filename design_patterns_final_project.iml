@@ -250,64 +250,69 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/junit-jupiter-api-5.10.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/junit-jupiter-api-5.10.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/junit-platform-launcher-1.10.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/junit-platform-launcher-1.10.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Downloads/junit-platform-engine-1.10.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/junit-platform-engine-1.10.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Downloads/junit-platform-commons-1.10.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/junit-platform-commons-1.10.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Downloads/mockito-core-5.11.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/mockito-core-5.10.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Downloads/byte-buddy-agent-1.15.11.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/byte-buddy-1.15.11.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Downloads/byte-buddy-1.15.11.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/byte-buddy-agent-1.15.11.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
