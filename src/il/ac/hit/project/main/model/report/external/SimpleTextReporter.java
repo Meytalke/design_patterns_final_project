@@ -24,10 +24,14 @@ public class SimpleTextReporter {
      * @param todoBucket tasks that are to do
      */
     public void generateTextReport(long completed, long inProgress, long todo, List<ITask> completedBucket, List<ITask> inProgressBucket, List<ITask>  todoBucket) {
+
+        // Printing total tasks section
         System.out.println("--- Report ---");
         System.out.println("Completed: " + completed);
         System.out.println("In Progress: " + inProgress);
         System.out.println("To Do: " + todo);
+
+        //Printing buckets {completed:{},inprogress:{}, to-do:{}}
         System.out.println("--- ToDo Bucket ---");
         for(ITask task: todoBucket) {
             System.out.println(task);

@@ -47,53 +47,51 @@ public class Main {
      * @param args command-line arguments (unused)
      */
     public static void main(String[] args) {
-        // Container to make the ViewModel visible to the shutdown hook (captured by reference).
-        final IViewModel[] viewModelContainer = new IViewModel[1];
 
-        // Initialize and start the UI on the Event Dispatch Thread.
-        SwingUtilities.invokeLater(() -> {
-            try {
-                // Create a single instance of the real DAO (Singleton)
-                ITasksDAO tasksDAO = TasksDAODerby.getInstance();
+        try {
+            // Create a single instance of the real DAO (Singleton)
+            ITasksDAO tasksDAO = TasksDAODerby.getInstance();
 
-                // Wrap the real DAO with a Proxy for caching
-                ITasksDAO proxyDAO = new TasksDAOProxy(tasksDAO);
+            // Wrap the real DAO with a Proxy for caching
+            ITasksDAO proxyDAO = new TasksDAOProxy(tasksDAO);
 
-                // Construct the View and ViewModel and wire them together.
-                IView taskManagerView = new TaskManagerView();
-                IViewModel viewModel = new TasksViewModel(proxyDAO,  taskManagerView);
-                viewModelContainer[0] = viewModel;
+            // Construct the View and ViewModel and wire them together.
+            IView taskManagerView = new TaskManagerView();
+            IViewModel viewModel = new TasksViewModel(proxyDAO,  taskManagerView);
+            taskManagerView.setViewModel(viewModel);
 
-                taskManagerView.setViewModel(viewModel);
+            // Initialize and start the UI on the Event Dispatch Thread.
+            SwingUtilities.invokeLater(() -> {
                 System.out.println("System starting");
                 taskManagerView.start();
+            });
+            //Attempt to ensure the database is shutdown upon shutting down the program.
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    // Give the ViewModel a chance to release resources.
+                    if(viewModel instanceof TasksViewModel){
+                        ((TasksViewModel) viewModel).shutdown();
+                    }
+
+                    // Derby's proper shutdown throws an SQLException with SQLState "08006".
+                    DriverManager.getConnection("jdbc:derby:;shutdown=true");
+                    System.out.println("Derby database shut down successfully.");
+                } catch (SQLException e) {
+                    if (e.getSQLState().equals("08006")) {
+                        System.out.println("Derby database shut down successfully.");
+                    } else {
+                        System.err.println("Error shutting down Derby: " + e.getMessage());
+                    }
+                }
+            }));
 
             } catch (TasksDAOException e) {
-                // Surface the error to the user via a dialog and log the stack trace.
-                JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(),
-                        "Database Error", JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
+            // Surface the error to the user via a dialog and log the stack trace.
+            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
             }
-        });
 
-        //Attempt to ensure the database is shutdown upon shutting down the program.
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                // Give the ViewModel a chance to release resources.
-                if (viewModelContainer[0] instanceof TasksViewModel) {
-                    ((TasksViewModel) viewModelContainer[0]).shutdown();
-                }
 
-                // Derby's proper shutdown throws an SQLException with SQLState "08006".
-                DriverManager.getConnection("jdbc:derby:;shutdown=true");
-                System.out.println("Derby database shut down successfully.");
-            } catch (SQLException e) {
-                if (e.getSQLState().equals("08006")) {
-                    System.out.println("Derby database shut down successfully.");
-                } else {
-                    System.err.println("Error shutting down Derby: " + e.getMessage());
-                }
-            }
-        }));
     }
 }

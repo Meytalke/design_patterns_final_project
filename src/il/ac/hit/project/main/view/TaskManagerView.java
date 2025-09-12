@@ -507,6 +507,17 @@ public class TaskManagerView extends JPanel implements IView {
         viewModel.loadTasks();
     }
 
+    /**
+     * Updates the task list displayed in the UI with the given collection of tasks.
+     * <p>
+     * This method clears the current list model and repopulates it with the provided tasks.
+     * The update is scheduled to run on the Event Dispatch Thread (EDT) using
+     * {@link SwingUtilities#invokeLater(Runnable)} to ensure thread safety when modifying
+     * Swing components.
+     *
+     * @param tasks the list of {@link ITask} objects to display in the task list;
+     *              if empty, the list will simply be cleared
+     */
     @Override
     public void setTasks(java.util.List<ITask> tasks) {
         SwingUtilities.invokeLater(() -> {
@@ -517,6 +528,20 @@ public class TaskManagerView extends JPanel implements IView {
         });
     }
 
+    /**
+     * Displays a message dialog to the user with a title and icon based on the specified message type.
+     * <p>
+     * The dialog is shown using {@link JOptionPane} and adapts its appearance as follows:
+     * <ul>
+     *   <li>{@link MessageType#SUCCESS} → Title: "Success", Information icon</li>
+     *   <li>{@link MessageType#ERROR} → Title: "Error", Error icon</li>
+     *   <li>{@link MessageType#WARNING} → Title: "Warning", Warning icon</li>
+     *   <li>{@link MessageType#INFO} or unspecified → Title: "Information", Information icon</li>
+     * </ul>
+     *
+     * @param message the text message to display in the dialog
+     * @param type    the {@link MessageType} that determines the dialog's title and icon
+     */
     @Override
     public void showMessage(String message, MessageType type) {
         String title;
@@ -559,6 +584,25 @@ public class TaskManagerView extends JPanel implements IView {
         ((TasksViewModel) getViewModel()).filterTasks(selectedState, titleTerm, descriptionTerm, idTerm);
     }
 
+    /**
+     * Populates the form fields and updates control states based on the provided task.
+     * <p>
+     * If a valid {@link ITask} is provided, this method:
+     * <ul>
+     *   <li>Sets the task title and description input fields with the task's values.</li>
+     *   <li>Selects the corresponding task state in the state combo box.</li>
+     *   <li>Enables or disables action buttons appropriately:
+     *       <ul>
+     *         <li>Enables: state combo box, update, delete, up, down, and deselect buttons.</li>
+     *         <li>Disables: add button.</li>
+     *       </ul>
+     *   </li>
+     * </ul>
+     * If the task is {@code null}, the form is reset to its default state.
+     *
+     * @param task the {@link ITask} whose data should populate the form,
+     *             or {@code null} to reset the form.
+     */
     @Override
     public void setFormData(ITask task) {
         if (task != null) {

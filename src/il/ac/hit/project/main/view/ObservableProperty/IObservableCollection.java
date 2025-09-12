@@ -44,4 +44,9 @@ public interface IObservableCollection <T> extends IObservableProperty<List<T>> 
      */
     void removeValue(T value);
 
+    /**
+     * Clears the collection from items.
+     */
+    void clear();
+
 }

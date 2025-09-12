@@ -46,9 +46,7 @@ public class ObservableCollection<T> implements IObservableCollection<T> {
     }
 
     /**
-     * Appends an item to the collection.
-     *
-     * @param value the item to append to the collection
+     * {@inheritDoc}
      */
     @Override
     public void appendValue(T value) {
@@ -57,9 +55,7 @@ public class ObservableCollection<T> implements IObservableCollection<T> {
     }
 
     /**
-     * Removes an item from the collection.
-     *
-     * @param value the item to remove from the collection
+     * {@inheritDoc}
      */
     @Override
     public void removeValue(T value) {
@@ -67,11 +63,15 @@ public class ObservableCollection<T> implements IObservableCollection<T> {
         notifyListeners();
     }
 
+    @Override
+    public void clear() {
+        getList().clear();
+        notifyListeners();
+    }
+
 
     /**
-     * Add a listener to the property.
-     *
-     * @param listener the listener to add
+     * {@inheritDoc}
      */
     @Override
     public void addListener(IPropertyObserver<List<T>> listener) {
@@ -79,9 +79,7 @@ public class ObservableCollection<T> implements IObservableCollection<T> {
     }
 
     /**
-     * Remove a listener from the property.
-     *
-     * @param listener the listener to remove
+     * {@inheritDoc}
      */
     @Override
     public void removeListener(IPropertyObserver<List<T>> listener) {
@@ -89,7 +87,7 @@ public class ObservableCollection<T> implements IObservableCollection<T> {
     }
 
     /**
-     * Removes all listeners from the property.
+     * {@inheritDoc}
      */
     @Override
     public void clearListeners() {

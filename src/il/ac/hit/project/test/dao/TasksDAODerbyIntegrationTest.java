@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.DriverManager;
@@ -18,13 +19,33 @@ import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
+/**
+ * Integration tests for the {@link TasksDAODerby} class.
+ * <p>
+ * These tests use an embedded Derby database to validate that the DAO
+ * correctly performs CRUD operations (create, read, delete).
+ * A fresh database is created before each test and removed afterwards
+ * to ensure isolation between test cases.
+ * </p>
+ */
 class TasksDAODerbyIntegrationTest {
 
+    /** The DAO under test. */
     private TasksDAODerby tasksDAODerby;
+    /** JDBC connection string for the test Derby database. */
     private final String TEST_DB_URL = "jdbc:derby:./testTaskDB;create=true";
+    /** JDBC connection string to shut down the test Derby database. */
     private final String SHUTDOWN_DB_URL = "jdbc:derby:./testTaskDB;shutdown=true";
+    /** File reference to the database directory on disk. */
     private final File dbDirectory = new File("./testTaskDB");
 
+    /**
+     * Prepares a clean database and initializes the DAO before each test.
+     *
+     * @throws TasksDAOException if the DAO cannot be created
+     * @throws SQLException      if there is a problem creating the test DB connection
+     */
     @BeforeEach
     void setUp() throws TasksDAOException, SQLException {
         // 1. Ensure a clean slate by deleting any existing test database.
@@ -38,6 +59,11 @@ class TasksDAODerbyIntegrationTest {
         }
     }
 
+    /**
+     * Cleans up after each test by shutting down the database and deleting files.
+     *
+     * @throws TasksDAOException if shutdown fails for reasons other than Derby's expected shutdown code
+     */
     @AfterEach
     void tearDown() throws TasksDAOException {
         // 1. Shut down the test database.
@@ -54,7 +80,12 @@ class TasksDAODerbyIntegrationTest {
         }
     }
 
-    // Helper method to safely delete the test database directory
+    /**
+     * Helper method to delete the Derby database directory if it exists.
+     * <p>
+     * Uses {@link Files#walk(Path, FileVisitOption...)} to recursively remove all files and subdirectories.
+     * </p>
+     */
     private void deleteTestDbDirectory() {
         if (dbDirectory.exists()) {
             try {
@@ -70,6 +101,11 @@ class TasksDAODerbyIntegrationTest {
         }
     }
 
+    /**
+     * Verifies that an empty database returns an empty array of tasks.
+     *
+     * @throws TasksDAOException if an error occurs while fetching tasks
+     */
     @Test
     void testGetTasks_emptyDatabase_returnsEmptyArray() throws TasksDAOException {
         ITask[] tasks = tasksDAODerby.getTasks();
@@ -77,6 +113,11 @@ class TasksDAODerbyIntegrationTest {
         assertEquals(0, tasks.length);
     }
 
+    /**
+     * Tests adding tasks and verifying they are correctly retrieved from the database.
+     *
+     * @throws TasksDAOException if an error occurs while adding or fetching tasks
+     */
     @Test
     void testAddAndGetTasks() throws TasksDAOException {
         ITask task1 = new Task(0, "Task 1", "Description 1", new ToDoState());
@@ -92,6 +133,11 @@ class TasksDAODerbyIntegrationTest {
         assertEquals("Task 2", tasks[1].getTitle());
     }
 
+    /**
+     * Tests that deleting all tasks clears the database.
+     *
+     * @throws TasksDAOException if an error occurs while adding or deleting tasks
+     */
     @Test
     void testDeleteAllTasks() throws TasksDAOException {
         ITask task = new Task(0, "Temp Task", "Temp Description", new ToDoState());

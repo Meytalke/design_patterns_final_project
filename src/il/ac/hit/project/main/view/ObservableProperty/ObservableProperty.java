@@ -32,9 +32,7 @@ public class ObservableProperty<T> implements IObservableProperty<T> {
 
     @Override
     /**
-     * Gets the current value of the property.
-     *
-     * @return the current value of the property
+     * {@inheritDoc}
      */
     public T get() {
         return value;
@@ -42,9 +40,7 @@ public class ObservableProperty<T> implements IObservableProperty<T> {
 
     @Override
     /**
-     * Sets the value of the property.
-     *
-     * @param newValue the new value of the property
+     * {@inheritDoc}
      */
     public void setValue(T newValue) {
         //Ensure update only on relevant value changes
@@ -57,9 +53,7 @@ public class ObservableProperty<T> implements IObservableProperty<T> {
 
     @Override
     /**
-     * Adds a listener to the property.
-     *
-     * @param listener the listener to add
+     * {@inheritDoc}
      */
     public void addListener(IPropertyObserver<T> listener) {
         listeners.add(listener);
@@ -67,9 +61,8 @@ public class ObservableProperty<T> implements IObservableProperty<T> {
 
     @Override
     /**
-     * Removes a listener from the property.
+     * {@inheritDoc}
      *
-     * @param listener the listener to remove
      */
     public void removeListener(IPropertyObserver<T> listener) {
         listeners.remove(listener);
@@ -77,7 +70,7 @@ public class ObservableProperty<T> implements IObservableProperty<T> {
 
     @Override
     /**
-     * Removes all listeners from the property.
+     * {@inheritDoc}
      */
     public void clearListeners() {
         listeners.clear();
@@ -85,7 +78,7 @@ public class ObservableProperty<T> implements IObservableProperty<T> {
 
     @Override
     /**
-     * Notifies all listeners that the property has changed.
+     * {@inheritDoc}
      */
     public void notifyListeners() {
         for(IPropertyObserver<T> listener : listeners){

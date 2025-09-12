@@ -143,9 +143,7 @@ public class TasksDAODerby implements ITasksDAO {
         List<ITask> tasks = new ArrayList<>();
         String sql = "SELECT * FROM tasks ORDER BY id ASC";
         //tryWith block, automatically closes AutoCloseable classes
-        try (Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
-
+        try (ResultSet resultSet = runQuery(sql);) {
             while (resultSet.next()) {
                 tasks.add(new Task(
                         resultSet.getInt("id"),
@@ -170,11 +168,10 @@ public class TasksDAODerby implements ITasksDAO {
      */
     @Override
     public ITask getTask(int id) throws TasksDAOException {
-        try{
-            //Select a specific task
-            String sql = "SELECT * FROM tasks WHERE id = " + id;
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
+        //Select a specific task
+        String sql = "SELECT * FROM tasks WHERE id = " + id;
+        try(ResultSet resultSet = runQuery(sql))
+        {
             //If we find any results... we return a task.
             if (resultSet.next()) {
                 return new Task(
@@ -184,12 +181,15 @@ public class TasksDAODerby implements ITasksDAO {
                         stateFromString(resultSet.getString("state"))
                 );
             }
+            else{
+                //Explicit declaring that task with that id does not exist.
+                throw new TasksDAOException("No task with id " + id);
+            }
 
         } catch (SQLException e) {
             throw new TasksDAOException("Error retrieving task", e);
         }
 
-        return null;
     }
 
     /**
@@ -208,25 +208,9 @@ public class TasksDAODerby implements ITasksDAO {
         //Insert new task
         String sql = "INSERT INTO tasks (title, description, state) " +
                 "VALUES ('" + title + "', '" + description + "', '" + state+ "')";
-
         try {
-            Statement statement = connection.createStatement();
-            // Get affected rows value to validate insert
-            int affectedRows = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-
-            if (affectedRows == 0)
-                throw new SQLException("Creating task failed, no rows affected.");
-
-            ResultSet generatedKeys = statement.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                // Get the auto-generated ID
-                int newId = generatedKeys.getInt(1);
-                // Update the task object with the new ID
-                ((Task) task).setId(newId);
-            } else {
-                throw new SQLException("Creating task failed, no ID obtained.");
-            }
-
+            int newId = runInsert(sql);
+            ((Task) task).setId(newId);
         } catch (SQLException e) {
             throw new TasksDAOException("Error adding task", e);
         }
@@ -252,8 +236,7 @@ public class TasksDAODerby implements ITasksDAO {
                 "WHERE id = " + task.getId();
 
         try {
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(sql);
+            runUpdate(sql);
         } catch (SQLException e) {
             throw new TasksDAOException("Error updating task", e);
         }
@@ -267,10 +250,8 @@ public class TasksDAODerby implements ITasksDAO {
     @Override
     public void deleteTasks() throws TasksDAOException {
         //Delete all tasks
-        String sql = "DELETE FROM tasks";
         try {
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(sql);
+            runUpdate( "DELETE FROM tasks");
         } catch (SQLException e) {
             throw new TasksDAOException("Error deleting all tasks", e);
         }
@@ -286,13 +267,58 @@ public class TasksDAODerby implements ITasksDAO {
     public void deleteTask(int id) throws TasksDAOException {
         String sql = "DELETE FROM tasks WHERE id = " + id;
         try {
-            Statement statement = connection.createStatement();
-            int affectedRows = statement.executeUpdate(sql);
+
+            int affectedRows = runUpdate(sql);
             if (affectedRows == 0) {
                 throw new SQLException("Deleting task failed, no rows affected.");
             }
         } catch (SQLException e) {
             throw new TasksDAOException("Error deleting task", e);
+        }
+    }
+
+    /**
+     * Run a query (SELECT) and return its ResultSet.
+     * The caller is responsible for processing the ResultSet.
+     */
+    private ResultSet runQuery(String sql) throws SQLException {
+        Statement statement = connection.createStatement();
+        return statement.executeQuery(sql); // stmt will be closed when ResultSet is closed
+    }
+
+    /**
+     * Run an update (INSERT, UPDATE, DELETE).
+     */
+    private int runUpdate(String sql) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            return statement.executeUpdate(sql);
+        }
+    }
+
+    /**
+     * Executes an INSERT SQL statement and returns the auto-generated primary key.
+     * <p>
+     * This method assumes that the target table has an auto-increment (identity) column.
+     * It is mainly used when inserting new tasks, so the caller can update the in-memory
+     * task object with the generated ID from the database.
+     * </p>
+     *
+     * @param sql the SQL INSERT statement to execute
+     * @return the auto-generated key (e.g., task ID)
+     * @throws SQLException if the insert fails, no rows are affected, or no key is returned
+     */
+    private int runInsert(String sql) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            int affectedRows = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+            if (affectedRows == 0) {
+                throw new SQLException("Insert failed, no rows affected.");
+            }
+            try (ResultSet keys = statement.getGeneratedKeys()) {
+                if (keys.next()) {
+                    return keys.getInt(1);
+                }
+                throw new SQLException("Insert failed, no ID obtained.");
+            }
         }
     }
 }
