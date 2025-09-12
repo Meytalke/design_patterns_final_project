@@ -9,6 +9,8 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Swing-based il.ac.hit.project.main.view for managing tasks in an MVVM setup.
@@ -138,6 +140,12 @@ public class TaskManagerView extends JPanel implements IView {
     private IViewModel viewModel;
 
     /**
+     * A map to store different sorting strategies, keyed by a sorting option enum.
+     * This allows for easy retrieval of the correct strategy at runtime.
+     */
+    private Map<SortingOption, ISortingStrategy> strategies = new HashMap<>();
+
+    /**
      * Constructs the task manager il.ac.hit.project.main.view and initializes the UI hierarchy.
      * <p>
      * This constructor creates and lays out all Swing components, configures renderers for
@@ -231,6 +239,14 @@ public class TaskManagerView extends JPanel implements IView {
         taskList.setCellRenderer(new TaskCellRenderer());
 
         window = new JFrame("Tasks Manager");
+
+        /**
+         * "Initializes the strategies map with concrete implementations of the ISortingStrategy interface.
+         * This sets up the available sorting algorithms."
+         */
+        strategies.put(SortingOption.STATE, new SortByStateStrategy());
+        strategies.put(SortingOption.ID, new SortByIDStrategy());
+        strategies.put(SortingOption.TITLE, new SortByTitleStrategy());
     }
 
     /**
@@ -420,25 +436,21 @@ public class TaskManagerView extends JPanel implements IView {
             }
         });
 
-        // Change the sorting strategy based on the selected option in the sort combo box.
+        /**
+         * An action listener for the sort combo box.
+         * When a user selects a sorting option, this listener retrieves the
+         * corresponding sorting strategy from the map and applies it to the
+         * ViewModel. This demonstrates a flexible, polymorphic approach
+         * to changing the sorting behavior without modifying the core logic.
+         *
+         * @param e The action event triggered by the user's selection.
+         */
         sortComboBox.addActionListener(e -> {
             SortingOption selectedOption = (SortingOption) sortComboBox.getSelectedItem();
 
-            switch (selectedOption) {
-                case STATE:
-                    viewModel.setSortingStrategy(new SortByStateStrategy());
-                    break;
-                case ID:
-                    viewModel.setSortingStrategy(new SortByIDStrategy());
-                    break;
-                case TITLE:
-                    viewModel.setSortingStrategy(new SortByTitleStrategy());
-                    break;
-                case null:
-                    break;
-                default:
-                    viewModel.setSortingStrategy(new SortByTitleStrategy());
-                    break;
+            ISortingStrategy selectedStrategy = strategies.get(selectedOption);
+            if (selectedStrategy != null) {
+                viewModel.setSortingStrategy(selectedStrategy);
             }
         });
 
