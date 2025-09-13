@@ -109,10 +109,8 @@ public class TasksDAOProxy implements ITasksDAO {
     public void deleteTask(int id) throws TasksDAOException {
         tasksDAO.deleteTask(id);
         //Remove from cache if exists
-        if(cache.containsKey(id))
-            cache.remove(id);
-        if(allCache.containsKey(id))
-            allCache.remove(id);
+        cache.remove(id);
+        allCache.remove(id);
         System.out.println("Task removed (cache): " + id);
     }
 
