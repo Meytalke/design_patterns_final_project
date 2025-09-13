@@ -858,7 +858,7 @@ public class TasksViewModelTest {
             assertEquals(2, filtered.size());
             assertTrue(filtered.stream().allMatch(t -> t.getState() instanceof ToDoState));
 
-            verify(view, times(2)).setTasks(ArgumentMatchers.<List<ITask>>any());
+            verify(view, times(1)).setTasks(ArgumentMatchers.<List<ITask>>any());
         }
 
         /**
@@ -875,7 +875,7 @@ public class TasksViewModelTest {
             assertEquals(1, filtered.size());
             assertEquals(2, filtered.getFirst().getId());
 
-            verify(view, times(2)).setTasks(ArgumentMatchers.<List<ITask>>any());
+            verify(view, times(1)).setTasks(ArgumentMatchers.<List<ITask>>any());
         }
 
         @Test
