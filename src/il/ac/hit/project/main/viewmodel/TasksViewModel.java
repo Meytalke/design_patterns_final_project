@@ -258,31 +258,85 @@ public class TasksViewModel implements IViewModel {
         //Wrap DB calls with our service executor
         getService().submit(() -> {
             try {
-                System.out.println("Attempting to update task ID: " + id);
-                Task task = (Task) getModel().getTask(id);
-                if (task == null) {
-                    System.err.println("Task not found for update. ID: " + id);
-                    // Error message: Task not found
-                    getView().showMessage("Error updating task: Task not found.", MessageType.ERROR);
-                    return;
-                }
+                Task task = fetchTaskToUpdate(id);
 
                 task.setTitle(newTitle);
                 task.setDescription(newDescription);
                 task.setState(newState);
 
-                //Updating the task on DB and in memory by searching for it using its id.
-                getModel().updateTask(task);
-                getAllTasks().replaceAll(t -> t.getId() == id ? task : t);
-                loadTasks();
-                // Success message: Task updated successfully
-                getView().showMessage("Task \"" + newTitle + "\" updated successfully!", MessageType.SUCCESS);
+                updateMemoryOnUpdateTask(task);
 
             } catch (TasksDAOException e) {
                 System.err.println("Error updating task: " + e.getMessage());
                 getView().showMessage("Error updating task: " + e.getMessage(), MessageType.ERROR);
             }
         });
+    }
+
+    /**
+     * Second version of updateTask method, allowing for updating a task with a task in hand.
+     * @param updatedTask the task data to use to update the task in memory
+     */
+    public void updateTask(ITask updatedTask){
+        //Wrap DB calls with our service executor
+        getService().submit(() -> {
+            try {
+                //Get the task from DB
+                Task taskDB = fetchTaskToUpdate(updatedTask.getId());
+                //Set attributes
+                taskDB.setTitle(updatedTask.getTitle());
+                taskDB.setDescription(updatedTask.getDescription());
+                taskDB.setState(updatedTask.getState());
+                //Update memory and refresh view
+                updateMemoryOnUpdateTask(taskDB);
+
+            } catch (TasksDAOException e) {
+                System.err.println("Error updating task: " + e.getMessage());
+                getView().showMessage("Error updating task: " + e.getMessage(), MessageType.ERROR);
+            }
+        });
+    }
+
+    /**
+     * Helper function to retrieve a specific task from the database and ensures
+     * we get a valid task back. <br/>
+     * Mainly used within {@link #updateTask} scope.
+     * @param id the id matching the task on database
+     * @return A task from the database.
+     * @throws TasksDAOException if the task was not found, or some kind of error occurred in DB when preforming the query.
+     */
+    public Task fetchTaskToUpdate(int id) throws TasksDAOException {
+        System.out.println("Attempting to update task ID: " + id);
+        Task taskDB = (Task) getModel().getTask(id);
+        if (taskDB == null) {
+            System.err.println("Task not found for update. ID: " + id);
+            // Error message: Task not found
+            getView().showMessage("Error updating task: Task not found.", MessageType.ERROR);
+            throw new TasksDAOException("Error updating task: Task not found.");
+        }else{
+            return taskDB;
+        }
+    }
+
+
+    /**
+     * Helper function to update memory across all channels with the new task.
+     * <ul>
+     *     <li>Updates the database</li>
+     *     <li>Updates the list in memory</li>
+     *     <li>Invokes UI refresh on the view</li>
+     * </ul>
+     * @param task the task data to use to update the memory
+     * @throws TasksDAOException when the database can't update the task successfully
+     */
+    public void updateMemoryOnUpdateTask(Task task) throws TasksDAOException {
+        //Updating the task on DB and in memory by searching for it using its id.
+        getModel().updateTask(task);
+        getAllTasks().replaceAll(t -> t.getId() == task.getId() ? task : t);
+        //Invoke UI refresh
+        getTasksList().setValue(getAllTasks());
+        // Success message: Task updated successfully
+        getView().showMessage("Task \"" + task.getTitle() + "\" updated successfully!", MessageType.SUCCESS);
     }
 
     /**
@@ -299,28 +353,20 @@ public class TasksViewModel implements IViewModel {
      * @param taskId the task identifier
      */
     public void moveTaskStateUp(int taskId) {
-        //Wrap DB calls with our service executor
-        getService().submit(() -> {
-            try {
-                Task task = (Task) getModel().getTask(taskId);
-                //No task found
-                if (task == null) {
-                    getView().showMessage("Error: Task with ID " + taskId + " not found.", MessageType.ERROR);
-                    return;
-                }
-                // Update task on DB
-                task.setState(task.getState().next());
-                getModel().updateTask(task);
-                // Invoke UI refresh and update list in memory
-                getAllTasks().replaceAll(t -> t.getId() == taskId ? task : t);
-                getTasksList().setValue(getAllTasks());
-                // Success message: Task updated successfully
-                getView().showMessage("Task state updated to " + task.getState().getDisplayName() + ".", MessageType.SUCCESS);
-            } catch (TasksDAOException e) {
-                System.err.println("Error updating task state: " + e.getMessage());
-                getView().showMessage("Error updating task state: " + e.getMessage(), MessageType.ERROR);
-            }
-        });
+        /*
+        * Get the task from in memory. Because we used the arrow up/down arrows to
+        * update the task state, we obviously have the task in memory, so we don't
+        * need to refetch it.
+        * */
+        Task task = (Task) getAllTasks()
+                .stream()
+                .filter(t -> t.getId() == taskId)
+                .findFirst()
+                .orElse(null);
+        if (task != null) {
+            task.setState(task.getState().next());
+            updateTask(task);
+        }
     }
 
     /**
@@ -337,28 +383,20 @@ public class TasksViewModel implements IViewModel {
      * @param taskId the task identifier
      */
     public void moveTaskStateDown(int taskId) {
-        // Wrap DB calls with our service executor
-        getService().submit(() -> {
-            try {
-                Task task = (Task) getModel().getTask(taskId);
-                // 404 - task not found
-                if (task == null) {
-                    getView().showMessage("Error: Task with ID " + taskId + " not found.", MessageType.ERROR);
-                    return;
-                }
-                // Update on DB
-                task.setState(task.getState().previous());
-                getModel().updateTask(task);
-                // Update list in memory and invoke UI refresh
-                getAllTasks().replaceAll(t -> t.getId() == taskId ? task : t);
-                getTasksList().setValue(getAllTasks());
-                // Success message: Task updated successfully
-                getView().showMessage("Task state updated to " + task.getState().getDisplayName() + ".", MessageType.SUCCESS);
-            } catch (TasksDAOException e) {
-                System.err.println("Error updating task state: " + e.getMessage());
-                getView().showMessage("Error updating task state: " + e.getMessage(), MessageType.ERROR);
-            }
-        });
+        /*
+         * Get the task from in memory. Because we used the arrow up/down arrows to
+         * update the task state, we obviously have the task in memory, so we don't
+         * need to refetch it.
+         * */
+        Task task = (Task) getAllTasks()
+                .stream()
+                .filter(t -> t.getId() == taskId)
+                .findFirst()
+                .orElse(null);
+        if (task != null) {
+            task.setState(task.getState().previous());
+            updateTask(task);
+        }
     }
 
     /**

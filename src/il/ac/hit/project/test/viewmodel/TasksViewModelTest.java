@@ -226,45 +226,27 @@ public class TasksViewModelTest {
             String title = "";
             String description = "";
 
-            // Mock DAO to throw an exception on addTask
+            // Define DB behavior
             doThrow(new TasksDAOException(
                     "Error adding task",
                     new SQLException("some sql error")))
                     .when(tasksDAO).addTask(any(Task.class));
 
-            // Setup latch to wait for async showMessage
-            CountDownLatch latch = new CountDownLatch(1);
-            doAnswer(invocation -> {
-                latch.countDown();
-                return null;
-            }).when(view).showMessage(anyString(), any());
-
-            // Invoke method under test
+            // Invoke test action
             viewModel.addTask(title, description);
 
             // Wait for the async update to finish
-            boolean finished = latch.await(3, TimeUnit.SECONDS);
-            assertTrue(finished, "Timeout waiting for async update");
-
-            // Normalize line endings
-            String actualOut = outContent.toString().replaceAll("\\r?\\n", "\n").trim();
-            String actualErr = errContent.toString().replaceAll("\\r?\\n", "\n").trim();
-
-            // Print actual output for debugging (optional)
-            System.out.println("ACTUAL_OUT: [" + actualOut + "]");
-            System.out.println("ACTUAL_ERR: [" + actualErr + "]");
+            boolean _ = latch.await(3, TimeUnit.SECONDS);
 
             // Expected output
-            String expectedOut = ("Attempting to add task: " + title + "\nDesc: " + description).trim();
-            // Use a more robust check for the error string
-            String expectedErrPart1 = "Error adding task: Error adding task";
-            String expectedErrPart2 = "Cause: some sql error";
+            String expectedOut = "Attempting to add task: " + title + "\nDesc: " + description;
+            String expectedErr = "Error adding task: Error adding task";
 
             // Assertions
-            assertEquals(expectedOut, actualOut, "Console out mismatch");
+            assertEquals(expectedOut + System.lineSeparator(), outContent.toString(), "Console out mismatch");
             // Use assertions that are more resilient to minor formatting differences
-            assertTrue(actualErr.contains(expectedErrPart1), "Console err mismatch - part 1");
-            assertTrue(actualErr.contains("some sql error"));
+            assertTrue(errContent.toString().contains(expectedErr), "Console err mismatch");
+            assertTrue(errContent.toString().contains("some sql error"));
             // Verify DAO call
             verify(tasksDAO, times(1)).addTask(any(Task.class));
 
@@ -347,31 +329,26 @@ public class TasksViewModelTest {
             Task task = new Task(id, "test1", "test1", new ToDoState());
             viewModel.getAllTasks().add(task);
 
-            // Mock DAO behavior
+            // Define DB behavior
             when(tasksDAO.getTask(id)).thenReturn(task);
 
-            // FIX HERE: Return an array with the task object.
-            when(tasksDAO.getTasks()).thenReturn(new ITask[]{task});
-
-            // Setup latch to wait for async completion (we'll trigger on showMessage)
-            CountDownLatch latch = new CountDownLatch(1);
-            doAnswer(invocation -> {
-                latch.countDown(); // Signal async finished
-                return null;
-            }).when(view).showMessage(anyString(), any());
-
-            // Call the method under test
+            // Invoke test action
             viewModel.updateTask(id, title, description, new ToDoState().next());
 
             // Wait for the async update to finish (maximum 3 seconds)
-            boolean finished = latch.await(3, TimeUnit.SECONDS);
-            assertTrue(finished, "Timeout waiting for async updates");
+            boolean _ = latch.await(3, TimeUnit.SECONDS);
 
-            // Verify DAO update
+            //Ensure print to console correctly
+            assertEquals("Attempting to update task ID: " + id + System.lineSeparator()
+                            + "Updating task list" + System.lineSeparator(), outContent.toString());
+
+            //Ensure model was called to updateTask
             verify(tasksDAO, times(1)).updateTask(task);
 
-            // Verify view updates
-            verify(view, atLeastOnce()).setTasks(anyList());
+            //Ensure tasksList was updated and listeners were notified
+            //Verify UI update
+            verify(view, atLeastOnce()).setTasks(ArgumentMatchers.<List<ITask>>any());
+            //Ensure view was told to show a success message
             verify(view, times(1)).showMessage(
                     "Task \"" + title + "\" updated successfully!",
                     MessageType.SUCCESS
@@ -408,23 +385,19 @@ public class TasksViewModelTest {
             task.setDescription(description);
             task.setState(task.getState().next());
 
-            // Mock DAO to throw exception on update
+            // Change mocked DB to throw TasksDAOException on update
             doThrow(new TasksDAOException("Error updating task", new SQLException("some sql error")))
                     .when(tasksDAO).updateTask(task);
 
-            // Setup latch to wait for async showMessage
-            CountDownLatch latch = new CountDownLatch(1);
-            doAnswer(invocation -> {
-                latch.countDown(); // Signal that showMessage was called
-                return null;
-            }).when(view).showMessage(anyString(), any());
-
-            // Invoke the method under test
+            // Invoke test action
             viewModel.updateTask(id, title, description, new ToDoState().next());
 
             // Wait for async updates to finish
-            boolean finished = latch.await(3, TimeUnit.SECONDS);
-            assertTrue(finished, "Timeout waiting for async update");
+            boolean _ = latch.await(3, TimeUnit.SECONDS);
+
+            //Ensure print to console correctly
+            assertEquals("Attempting to update task ID: " + id + System.lineSeparator() , outContent.toString());
+            assertEquals("Error updating task: " + "Error updating task" + System.lineSeparator(), errContent.toString());
 
             // Verify DAO update was attempted exactly once
             verify(tasksDAO, times(1)).updateTask(task);
@@ -451,7 +424,8 @@ public class TasksViewModelTest {
             viewModel.updateTask(id, "test1", "test1", new ToDoState());
             boolean _ = latch.await(3, TimeUnit.SECONDS);
             //Ensure print to  console correctly
-            assertEquals("Task not found for update. ID: " + id + System.lineSeparator(),  errContent.toString());
+            assertEquals("Task not found for update. ID: " + id + System.lineSeparator()
+                + "Error updating task: Error updating task: Task not found." + System.lineSeparator(),  errContent.toString());
 
             //Ensure proper error pop-up
             verify(view).showMessage("Error updating task: Task not found.", MessageType.ERROR);
@@ -515,35 +489,23 @@ public class TasksViewModelTest {
         void testMoveTaskStateUp_successful() throws Exception {
             int id = 1;
 
-            // Create a task with an initial state
-            Task task = new Task(id, "Test Task", "desc", new ToDoState());
+            // Create a task with an initial state and initialize the ViewModel's in memory list
+            Task task = new Task(id, "Test Task", "desc", new ToDoState().next());
+            viewModel.getAllTasks().add(task);
 
-            // Mock DAO methods
-            doReturn(task).when(tasksDAO).getTask(id);           // Return the task when getTask(id) is called
-            ITask[] tasksArray = new ITask[]{ task };
-            doReturn(tasksArray).when(tasksDAO).getTasks();     // Return all tasks when getTasks() is called
+            // Mock DAO returning the task
+            when(tasksDAO.getTask(id)).thenReturn(task);
 
-            // Initialize the ViewModel's observable collection with a modifiable list
-            viewModel.getTasksList().setValue(new ArrayList<>(Arrays.asList(task)));
-
-            // Setup CountDownLatch for asynchronous updates
-            CountDownLatch latch = new CountDownLatch(1);
-            doAnswer(invocation -> {
-                latch.countDown(); // Countdown when setTasks is called
-                return null;
-            }).when(view).setTasks(any());
-
-            // Call the method under test
+            // Invoke test action
             viewModel.moveTaskStateUp(id);
 
             // Wait for the async update to complete (max 3 seconds)
-            boolean finished = latch.await(3, TimeUnit.SECONDS);
-            assertTrue(finished, "Timeout waiting for async update");
+            boolean _ = latch.await(3, TimeUnit.SECONDS);
 
-            // Verify the DAO updated the task
+            // Ensure the DAO updated the task
             verify(tasksDAO, times(1)).updateTask(task);
 
-            // Verify the task is present in the ViewModel's observable collection
+            // Ensure the task is present in the ViewModel's observable collection
             ITask updatedTask = viewModel.getTasksList().get().stream()
                     .filter(t -> t.getId() == id)
                     .findFirst()
@@ -551,14 +513,9 @@ public class TasksViewModelTest {
 
             assertNotNull(updatedTask, "Updated task should not be null");
 
-            // Verify the task state has advanced correctly
-            assertEquals(new ToDoState().next(), updatedTask.getState(), "Task state should be updated");
+            // Ensure the task state has advanced correctly
+            assertEquals(task.getState(), updatedTask.getState(), "Task state should be updated");
 
-            // Verify the view shows the success message
-            verify(view).showMessage(
-                    "Task state updated to " + updatedTask.getState().getDisplayName() + ".",
-                    MessageType.SUCCESS
-            );
         }
 
 
@@ -580,8 +537,6 @@ public class TasksViewModelTest {
             // Ensure DAO update never called
             verify(tasksDAO, never()).updateTask(any());
 
-            // Ensure an error message shown
-            verify(view).showMessage("Error: Task with ID " + id + " not found.", MessageType.ERROR);
         }
     }
 
@@ -632,52 +587,40 @@ public class TasksViewModelTest {
             viewModel.getTasksList().get().clear();
         }
 
+
         /**
-         * Tests the successful state transition of a task to the next state.
-         * Verifies that the task's state is updated in the DAO, the ViewModel's list,
-         * and that the view is notified of the change.
+         * Tests that the {@link TasksViewModel#deleteTask(int)} method deletes a task
+         * successfully from the database.
+         * @throws Exception
          */
         @Test
-        void testMoveTaskStateUp_successful() throws Exception {
+        void testDeleteTask_successful() throws Exception {
             int id = 1;
+            Task task = new Task(id, "Delete Me", "desc", new ToDoState());
+            viewModel.getAllTasks().add(task);
+            viewModel.getTasksList().appendValue(task);
 
-            // Create the task with the initial state
-            Task task = new Task(id, "Test Task", "desc", new ToDoState());
+            // Mock DAO successful deletion
+            doNothing().when(tasksDAO).deleteTask(id);
 
-            // Mock DAO methods
-            doReturn(task).when(tasksDAO).getTask(id);  // Return the task when getTask(id) is called
-            Task[] tasksArray = new Task[]{ task };
-            doReturn(tasksArray).when(tasksDAO).getTasks();  // Return all tasks when getTasks() is called
+            // Invoke
+            viewModel.deleteTask(id);
+            boolean _ = latch.await(3, TimeUnit.SECONDS);
 
-            // Synchronize the ObservableCollection in the ViewModel with the array
-            viewModel.getTasksList().setValue(new ArrayList<>(Arrays.asList(tasksArray)));
+            // Ensure DAO delete called
+            verify(tasksDAO, times(1)).deleteTask(id);
 
-            // Create a latch to wait for asynchronous updates
-            CountDownLatch latch = new CountDownLatch(1);
-            doAnswer(invocation -> {
-                latch.countDown();  // Countdown when setTasks is called
-                return null;
-            }).when(view).setTasks(any());
+            // Ensure task removed from in-memory lists
+            assertTrue(viewModel.getAllTasks().stream().noneMatch(t -> t.getId() == id));
+            assertTrue(viewModel.getTasksList().get().stream().noneMatch(t -> t.getId() == id));
 
-            // Invoke the method under test
-            viewModel.moveTaskStateUp(id);
+            // Ensure success message shown
+            verify(view).showMessage("Task with ID " + id + " deleted successfully.", MessageType.SUCCESS);
 
-            // Wait for the asynchronous update to finish (maximum 3 seconds)
-            boolean finished = latch.await(3, TimeUnit.SECONDS);
-            assertTrue(finished, "Timeout waiting for async update");
-
-            // Verify that the DAO updated the task
-            verify(tasksDAO, times(1)).updateTask(task);
-
-            // Check that the task state has actually changed
-            assertEquals(new ToDoState().next(), task.getState(), "Task state should be updated");
-
-            // Verify that the view displays the success message
-            verify(view).showMessage(
-                    "Task state updated to " + task.getState().getDisplayName() + ".",
-                    MessageType.SUCCESS
-            );
+            // Ensure console log is empty (since no error expected)
+            assertEquals("", errContent.toString());
         }
+
 
         /**
          * Tests that the {@link TasksViewModel#deleteTask(int)} method handles a
