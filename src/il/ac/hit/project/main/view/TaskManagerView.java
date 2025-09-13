@@ -5,10 +5,32 @@ import il.ac.hit.project.main.viewmodel.IViewModel;
 import il.ac.hit.project.main.viewmodel.TasksViewModel;
 import il.ac.hit.project.main.viewmodel.strategy.*;
 
-import javax.swing.*;
+import javax.swing.SwingUtilities;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JLabel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JList;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.DefaultListModel;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JOptionPane;
+
+
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.FlowLayout;
+import java.awt.Insets;
+import java.util.List;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -510,7 +532,10 @@ public class TaskManagerView extends JPanel implements IView {
     }
 
     @Override
-    public void setTasks(java.util.List<ITask> tasks) {
+    /**
+     *
+     */
+    public void setTasks(List<ITask> tasks) {
         SwingUtilities.invokeLater(() -> {
             getListModel().clear();
             for (ITask task : tasks) {
@@ -519,6 +544,11 @@ public class TaskManagerView extends JPanel implements IView {
         });
     }
 
+    /**
+     * A helper method to display a pop-up message on the viewport.
+     * @param message the text of the message to display
+     * @param type    the type of message (e.g., success, error, warning)
+     */
     @Override
     public void showMessage(String message, MessageType type) {
         String title;
@@ -561,6 +591,11 @@ public class TaskManagerView extends JPanel implements IView {
         ((TasksViewModel) getViewModel()).filterTasks(selectedState, titleTerm, descriptionTerm, idTerm);
     }
 
+    /**
+     * Applies form fields to display task data, if no task is selected, clears the form.
+
+     * @param task the task to display on form
+     */
     @Override
     public void setFormData(ITask task) {
         if (task != null) {

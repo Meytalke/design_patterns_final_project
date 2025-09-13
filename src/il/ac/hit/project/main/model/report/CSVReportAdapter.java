@@ -1,7 +1,6 @@
-package il.ac.hit.project.main.model.report.external;
+package il.ac.hit.project.main.model.report;
 
-import il.ac.hit.project.main.model.report.IReportExporter;
-import il.ac.hit.project.main.model.report.ReportData;
+import il.ac.hit.project.main.model.report.external.CSVReportGenerator;
 import il.ac.hit.project.main.model.task.ITask;
 
 import java.io.IOException;
@@ -19,11 +18,7 @@ import java.util.Map;
  * <p>
  * Roles:
  * - Target: IReportExporter
-<<<<<<<< HEAD:src/main/java/model/report/CsvReportAdapter.java
- * - Adapter: CsvReportAdapter (this class)
-========
  * - Adapter: CSVReportAdapter (this class)
->>>>>>>> master:src/il/ac/hit/project/main/model/report/CSVReportAdapter.java
  * - Adaptee: CSVReportGenerator (external CSV writer)
  * - Client: Code that calls IReportExporter#export
  * <p>
@@ -42,9 +37,6 @@ public class CSVReportAdapter implements IReportExporter {
      * Adapts ReportData to the CSV generator's expected input and writes a file at the given path.
      * The resulting CSV contains two columns: Type and Count, with rows ordered as
      * "Completed", "In Progress", and "To Do".
-     * 
-     * The detailed CSV file contains columns for ID, Title, Description, State, Priority, and CreationDate.
-     *
      * The detailed CSV file contains columns for ID, Title, Description, State, Priority, and CreationDate.
      *
      * @param data non-null report data with task counts

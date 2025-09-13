@@ -19,11 +19,6 @@ public class PDFBoxReportGenerator {
 
     /**
      * Generates a PDF document with the given title and content.
-<<<<<<<< HEAD:src/main/java/model/report/external/PDFBoxReportGenerator.java
-     * 
-========
-     *
->>>>>>>> master:src/il/ac/hit/project/main/model/report/external/PDFBoxReportGenerator.java
      * @param title non-null title of the report
      * @param content non-null list of strings to display in the report
      * @param filePath non-null destination file path; may overwrite if the file exists

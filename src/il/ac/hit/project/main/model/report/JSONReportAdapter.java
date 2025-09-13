@@ -24,7 +24,8 @@ import java.util.stream.Stream;
  * Delegates to the adaptee to serialize the provided ReportData to JSON and write it to the given path.
  * Success is reported to stdout; IO failures are caught and logged to stderr.
  */
-public class JSONReportAdapter implements IReportExporter {
+public class
+JSONReportAdapter implements IReportExporter {
     /** Underlying JSON generator responsible for writing the file. */
     private final JSONReportGenerator generator = new JSONReportGenerator();
 

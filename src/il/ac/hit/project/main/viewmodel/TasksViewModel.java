@@ -4,7 +4,7 @@ import il.ac.hit.project.main.Main;
 import il.ac.hit.project.main.model.dao.ITasksDAO;
 import il.ac.hit.project.main.model.dao.TasksDAOException;
 import il.ac.hit.project.main.model.report.*;
-import il.ac.hit.project.main.model.report.external.CSVReportAdapter;
+import il.ac.hit.project.main.model.report.CSVReportAdapter;
 import il.ac.hit.project.main.model.task.ITask;
 import il.ac.hit.project.main.model.task.Task;
 import il.ac.hit.project.main.model.task.TaskState;
@@ -17,9 +17,6 @@ import il.ac.hit.project.main.view.ObservableProperty.ObservableCollection;
 import il.ac.hit.project.main.view.ObservableProperty.ObservableProperty;
 import il.ac.hit.project.main.view.IView;
 import il.ac.hit.project.main.viewmodel.combinator.TaskFilter;
-import il.ac.hit.project.main.viewmodel.state.DevState;
-import il.ac.hit.project.main.viewmodel.state.IAppState;
-import il.ac.hit.project.main.viewmodel.state.ProdState;
 import il.ac.hit.project.main.viewmodel.strategy.SortByIDStrategy;
 import il.ac.hit.project.main.viewmodel.strategy.ISortingStrategy;
 
