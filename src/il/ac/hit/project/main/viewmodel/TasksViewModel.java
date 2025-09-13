@@ -525,7 +525,6 @@ public class TasksViewModel implements IViewModel {
 
         getTasksList().setValue(combinedFilter.filter(getAllTasks()));
         sortTasks();
-        getTasksList().notifyListeners();
     }
 
     public void setPropertyListeners(){
