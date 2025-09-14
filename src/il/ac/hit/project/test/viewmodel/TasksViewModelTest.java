@@ -13,6 +13,7 @@ import org.junit.jupiter.api.*;
 import il.ac.hit.project.main.view.IView;
 import il.ac.hit.project.main.view.MessageType;
 import il.ac.hit.project.main.viewmodel.TasksViewModel;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 
 import java.io.ByteArrayOutputStream;
@@ -20,6 +21,7 @@ import java.io.PrintStream;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -340,7 +342,7 @@ public class TasksViewModelTest {
 
             //Ensure print to console correctly
             assertEquals("Attempting to update task ID: " + id + System.lineSeparator()
-                            + "Updating task list" + System.lineSeparator(), outContent.toString());
+                    + "Updating task list" + System.lineSeparator(), outContent.toString());
 
             //Ensure model was called to updateTask
             verify(tasksDAO, times(1)).updateTask(task);
@@ -425,7 +427,7 @@ public class TasksViewModelTest {
             boolean _ = latch.await(3, TimeUnit.SECONDS);
             //Ensure print to  console correctly
             assertEquals("Task not found for update. ID: " + id + System.lineSeparator()
-                + "Error updating task: Error updating task: Task not found." + System.lineSeparator(),  errContent.toString());
+                    + "Error updating task: Error updating task: Task not found." + System.lineSeparator(),  errContent.toString());
 
             //Ensure proper error pop-up
             verify(view).showMessage("Error updating task: Task not found.", MessageType.ERROR);
@@ -586,7 +588,6 @@ public class TasksViewModelTest {
             // Reset taskList
             viewModel.getTasksList().get().clear();
         }
-
 
         /**
          * Tests that the {@link TasksViewModel#deleteTask(int)} method deletes a task

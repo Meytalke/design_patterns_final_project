@@ -358,10 +358,10 @@ public class TasksViewModel implements IViewModel {
      */
     public void moveTaskStateUp(int taskId) {
         /*
-        * Get the task from in memory. Because we used the arrow up/down arrows to
-        * update the task state, we obviously have the task in memory, so we don't
-        * need to refetch it.
-        * */
+         * Get the task from in memory. Because we used the arrow up/down arrows to
+         * update the task state, we obviously have the task in memory, so we don't
+         * need to refetch it.
+         * */
         Task task = (Task) getAllTasks()
                 .stream()
                 .filter(t -> t.getId() == taskId)

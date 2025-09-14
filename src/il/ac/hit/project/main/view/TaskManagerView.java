@@ -639,9 +639,12 @@ public class TaskManagerView extends JPanel implements IView {
         downButton.setEnabled(false);
         upButton.setEnabled(false);
         deselectButton.setEnabled(false);
+        stateFilterComboBox.setSelectedIndex(0);
+        searchTitleInput.setText("");
+        searchDescriptionInput.setText("");
+        searchIdInput.setText("");
         taskList.clearSelection();
     }
-
 
     /**
      * Returns the ViewModel associated with this il.ac.hit.project.main.view.
