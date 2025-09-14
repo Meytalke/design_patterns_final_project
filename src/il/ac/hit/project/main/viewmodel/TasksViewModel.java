@@ -191,6 +191,9 @@ public class TasksViewModel implements IViewModel {
         getService().submit(() -> {
             try {
                 ITask[] tasksArray = getModel().getTasks();
+                if(tasksArray.length == 0) {
+                    System.out.println("No tasks found on DB");
+                }
                 // Convert the array to an ArrayList for mutable operations
                 setAllTasks( new ArrayList<>(Arrays.asList(tasksArray)));
                 //Use the observer to update the list in the UI
@@ -258,12 +261,13 @@ public class TasksViewModel implements IViewModel {
         //Wrap DB calls with our service executor
         getService().submit(() -> {
             try {
+                //Get the task from DB
                 Task task = fetchTaskToUpdate(id);
-
+                //Get the task from DB
                 task.setTitle(newTitle);
                 task.setDescription(newDescription);
                 task.setState(newState);
-
+                //Update memory and refresh view
                 updateMemoryOnUpdateTask(task);
 
             } catch (TasksDAOException e) {
@@ -283,7 +287,7 @@ public class TasksViewModel implements IViewModel {
             try {
                 //Get the task from DB
                 Task taskDB = fetchTaskToUpdate(updatedTask.getId());
-                //Set attributes
+                //Get the task from DB
                 taskDB.setTitle(updatedTask.getTitle());
                 taskDB.setDescription(updatedTask.getDescription());
                 taskDB.setState(updatedTask.getState());
@@ -334,7 +338,7 @@ public class TasksViewModel implements IViewModel {
         getModel().updateTask(task);
         getAllTasks().replaceAll(t -> t.getId() == task.getId() ? task : t);
         //Invoke UI refresh
-        getTasksList().setValue(getAllTasks());
+        getTasksList().setValue(new ArrayList<>(getAllTasks()));
         // Success message: Task updated successfully
         getView().showMessage("Task \"" + task.getTitle() + "\" updated successfully!", MessageType.SUCCESS);
     }
@@ -420,7 +424,7 @@ public class TasksViewModel implements IViewModel {
                 getAllTasks().removeIf(task -> task.getId() == id);
                 getTasks().removeIf(task -> task.getId() == id);
                 //Invoke UI refresh
-                getTasksList().setValue(getAllTasks());
+                getTasksList().setValue(new ArrayList<>(getAllTasks()));
                 getView().showMessage("Task with ID " + id + " deleted successfully.", MessageType.SUCCESS);
             } catch (TasksDAOException e) {
                 System.err.println("Error deleting task: " + e.getMessage());
@@ -561,7 +565,7 @@ public class TasksViewModel implements IViewModel {
             }
         }
 
-        getTasksList().setValue(combinedFilter.filter(getAllTasks()));
+        getTasksList().setValue(new ArrayList<>(combinedFilter.filter(getAllTasks())));
         sortTasks();
     }
 
