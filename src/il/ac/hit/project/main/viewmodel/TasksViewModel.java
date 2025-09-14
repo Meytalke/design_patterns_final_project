@@ -40,7 +40,7 @@ import static il.ac.hit.project.main.view.MessageType.ERROR;
  *   <li>Notify registered {@link IPropertyObserver} instances whenever the visible tasks list changes.</li>
  *   <li>Apply sorting via pluggable {@link ISortingStrategy} implementations.</li>
  *   <li>Filter tasks using combinable predicates from {@link TaskFilter}.</li>
- *   <li>Generate reports using a Visitor + Adapter approach ({@link ReportVisitor}, {@link IReportExporter}).</li>
+ *   <li>Generate reports using a Visitor and Adapter approach ({@link ReportVisitor}, {@link IReportExporter}).</li>
  * </ul>
  *
  * <h3>Threading</h3>
@@ -305,7 +305,7 @@ public class TasksViewModel implements IViewModel {
      * Helper function to retrieve a specific task from the database and ensures
      * we get a valid task back. <br/>
      * Mainly used within {@link #updateTask} scope.
-     * @param id the id matching the task on database
+     * @param id the id matching the task on a database
      * @return A task from the database.
      * @throws TasksDAOException if the task was not found, or some kind of error occurred in DB when preforming the query.
      */
@@ -419,7 +419,7 @@ public class TasksViewModel implements IViewModel {
         //Wrap DB calls with our service executor
         getService().submit(() -> {
             try {
-                // Delete from DB, and from memory
+                // Delete it from DB, and from memory
                 getModel().deleteTask(id);
                 getAllTasks().removeIf(task -> task.getId() == id);
                 getTasks().removeIf(task -> task.getId() == id);

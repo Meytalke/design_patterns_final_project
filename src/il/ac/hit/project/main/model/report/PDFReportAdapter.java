@@ -47,7 +47,7 @@ public class PDFReportAdapter implements IReportExporter {
         buckets.add("--- ToDo Tasks Bucket ---");
         data.toDoTasksBucket().forEach(task -> {buckets.add("" + task);});
 
-        // Create summary report section
+        // Create a summary report section
         List<String> reportContent = new ArrayList<>(List.of(
                 "Completed Tasks: " + data.completedTasks(),
                 "In Progress Tasks: " + data.inProgressTasks(),

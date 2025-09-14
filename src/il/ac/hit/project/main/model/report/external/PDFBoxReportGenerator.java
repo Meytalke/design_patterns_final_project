@@ -29,7 +29,7 @@ public class PDFBoxReportGenerator {
         // Create a new empty document
         try (PDDocument document = new PDDocument()) {
             PDPage page = new PDPage();
-            try (PDPageContentStream contentStream = new PDPageContentStream(document, page);){
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)){
                 document.addPage(page);
                 contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
                 contentStream.beginText();

@@ -27,14 +27,14 @@ public interface IView {
     /**
      * Returns the il.ac.hit.project.main.view il.ac.hit.project.main.model currently associated with this il.ac.hit.project.main.view.
      * <p>
-     * Implementations may return {@code null} if a il.ac.hit.project.main.view il.ac.hit.project.main.model has not yet been assigned.
+     * Implementations may return {@code null} if an il.ac.hit.project.main.view il.ac.hit.project.main.model has not yet been assigned.
      *
      * @return the current {@link IViewModel}, or {@code null} if none is set
      */
     IViewModel getViewModel();
 
     /**
-     * Associates a il.ac.hit.project.main.view il.ac.hit.project.main.model with this il.ac.hit.project.main.view and (re)binds UI elements as needed.
+     * Associates an il.ac.hit.project.main.view il.ac.hit.project.main.model with this il.ac.hit.project.main.view and (re)binds UI elements as needed.
      * <p>
      * Calling this method more than once should update bindings to the new il.ac.hit.project.main.model.
      *
@@ -53,7 +53,7 @@ public interface IView {
 
     /**
      * Sets the list of tasks to be displayed by the il.ac.hit.project.main.view.
-     *
+     * <p>
      * This method is typically used to refresh the entire task list
      * in the UI after a change, such as adding, deleting, or updating a task.
      *
@@ -63,7 +63,7 @@ public interface IView {
 
     /**
      * Populates the il.ac.hit.project.main.view's form with data from a given task.
-     *
+     * <p>
      * This is useful for editing an existing task, where the form fields
      * need to be pre-filled with the task's current title, description, and state.
      *
@@ -73,7 +73,7 @@ public interface IView {
 
     /**
      * Resets the UI form to its initial, empty state.
-     *
+     * <p>
      * This method should clear all input fields, radio buttons, or any
      * other form elements, making them ready for creating a new task.
      */
@@ -81,7 +81,7 @@ public interface IView {
 
     /**
      * Displays a message to the user, with a specific type indicating success or failure.
-     *
+     * <p>
      * The il.ac.hit.project.main.view is responsible for determining how to render the message based on its type
      * (e.g., a green bar for success, a red box for an error).
      *

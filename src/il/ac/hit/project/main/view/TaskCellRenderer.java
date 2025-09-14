@@ -3,7 +3,6 @@ package il.ac.hit.project.main.view;
 import il.ac.hit.project.main.model.task.ITask;
 import javax.swing.*;
 import java.awt.*;
-import java.text.SimpleDateFormat;
 
 /**
  * ListCellRenderer for rendering {@link ITask} items in a list component.
@@ -89,7 +88,6 @@ public class TaskCellRenderer extends JPanel implements ListCellRenderer<ITask> 
     public Component getListCellRendererComponent(JList<? extends ITask> list, ITask task,
                                                   int index,boolean isSelected,boolean cellHasFocus) {
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
         // Set the content for each label based on the task object
         idLabel.setText("#" + task.getId());
         titleLabel.setText(task.getTitle());

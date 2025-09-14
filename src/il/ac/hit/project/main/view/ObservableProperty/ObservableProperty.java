@@ -30,18 +30,18 @@ public class ObservableProperty<T> implements IObservableProperty<T> {
         setValue(value);
     }
 
-    @Override
     /**
      * {@inheritDoc}
      */
+    @Override
     public T get() {
         return value;
     }
 
-    @Override
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setValue(T newValue) {
         //Ensure update only on relevant value changes
         if((value == null && newValue!= null) || (value!=null && !value.equals(newValue))){
@@ -50,36 +50,34 @@ public class ObservableProperty<T> implements IObservableProperty<T> {
         }
     }
 
-
-    @Override
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addListener(IPropertyObserver<T> listener) {
         listeners.add(listener);
     }
 
-    @Override
     /**
      * {@inheritDoc}
-     *
      */
+    @Override
     public void removeListener(IPropertyObserver<T> listener) {
         listeners.remove(listener);
     }
 
-    @Override
     /**
      * {@inheritDoc}
      */
+    @Override
     public void clearListeners() {
         listeners.clear();
     }
 
-    @Override
     /**
      * {@inheritDoc}
      */
+    @Override
     public void notifyListeners() {
         for(IPropertyObserver<T> listener : listeners){
             listener.update(get());

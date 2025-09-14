@@ -15,21 +15,21 @@
   ],
   "tasksDTO": [
     {
-      "ID": 4,
-      "title": "Add Observer notifications",
-      "description": "Notify the view automatically when task list changes",
-      "state": "Completed"
-    },
-    {
       "ID": 1,
       "title": "Implement Proxy pattern",
       "description": "Wrap DAO with a caching proxy to reduce database calls",
+      "state": "Completed"
+    },
+    {
+      "ID": 4,
+      "title": "Add Observer notifications",
+      "description": "Notify the view automatically when task list changes",
       "state": "In Progress"
     },
     {
       "ID": 2,
       "title": "Add State pattern tests",
-      "description": "Write unit tests to verify task transitions (ToDo → InProgress → Done)",
+      "description": "Write unit tests to verify task transitions (ToDo → InProgress → Completed)",
       "state": "To Do"
     },
     {
