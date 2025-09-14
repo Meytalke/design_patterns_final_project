@@ -143,7 +143,7 @@ public class TasksDAODerby implements ITasksDAO {
         List<ITask> tasks = new ArrayList<>();
         String sql = "SELECT * FROM tasks ORDER BY id ASC";
         //tryWith block, automatically closes AutoCloseable classes
-        try (ResultSet resultSet = runQuery(sql);) {
+        try (ResultSet resultSet = runQuery(sql)) {
             while (resultSet.next()) {
                 tasks.add(new Task(
                         resultSet.getInt("id"),
@@ -172,7 +172,7 @@ public class TasksDAODerby implements ITasksDAO {
         String sql = "SELECT * FROM tasks WHERE id = " + id;
         try(ResultSet resultSet = runQuery(sql))
         {
-            //If we find any results... we return a task.
+            //If we find any results... we return to a task.
             if (resultSet.next()) {
                 return new Task(
                         resultSet.getInt("id"),
@@ -182,7 +182,7 @@ public class TasksDAODerby implements ITasksDAO {
                 );
             }
             else{
-                //Explicit declaring that task with that id does not exist.
+                //Explicit declaring that a task with that id does not exist.
                 throw new TasksDAOException("No task with id " + id);
             }
 
