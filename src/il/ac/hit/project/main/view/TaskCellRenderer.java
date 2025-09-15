@@ -7,7 +7,7 @@ import java.awt.*;
 /**
  * ListCellRenderer for rendering {@link ITask} items in a list component.
  * <p>
- * Displays task attributes such as ID, title, description, state, creation date, and priority
+ * Displays task attributes such as ID, title, description and state
  * using a panel with labeled fields. Selection and focus states are reflected in the background
  * and foreground as per the host look-and-feel.
  */
@@ -43,7 +43,7 @@ public class TaskCellRenderer extends JPanel implements ListCellRenderer<ITask> 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
-        // Create a panel for the top-right section (state and priority)
+        // Create a panel for the top-right section (state)
         JPanel eastPanel = new JPanel();
         eastPanel.setLayout(new BoxLayout(eastPanel, BoxLayout.Y_AXIS));
 

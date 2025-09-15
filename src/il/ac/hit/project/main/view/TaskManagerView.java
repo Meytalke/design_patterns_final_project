@@ -17,7 +17,7 @@ import java.util.Map;
  * <p>
  * This component composes the task management UI, including:
  * <ul>
- *   <li>Inputs for creating and editing tasks (title, description, state, priority).</li>
+ *   <li>Inputs for creating and editing tasks (title, description and state).</li>
  *   <li>Search fields (by id, title, description) and a state filter.</li>
  *   <li>Sorting controls to reorder the visible task list.</li>
  *   <li>Action buttons for adding, updating, deleting, bulk-deleting, navigating, and reporting/exporting.</li>
@@ -216,7 +216,7 @@ public class TaskManagerView extends JPanel implements IView {
         /*
          * Sorting option selector.
          *
-         * Populates from the available sorting options (e.g., by date, priority, title).
+         * Populates from the available sorting options (e.g., by id, state, title).
          * The renderer shows a user-facing display name for each option.
          */
         sortComboBox = new JComboBox<>(SortingOption.values());
@@ -269,7 +269,7 @@ public class TaskManagerView extends JPanel implements IView {
      * <p>
      * This includes:
      * <ul>
-     *     <li>A panel for adding/updating tasks with input fields for title, description, state, and priority.</li>
+     *     <li>A panel for adding/updating tasks with input fields for title, description and state.</li>
      *     <li>A panel for searching/filtering tasks with input fields for search title, description, and ID, as well as a combo box for selecting a task state to filter by.</li>
      *     <li>A panel for displaying the current task list with a JList component.</li>
      *     <li>A panel for controlling the task list with action buttons (add, update, delete, delete all, report, export) and a combo box for selecting the export format.</li>
@@ -622,7 +622,7 @@ public class TaskManagerView extends JPanel implements IView {
 
     /**
      * Resets the form to its initial state: clears input fields, selects the first
-     * option in the state and priority combo boxes, disables the state combo box,
+     * option in the state combo box, disables the state combo box,
      * and enables/disables the control buttons as appropriate. Also clears the
      * selection in the task list.
      */

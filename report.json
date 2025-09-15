@@ -2,40 +2,22 @@
   "totalTasksDTO": [
     {
       "type": "Completed",
-      "totalTasks": 1
+      "totalTasks": 0
     },
     {
       "type": "InProgress",
-      "totalTasks": 1
+      "totalTasks": 0
     },
     {
       "type": "To Do",
-      "totalTasks": 2
+      "totalTasks": 1
     }
   ],
   "tasksDTO": [
     {
       "ID": 1,
-      "title": "Implement Proxy pattern",
-      "description": "Wrap DAO with a caching proxy to reduce database calls",
-      "state": "Completed"
-    },
-    {
-      "ID": 4,
-      "title": "Add Observer notifications",
-      "description": "Notify the view automatically when task list changes",
-      "state": "In Progress"
-    },
-    {
-      "ID": 2,
-      "title": "Add State pattern tests",
-      "description": "Write unit tests to verify task transitions (ToDo → InProgress → Completed)",
-      "state": "To Do"
-    },
-    {
-      "ID": 3,
-      "title": "Apply Composite filter",
-      "description": "Combine multiple TaskFilter conditions using Combinator pattern",
+      "title": "test",
+      "description": "test",
       "state": "To Do"
     }
   ]

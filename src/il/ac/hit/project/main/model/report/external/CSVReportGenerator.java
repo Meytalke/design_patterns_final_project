@@ -37,7 +37,7 @@ public class CSVReportGenerator {
 
     /**
      * Creates a detailed CSV report from a given list of tasks.
-     * The CSV file's columns are ID, Title, Description, State, Priority, and CreationDate.
+     * The CSV file's columns are ID, Title, Description and State.
      *
      * @param tasks non-null list of tasks to include in the report
      * @param path non-null destination file path; may overwrite if the file exists
@@ -47,7 +47,7 @@ public class CSVReportGenerator {
 
         try (FileWriter fileWriter = new FileWriter(path);
              CSVPrinter csvPrinter = new CSVPrinter(fileWriter,
-                     CSVFormat.DEFAULT.withHeader("ID", "Title", "Description", "State", "Priority", "CreationDate"))){
+                     CSVFormat.DEFAULT.withHeader("ID", "Title", "Description", "State"))){
 
             for(ITask task : tasks){csvPrinter.printRecord(
                     task.getId(),
