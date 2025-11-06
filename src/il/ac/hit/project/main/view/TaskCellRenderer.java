@@ -3,12 +3,11 @@ package il.ac.hit.project.main.view;
 import il.ac.hit.project.main.model.task.ITask;
 import javax.swing.*;
 import java.awt.*;
-import java.text.SimpleDateFormat;
 
 /**
  * ListCellRenderer for rendering {@link ITask} items in a list component.
  * <p>
- * Displays task attributes such as ID, title, description, state, creation date, and priority
+ * Displays task attributes such as ID, title, description and state
  * using a panel with labeled fields. Selection and focus states are reflected in the background
  * and foreground as per the host look-and-feel.
  */
@@ -44,7 +43,7 @@ public class TaskCellRenderer extends JPanel implements ListCellRenderer<ITask> 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
-        // Create a panel for the top-right section (state and priority)
+        // Create a panel for the top-right section (state)
         JPanel eastPanel = new JPanel();
         eastPanel.setLayout(new BoxLayout(eastPanel, BoxLayout.Y_AXIS));
 
@@ -89,7 +88,6 @@ public class TaskCellRenderer extends JPanel implements ListCellRenderer<ITask> 
     public Component getListCellRendererComponent(JList<? extends ITask> list, ITask task,
                                                   int index,boolean isSelected,boolean cellHasFocus) {
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
         // Set the content for each label based on the task object
         idLabel.setText("#" + task.getId());
         titleLabel.setText(task.getTitle());

@@ -25,7 +25,7 @@ public class SimpleTextReporter {
      */
     public void generateTextReport(long completed, long inProgress, long todo, List<ITask> completedBucket, List<ITask> inProgressBucket, List<ITask>  todoBucket) {
 
-        // Printing total tasks section
+        // Printing a total tasks section
         System.out.println("--- Report ---");
         System.out.println("Completed: " + completed);
         System.out.println("In Progress: " + inProgress);

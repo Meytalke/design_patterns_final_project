@@ -5,7 +5,6 @@ import il.ac.hit.project.main.model.task.Task;
 import il.ac.hit.project.main.model.task.TaskState;
 import il.ac.hit.project.main.model.task.ToDoState;
 import il.ac.hit.project.main.view.ObservableProperty.IObservableProperty;
-import il.ac.hit.project.main.view.ObservableProperty.ObservableProperty;
 import il.ac.hit.project.main.view.TaskManagerView;
 import il.ac.hit.project.main.viewmodel.TasksViewModel;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,7 +40,7 @@ class TaskManagerViewTest {
         // Use a mock ViewModel to isolate the View and verify its interactions.
         viewModel = mock(TasksViewModel.class);
 
-        // Mock the IObservableProperty that the ViewModel returns for selectedTask.
+        // Mock the IObservableProperty that the ViewModel returns for the selectedTask.
         selectedTaskMock = mock(IObservableProperty.class);
 
         // This is a crucial fix: configure the mock to return the mock object itself.

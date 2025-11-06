@@ -6,10 +6,10 @@ package il.ac.hit.project.main.viewmodel.strategy;
  */
 public enum SortingOption {
 
-    /** Sort by the task's creation date (oldest to newest). */
+    /** Sort by the task's id (oldest to newest). */
     ID("Id"),
 
-    /** Sort by the task's priority. */
+    /** Sort by the task's state. */
     STATE("State"),
 
     /** Sort by the task's title (lexicographical). */

@@ -76,8 +76,8 @@ public class Task implements ITask {
     public TaskState getState() {return state;}
 
     /**
-     * Returns a human-readable representation containing the id, title, state,
-     * creation date, and priority. The exact format is not guaranteed to be stable
+     * Returns a human-readable representation containing the id, title and state.
+     * The exact format is not guaranteed to be stable
      * across versions and is primarily intended for logging/debugging.
      */
     @Override

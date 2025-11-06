@@ -142,8 +142,8 @@ class TasksDAODerbyUnitTest {
 
         // Mock the behavior of createStatement()
         when(mockedConnection.createStatement())
-                .thenReturn(mockedStatementForSetup) // First call returns a statement that doesn't throw
-                .thenReturn(mockedStatementForTest); // Subsequent calls return a statement that throws
+                .thenReturn(mockedStatementForSetup) // The first call returns a statement that doesn't throw
+                .thenReturn(mockedStatementForTest); // Later calls return a statement that throws
 
         // Mock the setup statement to succeed
         when(mockedStatementForSetup.executeUpdate(anyString())).thenReturn(1);

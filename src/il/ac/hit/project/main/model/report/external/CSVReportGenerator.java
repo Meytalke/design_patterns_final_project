@@ -20,10 +20,10 @@ public class CSVReportGenerator {
      * Creates a summary CSV report from a given map of report data.
      * The CSV file's columns are Type and Count.
      *
-     * @param reportData non-null map with report data; keys are task types (e.g., "Completed", "In Progress", "To Do")
+     * @param reportData non-null map with report data; keys are task types (e.g., "Completed", "In Progress", "To Do"),
      *                   and values are the corresponding task counts
      * @param path non-null destination file path; may overwrite if the file exists
-     * @throws IOException if an IO error occurs writing to the given path
+     * @throws IOException if an IO error occurs, writing to the given path
      */
     public void createSummaryCSV(Map<String, Long> reportData, String path) throws IOException {
         try (FileWriter fileWriter = new FileWriter(path);
@@ -37,17 +37,17 @@ public class CSVReportGenerator {
 
     /**
      * Creates a detailed CSV report from a given list of tasks.
-     * The CSV file's columns are ID, Title, Description, State, Priority, and CreationDate.
+     * The CSV file's columns are ID, Title, Description and State.
      *
      * @param tasks non-null list of tasks to include in the report
      * @param path non-null destination file path; may overwrite if the file exists
-     * @throws IOException if an IO error occurs writing to the given path
+     * @throws IOException if an IO error occurs, writing to the given path
      */
     public void createDetailedCSV(List<ITask> tasks, String path) throws IOException {
 
         try (FileWriter fileWriter = new FileWriter(path);
              CSVPrinter csvPrinter = new CSVPrinter(fileWriter,
-                     CSVFormat.DEFAULT.withHeader("ID", "Title", "Description", "State", "Priority", "CreationDate"))){
+                     CSVFormat.DEFAULT.withHeader("ID", "Title", "Description", "State"))){
 
             for(ITask task : tasks){csvPrinter.printRecord(
                     task.getId(),

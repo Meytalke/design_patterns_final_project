@@ -38,8 +38,8 @@ public class CSVReportAdapter implements IReportExporter {
      * Adapts ReportData to the CSV generator's expected input and writes a file at the given path.
      * The resulting CSV contains two columns: Type and Count, with rows ordered as
      * "Completed", "In Progress", and "To Do".
-     *
-     * The detailed CSV file contains columns for ID, Title, Description, State, Priority, and CreationDate.
+     * <p>
+     * The detailed CSV file contains columns for ID, Title, Description and State.
      *
      * @param data non-null report data with task counts
      * @param path non-null destination file path; may overwrite if the file exists

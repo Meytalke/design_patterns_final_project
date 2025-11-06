@@ -3,7 +3,7 @@ package il.ac.hit.project.main.model.task;
 /**
  * Read-only contract for a task domain object.
  * <p>
- * Exposes identity, basic metadata, workflow state, and priority. This interface
+ * Exposes identity, basic metadata and workflow state. This interface
  * does not define mutating operations; implementations may be immutable or provide
  * their own mutation APIs elsewhere.
  *

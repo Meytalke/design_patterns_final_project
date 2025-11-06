@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>
  * These tests use an embedded Derby database to validate that the DAO
  * correctly performs CRUD operations (create, read, delete).
- * A fresh database is created before each test and removed afterwards
+ * A fresh database is created before each test and removed afterward
  * to ensure isolation between test cases.
  * </p>
  */

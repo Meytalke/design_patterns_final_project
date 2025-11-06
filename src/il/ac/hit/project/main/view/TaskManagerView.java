@@ -17,7 +17,7 @@ import java.util.Map;
  * <p>
  * This component composes the task management UI, including:
  * <ul>
- *   <li>Inputs for creating and editing tasks (title, description, state, priority).</li>
+ *   <li>Inputs for creating and editing tasks (title, description and state).</li>
  *   <li>Search fields (by id, title, description) and a state filter.</li>
  *   <li>Sorting controls to reorder the visible task list.</li>
  *   <li>Action buttons for adding, updating, deleting, bulk-deleting, navigating, and reporting/exporting.</li>
@@ -143,7 +143,7 @@ public class TaskManagerView extends JPanel implements IView {
      * A map to store different sorting strategies, keyed by a sorting option enum.
      * This allows for easy retrieval of the correct strategy at runtime.
      */
-    private Map<SortingOption, ISortingStrategy> strategies = new HashMap<>();
+    private final Map<SortingOption, ISortingStrategy> strategies = new HashMap<>();
 
     /**
      * Constructs the task manager il.ac.hit.project.main.view and initializes the UI hierarchy.
@@ -216,7 +216,7 @@ public class TaskManagerView extends JPanel implements IView {
         /*
          * Sorting option selector.
          *
-         * Populates from the available sorting options (e.g., by date, priority, title).
+         * Populates from the available sorting options (e.g., by id, state, title).
          * The renderer shows a user-facing display name for each option.
          */
         sortComboBox = new JComboBox<>(SortingOption.values());
@@ -240,10 +240,8 @@ public class TaskManagerView extends JPanel implements IView {
 
         window = new JFrame("Tasks Manager");
 
-        /**
-         * "Initializes the strategies map with concrete implementations of the ISortingStrategy interface.
-         * This sets up the available sorting algorithms."
-         */
+        // Initializes the strategy map with concrete implementations of the ISortingStrategy interface.
+        // This sets up the available sorting algorithms
         strategies.put(SortingOption.STATE, new SortByStateStrategy());
         strategies.put(SortingOption.ID, new SortByIDStrategy());
         strategies.put(SortingOption.TITLE, new SortByTitleStrategy());
@@ -271,13 +269,13 @@ public class TaskManagerView extends JPanel implements IView {
      * <p>
      * This includes:
      * <ul>
-     *     <li>A panel for adding/updating tasks with input fields for title, description, state, and priority.</li>
+     *     <li>A panel for adding/updating tasks with input fields for title, description and state.</li>
      *     <li>A panel for searching/filtering tasks with input fields for search title, description, and ID, as well as a combo box for selecting a task state to filter by.</li>
      *     <li>A panel for displaying the current task list with a JList component.</li>
      *     <li>A panel for controlling the task list with action buttons (add, update, delete, delete all, report, export) and a combo box for selecting the export format.</li>
      * </ul>
      * <p>
-     * Also sets up event listeners for the buttons and combo boxes, and initializes the ViewModel with the initial data.
+     * Also sets up event listeners for the buttons and combo boxes and initializes the ViewModel with the initial data.
      */
     public void start() {
         JPanel addTaskPanel = new JPanel(new GridBagLayout());
@@ -436,14 +434,14 @@ public class TaskManagerView extends JPanel implements IView {
             }
         });
 
-        /**
+        /*
          * An action listener for the sort combo box.
          * When a user selects a sorting option, this listener retrieves the
          * corresponding sorting strategy from the map and applies it to the
          * ViewModel. This demonstrates a flexible, polymorphic approach
          * to changing the sorting behavior without modifying the core logic.
          *
-         * @param e The action event triggered by the user's selection.
+         * @param e The action event is triggered by the user's selection.
          */
         sortComboBox.addActionListener(e -> {
             SortingOption selectedOption = (SortingOption) sortComboBox.getSelectedItem();
@@ -624,7 +622,7 @@ public class TaskManagerView extends JPanel implements IView {
 
     /**
      * Resets the form to its initial state: clears input fields, selects the first
-     * option in the state and priority combo boxes, disables the state combo box,
+     * option in the state combo box, disables the state combo box,
      * and enables/disables the control buttons as appropriate. Also clears the
      * selection in the task list.
      */
@@ -797,9 +795,9 @@ public class TaskManagerView extends JPanel implements IView {
     }
 
     /**
-     * Returns the button for de-selecting the currently selected task.
+     * Returns the button for deselecting the currently selected task.
      *
-     * @return the button for de-selecting the task
+     * @return the button for deselecting the task
      */
     public JButton getDeselectButton() {
         return deselectButton;
@@ -815,22 +813,34 @@ public class TaskManagerView extends JPanel implements IView {
     }
 
     /**
-     * Returns the sorting strategy for sorting tasks by creation date (oldest to newest).
+     * Returns the sorting strategy for sorting tasks by ID (highest to lowest).
      *
-     * @return the sorting strategy for sorting tasks by creation date
-     */
-    public ISortingStrategy getSortByStateStrat() {
-        return sortByTitleStrat;
-    }
-
-    /**
-     * Returns the sorting strategy for sorting tasks by priority (highest to lowest).
-     *
-     * @return the sorting strategy for sorting tasks by priority
+     * @return the sorting strategy for sorting tasks by ID
      */
     public ISortingStrategy getSortByIdStrat() {
         return sortById;
     }
+
+    /**
+     * Returns the sorting strategy for sorting tasks by their state.
+     * The sorting order is: "To Do", followed by "In Progress", and then "Complete".
+     *
+     * @return the sorting strategy for sorting tasks by their state
+     */
+    public ISortingStrategy getSortByStateStrat() {
+        return sortByState;
+    }
+
+    /**
+     * Returns the sorting strategy for sorting tasks by title.
+     * The tasks are sorted alphabetically by their title (A-Z).
+     *
+     * @return the sorting strategy for sorting tasks by title
+     */
+    public ISortingStrategy getSortByTitleStrat() {
+        return sortByTitleStrat;
+    }
+
 
     /**
      * Returns the currently selected {@link TaskState} in the UI state filter combo box.

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * <p>
  * Combinators:
  * <ul>
- *   <li>{@link #and(TaskFilter)} and {@link #or(TaskFilter)} return new filters without shared mutable state.</li>
+ *   <li>{@link #and(TaskFilter)} and {@link #or(TaskFilter)} return new filters without a shared mutable state.</li>
  *   <li>Factories: {@link #byId(int)}, {@link #byTitle(String)}, {@link #byDescription(String)}, {@link #byState(String)}.</li>
  * </ul>
  * <p>

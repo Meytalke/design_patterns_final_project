@@ -29,7 +29,7 @@ public class PDFBoxReportGenerator {
         // Create a new empty document
         try (PDDocument document = new PDDocument()) {
             PDPage page = new PDPage();
-            try (PDPageContentStream contentStream = new PDPageContentStream(document, page);){
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)){
                 document.addPage(page);
                 contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
                 contentStream.beginText();
@@ -42,8 +42,7 @@ public class PDFBoxReportGenerator {
                 contentStream.newLine();
 
                 // Write the content lines
-                PDType0Font font = PDType0Font.load(document, new File("fonts/arial.ttf"));
-                contentStream.setFont(font, 12);
+                contentStream.setFont(PDType1Font.HELVETICA, 12);
                 for (String line : content) {
                     contentStream.showText(line);
                     contentStream.newLine();

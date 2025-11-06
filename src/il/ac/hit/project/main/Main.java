@@ -91,7 +91,5 @@ public class Main {
                     "Database Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             }
-
-
     }
 }

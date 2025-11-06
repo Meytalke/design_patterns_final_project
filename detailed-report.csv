@@ -1,5 +1,2 @@
-ID,Title,Description,State,Priority,CreationDate
-4,Add Observer notifications,Notify the view automatically when task list changes,Completed
-1,Implement Proxy pattern,Wrap DAO with a caching proxy to reduce database calls,In Progress
-2,Add State pattern tests,Write unit tests to verify task transitions (ToDo → InProgress → Done),To Do
-3,Apply Composite filter,Combine multiple TaskFilter conditions using Combinator pattern,To Do
+ID,Title,Description,State
+1,test,test,To Do

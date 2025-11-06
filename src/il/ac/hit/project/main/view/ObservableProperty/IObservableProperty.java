@@ -7,7 +7,7 @@ package il.ac.hit.project.main.view.ObservableProperty;
  * observed by other objects.
  * <p>
  * The interface is designed to be used by UI components that need to
- * react to changes in a il.ac.hit.project.main.model, without having to know the details of
+ * react to changes in an il.ac.hit.project.main.model, without having to know the details of
  * the il.ac.hit.project.main.model itself.
  *
  * @param <T> the type of the property

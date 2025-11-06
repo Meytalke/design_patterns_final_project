@@ -13,7 +13,6 @@ import org.junit.jupiter.api.*;
 import il.ac.hit.project.main.view.IView;
 import il.ac.hit.project.main.view.MessageType;
 import il.ac.hit.project.main.viewmodel.TasksViewModel;
-import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 
 import java.io.ByteArrayOutputStream;
@@ -21,7 +20,6 @@ import java.io.PrintStream;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -344,10 +342,10 @@ public class TasksViewModelTest {
             assertEquals("Attempting to update task ID: " + id + System.lineSeparator()
                     + "Updating task list" + System.lineSeparator(), outContent.toString());
 
-            //Ensure model was called to updateTask
+            //Ensure the model was called to updateTask
             verify(tasksDAO, times(1)).updateTask(task);
 
-            //Ensure tasksList was updated and listeners were notified
+            //Ensure the tasksList was updated and listeners were notified
             //Verify UI update
             verify(view, atLeastOnce()).setTasks(ArgumentMatchers.<List<ITask>>any());
             //Ensure view was told to show a success message
@@ -611,14 +609,14 @@ public class TasksViewModelTest {
             // Ensure DAO delete called
             verify(tasksDAO, times(1)).deleteTask(id);
 
-            // Ensure task removed from in-memory lists
+            // Ensure a task removed from in-memory lists
             assertTrue(viewModel.getAllTasks().stream().noneMatch(t -> t.getId() == id));
             assertTrue(viewModel.getTasksList().get().stream().noneMatch(t -> t.getId() == id));
 
-            // Ensure success message shown
+            // Ensure a success message shown
             verify(view).showMessage("Task with ID " + id + " deleted successfully.", MessageType.SUCCESS);
 
-            // Ensure console log is empty (since no error expected)
+            // Ensure the console log is empty (since no error expected)
             assertEquals("", errContent.toString());
         }
 
